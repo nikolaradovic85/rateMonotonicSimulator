@@ -12,7 +12,6 @@ package javaapplication1;
  */
 public class instanceOfPeriodicTask implements Comparable<instanceOfPeriodicTask>{
 
-   // private int instancePriority;//  prioritet - mislim da ne treba
     private int taskPeriod;// perioda 
     private int phi;//faza 
     private int rActivationTime;//vrijeme aktivacije
@@ -22,12 +21,10 @@ public class instanceOfPeriodicTask implements Comparable<instanceOfPeriodicTask
     /**
     *constructor 
     */
-    public instanceOfPeriodicTask(//int instancePriority, 
-            int taskPeriod, int phi,
+    public instanceOfPeriodicTask(int taskPeriod, int phi,
             int rActivationTime, int dAbsolutDeadline, int cExecutionTime) {
         this.cExecutionTime = cExecutionTime;
         this.dAbsolutDeadline = dAbsolutDeadline;
-    //    this.instancePriority = instancePriority;
         this.phi = phi;
         this.rActivationTime = rActivationTime;
         this.taskPeriod = taskPeriod;
