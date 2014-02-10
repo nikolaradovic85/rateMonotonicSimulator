@@ -57,7 +57,7 @@ public class Main {
             }
         }
         //at the end sort readyQ by priority(highest first,priority - rate)
-        Collections.sort(readyQ);
+        Collections.sort(readyQ, instanceOfPeriodicTask.Comparators.TASK_PERIOD);
     }
     /**
      * @return next time of activation of any instance from input after time

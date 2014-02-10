@@ -6,11 +6,13 @@
 
 package javaapplication1;
 
+import java.util.Comparator;
+
 /**
  *
  * @author nikola
  */
-public class instanceOfPeriodicTask implements Comparable<instanceOfPeriodicTask>{
+public class instanceOfPeriodicTask {
 
     private int taskPeriod;// perioda 
     private int phi;//faza 
@@ -100,9 +102,18 @@ public class instanceOfPeriodicTask implements Comparable<instanceOfPeriodicTask
         this.cExecutionTime = cExecutionTime;
     }
     
-    //@override
-    public int compareTo(instanceOfPeriodicTask other){
-        return this.taskPeriod - other.getTaskPeriod();
+    public static class Comparators {
+        
+        //This comparator compares two instanceOfPeriodicTask objects
+        //using their taskPeriod property.
+        public static Comparator<instanceOfPeriodicTask> TASK_PERIOD = new Comparator<instanceOfPeriodicTask>() {
+            @Override
+            public int compare(instanceOfPeriodicTask o1, instanceOfPeriodicTask o2) {
+                return o1.taskPeriod - o2.getTaskPeriod();
+            }
+        };
+        
+        /* We can add other comparators here */
     }
     
 }
