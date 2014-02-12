@@ -15,12 +15,12 @@ import java.util.logging.Logger;
 public class Main {
 
     static int endOfTime = 0;
-    
+
     public static void userInput(ArrayList<periodicTask> input) {
         Scanner scan = new Scanner(System.in);
         System.out.print("Number of periodic tasks: ");
         final int numberOfPeriodicTasks = scan.nextInt();
-        
+
         for (int i = 0; i < numberOfPeriodicTasks; i++) {
             System.out.println((i + 1) + ". periodic task:");
             System.out.print("Phase: ");
@@ -32,43 +32,75 @@ public class Main {
             periodicTask temp = new periodicTask(taskPeriod, phi, cTaskExecutionTime);
             input.add(temp);
         }
-        
+
         System.out.print("End of time period: ");
         endOfTime = scan.nextInt();
     }
-    
+
     /**
-     *Reads a file and populates input
+     * Reads a file and populates input, execution time calculated from uniform
+     * distribution
+     *
      * @param input ArrayList of periodicTask to be populated
      * @param f file which is parsed
      */
-    public static void readInputFromFile(ArrayList<periodicTask> input, 
+    public static void readInputFromFile(ArrayList<periodicTask> input,
             File f) {
         try {
             Scanner scan = new Scanner(f);
-            
+
             int numberOfPeriodicTasks = scan.nextInt();
-           
+
             for (int i = 0; i < numberOfPeriodicTasks; i++) {
-                int phi = scan.nextInt();           
-                int taskPeriod = scan.nextInt();            
+                int phi = scan.nextInt();
+                int taskPeriod = scan.nextInt();
                 int cMin = scan.nextInt();
                 int cMax = scan.nextInt();
                 int randomDistribution = scan.nextInt(); // not used
                 //at this time uniform distribution is used - Math.random()
-                int cTaskExecutionTime = cMin + (int)(Math.random() * (cMax - cMin + 1));
+                int cTaskExecutionTime = cMin + (int) (Math.random() * (cMax - cMin + 1));
                 System.out.println(cTaskExecutionTime);
                 periodicTask temp = new periodicTask(taskPeriod, phi, cTaskExecutionTime);
                 input.add(temp);
             }
-            
+
             endOfTime = scan.nextInt();
-            
+
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("File not found!");
         }
-        
+
+    }
+
+    /**
+     * Reads a file and populates input
+     *
+     * @param input ArrayList of periodicTask to be populated
+     * @param f file which is parsed
+     */
+    public static void simpleReadInputFromFile(ArrayList<periodicTask> input,
+            File f) {
+        try {
+            Scanner scan = new Scanner(f);
+
+            int numberOfPeriodicTasks = scan.nextInt();
+
+            for (int i = 0; i < numberOfPeriodicTasks; i++) {
+                int phi = scan.nextInt();
+                int taskPeriod = scan.nextInt();
+                int cTaskExecutionTime = scan.nextInt();
+                periodicTask temp = new periodicTask(taskPeriod, phi, cTaskExecutionTime);
+                input.add(temp);
+            }
+
+            endOfTime = scan.nextInt();
+
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("File not found!");
+        }
+
     }
 
     public static int getMinPhi(ArrayList<periodicTask> input) {
@@ -80,9 +112,11 @@ public class Main {
         }
         return minPhi;
     }
+
     /**
-     *adds instances of periodic task that activate at time = time to readyQ,
+     * adds instances of periodic task that activate at time = time to readyQ,
      * and sorts instances in readyQ by priority
+     *
      * @param time
      * @param readyQ
      * @param input
@@ -100,12 +134,11 @@ public class Main {
                 readyQ.add(tempInstance);
             }
         }
-        //at the end sort readyQ by priority(highest first,priority - rate)
-        Collections.sort(readyQ, instanceOfPeriodicTask.Comparators.TASK_PERIOD);
     }
+
     /**
      * @return next time of activation of any instance from input after time
-     * @param input set of periodic tasks 
+     * @param input set of periodic tasks
      * @param time
      */
     public static int getNextActivationTime(ArrayList<periodicTask> input, int time) {
@@ -125,20 +158,23 @@ public class Main {
     }
 
     /**
-     * checks if any task from readyQ missed own deadline in time period [0,time]
+     * checks if any task from readyQ missed own deadline in time period
+     * [0,time]
+     *
      * @param readyQ
      * @param time
      * @return false if every instance meets deadline, otherwise true
      */
     public static boolean checkForMissedDeadline(
-            ArrayList<instanceOfPeriodicTask> readyQ, int time){
-        for(instanceOfPeriodicTask temp : readyQ){
+            ArrayList<instanceOfPeriodicTask> readyQ, int time) {
+        for (instanceOfPeriodicTask temp : readyQ) {
             if (temp.getdAbsolutDeadline() < time) {
                 return true;
             }
         }
         return false;
     }
+
     /**
      * simulates rate monotonic scheduling
      *
@@ -154,6 +190,7 @@ public class Main {
         int time = getMinPhi(input);
         while (time < endOfTimePeriod) {
             updateReadyQ(time, readyQ, input);
+            Collections.sort(readyQ, instanceOfPeriodicTask.Comparators.TASK_PERIOD);
             int timeOfNextInstanceActivation = getNextActivationTime(input, time);
             //if there is no active instances, jump to time of next activation
             if (readyQ.isEmpty()) {
@@ -163,7 +200,7 @@ public class Main {
                 //if instance with highest priority misses own deadline
                 if (time + highestPriorityInstance.getcExecutionTime()
                         > highestPriorityInstance.getdAbsolutDeadline()) {
-                    System.out.println("NOT FEASIBLE! ( deadline passed at: "
+                    System.out.println("RM: NOT FEASIBLE! ( deadline passed at: "
                             + highestPriorityInstance.getdAbsolutDeadline() + " )");
                     return false;
                 }
@@ -185,11 +222,67 @@ public class Main {
                 }
                 //check if some instance with lower priority missed deadline
                 if (checkForMissedDeadline(readyQ, time) == true) {
-                    System.out.println("NOT FEASIBLE! ( deadline passed at: "
+                    System.out.println("RM: NOT FEASIBLE! ( deadline passed at: "
                             + time + " )");
                     return false;
                 }
-                
+
+            }
+        }
+        return true;
+    }
+
+    /**
+     * simulates earliest deadline first scheduling
+     *
+     * @param input - input array list of periodic tasks
+     * @param endOfTimePeriod - end of simulation period, implied begin of
+     * simulation = 0
+     * @return true if input is feasible in time interval [0,endOfPeriodicTask]
+     */
+    public static boolean edfSimulation(int endOfTimePeriod, ArrayList<periodicTask> input) {
+        //sorting input by priority (highest priority first)
+        Collections.sort(input);
+        ArrayList<instanceOfPeriodicTask> readyQ = new ArrayList<>();
+        int time = getMinPhi(input);
+        while (time < endOfTimePeriod) {
+            updateReadyQ(time, readyQ, input);
+            Collections.sort(readyQ, instanceOfPeriodicTask.Comparators.ABSOLUTE_DEADLINE);
+            int timeOfNextInstanceActivation = getNextActivationTime(input, time);
+            //if there is no active instances, jump to time of next activation
+            if (readyQ.isEmpty()) {
+                time = timeOfNextInstanceActivation;
+            } else {
+                instanceOfPeriodicTask highestPriorityInstance = readyQ.get(0);
+                //if instance with highest priority misses own deadline
+                if (time + highestPriorityInstance.getcExecutionTime()
+                        > highestPriorityInstance.getdAbsolutDeadline()) {
+                    System.out.println("EDF: NOT FEASIBLE! ( deadline passed at: "
+                            + highestPriorityInstance.getdAbsolutDeadline() + " )");
+                    return false;
+                }
+                //if  instance with highest priority can be executed before any 
+                //other tasks activate
+                if (time + highestPriorityInstance.getcExecutionTime()
+                        <= timeOfNextInstanceActivation) {
+                    //dodati log
+                    //execute task, set time to the end of execution
+                    time += highestPriorityInstance.getcExecutionTime();
+                    //remove task from readyQ
+                    readyQ.remove(0);
+                } else {
+                    //execute task untill activation of some other task
+                    highestPriorityInstance.setcExecutionTime(highestPriorityInstance.getcExecutionTime()
+                            - (timeOfNextInstanceActivation - time));
+                    //set time
+                    time = timeOfNextInstanceActivation;
+                }
+                //check if some instance with lower priority missed deadline
+                if (checkForMissedDeadline(readyQ, time) == true) {
+                    System.out.println("EDF: NOT FEASIBLE! ( deadline passed at: "
+                            + time + " )");
+                    return false;
+                }
 
             }
         }
@@ -197,13 +290,19 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        ArrayList<periodicTask> input = new ArrayList<>();
+        ArrayList<periodicTask> inputRM = new ArrayList<>();
         //userInput(input);            //for user input
         //File f = new File(args[0]);  //for command-line file name input
-        readInputFromFile(input, new File("input.txt"));
-        boolean feasibilityTest = rmSimulation(endOfTime, input);
-        if (feasibilityTest == true) {
-            System.out.println("FEASIBLE!");
+        simpleReadInputFromFile(inputRM, new File("simpleInput.txt"));
+        boolean feasibilityTestRM = rmSimulation(endOfTime, inputRM);
+        if (feasibilityTestRM == true) {
+            System.out.println("RM: FEASIBLE!");
+        }
+        ArrayList<periodicTask> inputEDF = new ArrayList<>();
+        simpleReadInputFromFile(inputEDF, new File("simpleInput.txt"));
+        boolean feasibilityTestEDF = edfSimulation(endOfTime, inputEDF);
+        if (feasibilityTestEDF == true) {
+            System.out.println("EDF: FEASIBLE!");
         }
     }
 

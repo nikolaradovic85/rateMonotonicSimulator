@@ -109,10 +109,16 @@ public class instanceOfPeriodicTask {
         public static Comparator<instanceOfPeriodicTask> TASK_PERIOD = new Comparator<instanceOfPeriodicTask>() {
             @Override
             public int compare(instanceOfPeriodicTask o1, instanceOfPeriodicTask o2) {
-                return o1.taskPeriod - o2.getTaskPeriod();
+                return o1.getTaskPeriod() - o2.getTaskPeriod();
             }
         };
         
+        public static Comparator<instanceOfPeriodicTask> ABSOLUTE_DEADLINE = new Comparator<instanceOfPeriodicTask>(){
+            @Override
+            public int compare(instanceOfPeriodicTask o1, instanceOfPeriodicTask o2){
+                return o1.getdAbsolutDeadline()-o2.getdAbsolutDeadline();
+            }
+        };
         /* We can add other comparators here */
     }
     
