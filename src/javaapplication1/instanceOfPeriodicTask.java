@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package javaapplication1;
 
 import java.util.Comparator;
@@ -14,19 +8,24 @@ import java.util.Comparator;
  */
 public class instanceOfPeriodicTask {
 
-    private int taskPeriod;// perioda 
-    private int phi;//faza 
-    private int rActivationTime;//vrijeme aktivacije
-    private int dAbsolutDeadline;//apsolutni deadline
-    private int cExecutionTime;//vrijeme izvrsavanja 
+    private int taskPeriod;         // period
+    private int phi;                // phase
+    private int rActivationTime;    // activation time
+    private int dAbsoluteDeadline;  // absolute deadline
+    private int cExecutionTime;     // execution time
 
     /**
     *constructor 
+     * @param taskPeriod
+     * @param phi
+     * @param rActivationTime
+     * @param dAbsoluteDeadline
+     * @param cExecutionTime
     */
     public instanceOfPeriodicTask(int taskPeriod, int phi,
-            int rActivationTime, int dAbsolutDeadline, int cExecutionTime) {
+            int rActivationTime, int dAbsoluteDeadline, int cExecutionTime) {
         this.cExecutionTime = cExecutionTime;
-        this.dAbsolutDeadline = dAbsolutDeadline;
+        this.dAbsoluteDeadline = dAbsoluteDeadline;
         this.phi = phi;
         this.rActivationTime = rActivationTime;
         this.taskPeriod = taskPeriod;
@@ -75,17 +74,17 @@ public class instanceOfPeriodicTask {
     }
 
     /**
-     * @return the dAbsolutDeadline
+     * @return the dAbsoluteDeadline
      */
-    public int getdAbsolutDeadline() {
-        return dAbsolutDeadline;
+    public int getdAbsoluteDeadline() {
+        return dAbsoluteDeadline;
     }
 
     /**
-     * @param dAbsolutDeadline the dAbsolutDeadline to set
+     * @param dAbsoluteDeadline the dAbsoluteDeadline to set
      */
-    public void setdAbsolutDeadline(int dAbsolutDeadline) {
-        this.dAbsolutDeadline = dAbsolutDeadline;
+    public void setdAbsoluteDeadline(int dAbsoluteDeadline) {
+        this.dAbsoluteDeadline = dAbsoluteDeadline;
     }
 
     /**
@@ -106,17 +105,19 @@ public class instanceOfPeriodicTask {
         
         //This comparator compares two instanceOfPeriodicTask objects
         //using their taskPeriod property.
-        public static Comparator<instanceOfPeriodicTask> TASK_PERIOD = new Comparator<instanceOfPeriodicTask>() {
+        public static Comparator<instanceOfPeriodicTask> TASK_PERIOD = 
+                new Comparator<instanceOfPeriodicTask>() {
             @Override
             public int compare(instanceOfPeriodicTask o1, instanceOfPeriodicTask o2) {
                 return o1.getTaskPeriod() - o2.getTaskPeriod();
             }
         };
         
-        public static Comparator<instanceOfPeriodicTask> ABSOLUTE_DEADLINE = new Comparator<instanceOfPeriodicTask>(){
+        public static Comparator<instanceOfPeriodicTask> ABSOLUTE_DEADLINE = 
+                new Comparator<instanceOfPeriodicTask>(){
             @Override
-            public int compare(instanceOfPeriodicTask o1, instanceOfPeriodicTask o2){
-                return o1.getdAbsolutDeadline()-o2.getdAbsolutDeadline();
+            public int compare(instanceOfPeriodicTask o1, instanceOfPeriodicTask o2) {
+                return o1.getdAbsoluteDeadline() - o2.getdAbsoluteDeadline();
             }
         };
         /* We can add other comparators here */
