@@ -1,13 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package javaapplication1;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -15,8 +14,13 @@ import java.util.Collections;
  */
 public class Main {
 
-    public static void generateInput(ArrayList<periodicTask> input, int numberOfPeriodicTasks) {
+    static int endOfTime = 0;
+    
+    public static void userInput(ArrayList<periodicTask> input) {
         Scanner scan = new Scanner(System.in);
+        System.out.print("Number of periodic tasks: ");
+        final int numberOfPeriodicTasks = scan.nextInt();
+        
         for (int i = 0; i < numberOfPeriodicTasks; i++) {
             System.out.println((i + 1) + ". periodic task:");
             System.out.print("Phase: ");
@@ -28,6 +32,38 @@ public class Main {
             periodicTask temp = new periodicTask(taskPeriod, phi, cTaskExecutionTime);
             input.add(temp);
         }
+        
+        System.out.print("End of time period: ");
+        endOfTime = scan.nextInt();
+    }
+    
+    /**
+     *Reads a file and populates input
+     * @param input ArrayList of periodicTask to be populated
+     * @param f file which is parsed
+     */
+    public static void readInputFromFile(ArrayList<periodicTask> input, 
+            File f) {
+        try {
+            Scanner scan = new Scanner(f);
+            
+            int numberOfPeriodicTasks = scan.nextInt();
+            
+            for (int i = 0; i < numberOfPeriodicTasks; i++) {
+                int phi = scan.nextInt();           
+                int taskPeriod = scan.nextInt();            
+                int cTaskExecutionTime = scan.nextInt();
+                periodicTask temp = new periodicTask(taskPeriod, phi, cTaskExecutionTime);
+                input.add(temp);
+            }
+            
+            endOfTime = scan.nextInt();
+            
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("File not found!");
+        }
+        
     }
 
     public static int getMinPhi(ArrayList<periodicTask> input) {
@@ -42,6 +78,9 @@ public class Main {
     /**
      *adds instances of periodic task that activate at time = time to readyQ,
      * and sorts instances in readyQ by priority
+     * @param time
+     * @param readyQ
+     * @param input
      */
     public static void updateReadyQ(int time, ArrayList<instanceOfPeriodicTask> readyQ,
             ArrayList<periodicTask> input) {
@@ -82,13 +121,16 @@ public class Main {
 
     /**
      * checks if any task from readyQ missed own deadline in time period [0,time]
+     * @param readyQ
+     * @param time
      * @return false if every instance meets deadline, otherwise true
      */
     public static boolean checkForMissedDeadline(
             ArrayList<instanceOfPeriodicTask> readyQ, int time){
         for(instanceOfPeriodicTask temp : readyQ){
-            if(temp.getdAbsolutDeadline()>time)
+            if (temp.getdAbsolutDeadline() < time) {
                 return true;
+            }
         }
         return false;
     }
@@ -103,7 +145,7 @@ public class Main {
     public static boolean rmSimulation(int endOfTimePeriod, ArrayList<periodicTask> input) {
         //sorting input by priority (highest priority first)
         Collections.sort(input);
-        ArrayList<instanceOfPeriodicTask> readyQ = new ArrayList<instanceOfPeriodicTask>();
+        ArrayList<instanceOfPeriodicTask> readyQ = new ArrayList<>();
         int time = getMinPhi(input);
         while (time < endOfTimePeriod) {
             updateReadyQ(time, readyQ, input);
@@ -150,14 +192,11 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        Scanner scan = new Scanner(System.in);
-        System.out.print("Number of periodic tasks: ");
-        final int numberOfPeriodicTasks = scan.nextInt();
-        ArrayList<periodicTask> input = new ArrayList<periodicTask>();
-        generateInput(input, numberOfPeriodicTasks);
-        System.out.print("End of time period: ");
-        final int endOfTimePeriod = scan.nextInt();
-        boolean feasibilityTest = rmSimulation(endOfTimePeriod, input);
+        ArrayList<periodicTask> input = new ArrayList<>();
+        //userInput(input);            //for user input
+        //File f = new File(args[0]);  //for command-line file name input
+        readInputFromFile(input, new File("input.txt"));
+        boolean feasibilityTest = rmSimulation(endOfTime, input);
         if (feasibilityTest == true) {
             System.out.println("FEASIBLE!");
         }
