@@ -6,8 +6,9 @@ import java.util.Comparator;
  *
  * @author nikola
  */
-public class instanceOfPeriodicTask {
+public class InstanceOfPeriodicTask {
 
+    private int id;
     private int taskPeriod;         // period
     private int phi;                // phase
     private int rActivationTime;    // activation time
@@ -16,21 +17,31 @@ public class instanceOfPeriodicTask {
 
     /**
     *constructor 
+     * @param pId
      * @param taskPeriod
      * @param phi
      * @param rActivationTime
      * @param dAbsoluteDeadline
      * @param cExecutionTime
     */
-    public instanceOfPeriodicTask(int taskPeriod, int phi,
+    public InstanceOfPeriodicTask(int pId, int taskPeriod, int phi,
             int rActivationTime, int dAbsoluteDeadline, int cExecutionTime) {
+        this.id = pId;
         this.cExecutionTime = cExecutionTime;
         this.dAbsoluteDeadline = dAbsoluteDeadline;
         this.phi = phi;
         this.rActivationTime = rActivationTime;
         this.taskPeriod = taskPeriod;
     }
+    
+    public int getId() {
+        return id;
+    }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+    
     /**
      * @return the taskPeriod
      */
@@ -103,20 +114,20 @@ public class instanceOfPeriodicTask {
     
     public static class Comparators {
         
-        //This comparator compares two instanceOfPeriodicTask objects
+        //This comparator compares two InstanceOfPeriodicTask objects
         //using their taskPeriod property.
-        public static Comparator<instanceOfPeriodicTask> TASK_PERIOD = 
-                new Comparator<instanceOfPeriodicTask>() {
+        public static Comparator<InstanceOfPeriodicTask> TASK_PERIOD = 
+                new Comparator<InstanceOfPeriodicTask>() {
             @Override
-            public int compare(instanceOfPeriodicTask o1, instanceOfPeriodicTask o2) {
+            public int compare(InstanceOfPeriodicTask o1, InstanceOfPeriodicTask o2) {
                 return o1.getTaskPeriod() - o2.getTaskPeriod();
             }
         };
         
-        public static Comparator<instanceOfPeriodicTask> ABSOLUTE_DEADLINE = 
-                new Comparator<instanceOfPeriodicTask>(){
+        public static Comparator<InstanceOfPeriodicTask> ABSOLUTE_DEADLINE = 
+                new Comparator<InstanceOfPeriodicTask>(){
             @Override
-            public int compare(instanceOfPeriodicTask o1, instanceOfPeriodicTask o2) {
+            public int compare(InstanceOfPeriodicTask o1, InstanceOfPeriodicTask o2) {
                 return o1.getdAbsoluteDeadline() - o2.getdAbsoluteDeadline();
             }
         };

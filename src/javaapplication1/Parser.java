@@ -20,7 +20,7 @@ public class Parser {
      * Manual user input.
      * @param input 
      */
-    public static void userInput(ArrayList<periodicTask> input) {
+    public static void userInput(ArrayList<PeriodicTask> input) {
         Scanner scan = new Scanner(System.in);
         System.out.print("Number of periodic tasks: ");
         final int numberOfPeriodicTasks = scan.nextInt();
@@ -33,7 +33,7 @@ public class Parser {
             int taskPeriod = scan.nextInt();
             System.out.print("Execution Time: ");
             int cTaskExecutionTime = scan.nextInt();
-            periodicTask temp = new periodicTask(taskPeriod, phi, cTaskExecutionTime);
+            PeriodicTask temp = new PeriodicTask(i + 1, taskPeriod, phi, cTaskExecutionTime);
             input.add(temp);
         }
 
@@ -45,10 +45,10 @@ public class Parser {
      * Reads a file and populates input, execution time calculated from uniform
      * distribution
      *
-     * @param input ArrayList of periodicTask to be populated
+     * @param input ArrayList of PeriodicTask to be populated
      * @param f file which is parsed
      */
-    public static void readInputFromFile(ArrayList<periodicTask> input,
+    public static void readInputFromFile(ArrayList<PeriodicTask> input,
             File f) {
         try {
             Scanner scan = new Scanner(f);
@@ -56,6 +56,7 @@ public class Parser {
             int numberOfPeriodicTasks = scan.nextInt();
 
             for (int i = 0; i < numberOfPeriodicTasks; i++) {
+                int id = scan.nextInt();
                 int phi = scan.nextInt();
                 int taskPeriod = scan.nextInt();
                 int cMin = scan.nextInt();
@@ -64,7 +65,7 @@ public class Parser {
                 //at this time uniform distribution is used - Math.random()
                 int cTaskExecutionTime = cMin + (int) (Math.random() * (cMax - cMin + 1));
                 System.out.println(cTaskExecutionTime);
-                periodicTask temp = new periodicTask(taskPeriod, phi, cTaskExecutionTime);
+                PeriodicTask temp = new PeriodicTask(id, taskPeriod, phi, cTaskExecutionTime);
                 input.add(temp);
             }
 
@@ -80,10 +81,10 @@ public class Parser {
     /**
      * Reads a file and populates input
      *
-     * @param input ArrayList of periodicTask to be populated
+     * @param input ArrayList of PeriodicTask to be populated
      * @param f file which is parsed
      */
-    public static void simpleReadInputFromFile(ArrayList<periodicTask> input,
+    public static void simpleReadInputFromFile(ArrayList<PeriodicTask> input,
             File f) {
         try {
             Scanner scan = new Scanner(f);
@@ -91,10 +92,11 @@ public class Parser {
             int numberOfPeriodicTasks = scan.nextInt();
 
             for (int i = 0; i < numberOfPeriodicTasks; i++) {
+                int id = scan.nextInt();
                 int phi = scan.nextInt();
                 int taskPeriod = scan.nextInt();
                 int cTaskExecutionTime = scan.nextInt();
-                periodicTask temp = new periodicTask(taskPeriod, phi, cTaskExecutionTime);
+                PeriodicTask temp = new PeriodicTask(id, taskPeriod, phi, cTaskExecutionTime);
                 input.add(temp);
             }
 

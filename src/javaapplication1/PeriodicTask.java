@@ -10,16 +10,26 @@ package javaapplication1;
  * @author nikola
  */
 
-public class periodicTask implements Comparable <periodicTask>{
-    private int taskPeriod;//perioda
-    private int phi;//faza
-    private int cTaskExecutionTime;//vrijeme izvrsavanja
+public class PeriodicTask implements Comparable <PeriodicTask>{
+    private int id;
+    private int taskPeriod;         //perioda
+    private int phi;                //faza
+    private int cTaskExecutionTime; //vrijeme izvrsavanja
     
     //constructor
-    public periodicTask(int taskPeriod, int phi, int cTaskExecutionTime){
+    public PeriodicTask(int pId, int taskPeriod, int phi, int cTaskExecutionTime){
+        this.id = pId;
         this.cTaskExecutionTime = cTaskExecutionTime;
         this.phi = phi;
         this.taskPeriod = taskPeriod;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     /**
@@ -65,8 +75,7 @@ public class periodicTask implements Comparable <periodicTask>{
     }
     
     //@override
-    public int compareTo(periodicTask other){
+    public int compareTo(PeriodicTask other){
         return this.taskPeriod - other.getTaskPeriod();
     }
 }
-      

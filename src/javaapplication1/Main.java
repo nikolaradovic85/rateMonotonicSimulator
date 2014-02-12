@@ -12,9 +12,9 @@ public class Main {
 
     static int endOfTime = 0;
 
-    public static int getMinPhi(ArrayList<periodicTask> input) {
+    public static int getMinPhi(ArrayList<PeriodicTask> input) {
         int minPhi = input.get(0).getPhi();
-        for (periodicTask temp : input) {
+        for (PeriodicTask temp : input) {
             if (temp.getPhi() < minPhi) {
                 minPhi = temp.getPhi();
             }
@@ -30,15 +30,27 @@ public class Main {
      * @param readyQ
      * @param input
      */
-    public static void updateReadyQ(int time, ArrayList<instanceOfPeriodicTask> readyQ,
-            ArrayList<periodicTask> input) {
+    public static void updateReadyQ(
+            int time, ArrayList<InstanceOfPeriodicTask> readyQ, 
+            ArrayList<PeriodicTask> input) {
+        
         //for each task from input set of periodic tasks
-        for (periodicTask temp : input) {
+        for (PeriodicTask temp : input) {
+            
             //check if instance should be activated
-            if (time - temp.getPhi() >= 0 && (time - temp.getPhi()) % temp.getTaskPeriod() == 0) {
+            if (time - temp.getPhi() >= 0 && 
+                    (time - temp.getPhi()) % temp.getTaskPeriod() == 0) {
+                
                 //create instance
-                instanceOfPeriodicTask tempInstance = new instanceOfPeriodicTask(temp.getTaskPeriod(), temp.getPhi(), time,
-                        temp.getTaskPeriod() + time, temp.getcTaskExecutionTime());
+                InstanceOfPeriodicTask tempInstance;
+                tempInstance = new InstanceOfPeriodicTask(
+                        temp.getId(),
+                        temp.getTaskPeriod(),
+                        temp.getPhi(),
+                        time,
+                        temp.getTaskPeriod() + time,
+                        temp.getcTaskExecutionTime());
+                
                 //add instance to readyQ 
                 readyQ.add(tempInstance);
             }
@@ -50,11 +62,11 @@ public class Main {
      * @param input set of periodic tasks
      * @param time
      */
-    public static int getNextActivationTime(ArrayList<periodicTask> input, int time) {
+    public static int getNextActivationTime(ArrayList<PeriodicTask> input, int time) {
         int nextActivationTime = time + 1;
         boolean found = false;
         while (!found) {
-            for (periodicTask temp : input) {
+            for (PeriodicTask temp : input) {
                 if ((nextActivationTime - temp.getPhi()) % temp.getTaskPeriod() == 0) {
                     found = true;
                 }
@@ -75,8 +87,8 @@ public class Main {
      * @return false if every instance meets deadline, otherwise true
      */
     public static boolean checkForMissedDeadline(
-            ArrayList<instanceOfPeriodicTask> readyQ, int time) {
-        for (instanceOfPeriodicTask temp : readyQ) {
+            ArrayList<InstanceOfPeriodicTask> readyQ, int time) {
+        for (InstanceOfPeriodicTask temp : readyQ) {
             if (temp.getdAbsoluteDeadline() < time) {
                 return true;
             }
@@ -92,20 +104,20 @@ public class Main {
      * simulation = 0
      * @return true if input is feasible in time interval [0,endOfPeriodicTask]
      */
-    public static boolean rmSimulation(int endOfTimePeriod, ArrayList<periodicTask> input) {
+    public static boolean rmSimulation(int endOfTimePeriod, ArrayList<PeriodicTask> input) {
         //sorting input by priority (highest priority first)
         Collections.sort(input);
-        ArrayList<instanceOfPeriodicTask> readyQ = new ArrayList<>();
+        ArrayList<InstanceOfPeriodicTask> readyQ = new ArrayList<>();
         int time = getMinPhi(input);
         while (time < endOfTimePeriod) {
             updateReadyQ(time, readyQ, input);
-            Collections.sort(readyQ, instanceOfPeriodicTask.Comparators.TASK_PERIOD);
+            Collections.sort(readyQ, InstanceOfPeriodicTask.Comparators.TASK_PERIOD);
             int timeOfNextInstanceActivation = getNextActivationTime(input, time);
             //if there is no active instances, jump to time of next activation
             if (readyQ.isEmpty()) {
                 time = timeOfNextInstanceActivation;
             } else {
-                instanceOfPeriodicTask highestPriorityInstance = readyQ.get(0);
+                InstanceOfPeriodicTask highestPriorityInstance = readyQ.get(0);
                 //if instance with highest priority misses own deadline
                 if (time + highestPriorityInstance.getcExecutionTime()
                         > highestPriorityInstance.getdAbsoluteDeadline()) {
@@ -149,20 +161,20 @@ public class Main {
      * simulation = 0
      * @return true if input is feasible in time interval [0,endOfPeriodicTask]
      */
-    public static boolean edfSimulation(int endOfTimePeriod, ArrayList<periodicTask> input) {
+    public static boolean edfSimulation(int endOfTimePeriod, ArrayList<PeriodicTask> input) {
         //sorting input by priority (highest priority first)
         Collections.sort(input);
-        ArrayList<instanceOfPeriodicTask> readyQ = new ArrayList<>();
+        ArrayList<InstanceOfPeriodicTask> readyQ = new ArrayList<>();
         int time = getMinPhi(input);
         while (time < endOfTimePeriod) {
             updateReadyQ(time, readyQ, input);
-            Collections.sort(readyQ, instanceOfPeriodicTask.Comparators.ABSOLUTE_DEADLINE);
+            Collections.sort(readyQ, InstanceOfPeriodicTask.Comparators.ABSOLUTE_DEADLINE);
             int timeOfNextInstanceActivation = getNextActivationTime(input, time);
             //if there is no active instances, jump to time of next activation
             if (readyQ.isEmpty()) {
                 time = timeOfNextInstanceActivation;
             } else {
-                instanceOfPeriodicTask highestPriorityInstance = readyQ.get(0);
+                InstanceOfPeriodicTask highestPriorityInstance = readyQ.get(0);
                 //if instance with highest priority misses own deadline
                 if (time + highestPriorityInstance.getcExecutionTime()
                         > highestPriorityInstance.getdAbsoluteDeadline()) {
@@ -202,14 +214,14 @@ public class Main {
         /* userInput(input);            //for user input
         File f = new File(args[0]);     //for command-line file name input */
         
-        ArrayList<periodicTask> inputRM = new ArrayList<>();
+        ArrayList<PeriodicTask> inputRM = new ArrayList<>();
         Parser.simpleReadInputFromFile(inputRM, new File("simpleInput.txt"));
         boolean feasibilityTestRM = rmSimulation(endOfTime, inputRM);
         if (feasibilityTestRM == true) {
             System.out.println("RM: FEASIBLE!");
         }
         
-        ArrayList<periodicTask> inputEDF = new ArrayList<>();
+        ArrayList<PeriodicTask> inputEDF = new ArrayList<>();
         Parser.simpleReadInputFromFile(inputEDF, new File("simpleInput.txt"));
         boolean feasibilityTestEDF = edfSimulation(endOfTime, inputEDF);
         if (feasibilityTestEDF == true) {
