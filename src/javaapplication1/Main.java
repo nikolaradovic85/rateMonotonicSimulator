@@ -48,11 +48,16 @@ public class Main {
             Scanner scan = new Scanner(f);
             
             int numberOfPeriodicTasks = scan.nextInt();
-            
+           
             for (int i = 0; i < numberOfPeriodicTasks; i++) {
                 int phi = scan.nextInt();           
                 int taskPeriod = scan.nextInt();            
-                int cTaskExecutionTime = scan.nextInt();
+                int cMin = scan.nextInt();
+                int cMax = scan.nextInt();
+                int randomDistribution = scan.nextInt(); // not used
+                //at this time uniform distribution is used - Math.random()
+                int cTaskExecutionTime = cMin + (int)(Math.random() * (cMax - cMin + 1));
+                System.out.println(cTaskExecutionTime);
                 periodicTask temp = new periodicTask(taskPeriod, phi, cTaskExecutionTime);
                 input.add(temp);
             }
