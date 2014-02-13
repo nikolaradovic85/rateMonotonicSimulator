@@ -55,7 +55,6 @@ public class Main {
                 //add instance to readyQ 
                 readyQ.add(tempInstance);
                 
-                //TODO-LOG log activation (or continuation) time for tempInstance
             }
         }
     }
@@ -95,6 +94,8 @@ public class Main {
             ArrayList<InstanceOfPeriodicTask> readyQ, int time) {
         for (InstanceOfPeriodicTask temp : readyQ) {
             if (temp.getdAbsoluteDeadline() < time) {
+                
+                //TODO temp.setMissedDeadline();
                 return true;
             }
         }
@@ -145,8 +146,12 @@ public class Main {
                         > highestPriorityInstance.getdAbsoluteDeadline()) {
                     System.out.println("RM: NOT FEASIBLE! ( deadline passed at: "
                             + highestPriorityInstance.getdAbsoluteDeadline() + " )");
+                    //TODO highestPriorityInstance.addToStartOfExecutionTimeList(time);
+                    //TODO highestPriorityInstance.addToEndOfExecutionTimeList(highestPriorityInstance.getdAbsoluteDeadline());
+                    //TODO highestPriorityInstance.setMissedDeadline();
+                    //TODO highestPriorityInstance.parseExecutionTimeLists() and save to file
                     return false;
-                    //TODO-LOG close log and save to file
+                    
                 }
                 
                 //if  instance with highest priority can be executed before any 
@@ -154,10 +159,13 @@ public class Main {
                 if (time + highestPriorityInstance.getcExecutionTime()
                         <= timeOfNextInstanceActivation) {
                     
-                    //TODO-LOG log finish time for highestPriorityInstance
+                    //TODO highestPriorityInstance.addToStartOfExecutionTimeList(time);
                     
                     //execute task, set time to the end of execution
                     time += highestPriorityInstance.getcExecutionTime();
+                    
+                    //TODO highestPriorityInstance.addToEndOfExecutionTimeList(time);
+                    //TODO highestPriorityInstance.parseExecutionTimeLists() and save to file
                     //remove task from readyQ
                     readyQ.remove(0);
                 }
@@ -168,9 +176,9 @@ public class Main {
                     highestPriorityInstance.setcExecutionTime(highestPriorityInstance.getcExecutionTime()
                             - (timeOfNextInstanceActivation - time));
                     //set time
+                    //TODO highestPriorityInstance.addToStartOfExecutionTimeList(time);
                     time = timeOfNextInstanceActivation;
-                    
-                    //TODO-LOG log time of interupt
+                    //TODO highestPriorityInstance.addToEndOfExecutionTimeList(time);
                 }
                 
                 //check if some instance with lower priority missed deadline
@@ -178,13 +186,17 @@ public class Main {
                     System.out.println("RM: NOT FEASIBLE! ( deadline passed at: "
                             + time + " )");
                     
-                    //TODO-LOG close log and save to file
+                    //correct me if i'm wrong, but TODO nothing at all, everythig is allready done
                     
                     return false;
                 }
 
             }
         }
+        //TODO for each instance from readyQ 
+        //if size of StartExecList > size of EndExecList
+        //temp.addToEndOfExecutionTimeList(endOfTimePeriod);
+        //temp.parseExecutionTimeLists() and save to file
         return true;
     }
 
