@@ -31,7 +31,8 @@ public class Main {
      * @param input
      */
     public static void updateReadyQ(
-            int time, ArrayList<InstanceOfPeriodicTask> readyQ, 
+            int time, 
+            ArrayList<InstanceOfPeriodicTask> readyQ, 
             ArrayList<PeriodicTask> input) {
         
         //for each task from input set of periodic tasks
@@ -53,11 +54,15 @@ public class Main {
                 
                 //add instance to readyQ 
                 readyQ.add(tempInstance);
+                
+                //TODO-LOG log activation (or continuation) time for tempInstance
             }
         }
     }
 
     /**
+     * Search for next activation time of ANY task (both higher and lower priority)
+     * 
      * @return next time of activation of any instance from input after time
      * @param input set of periodic tasks
      * @param time
@@ -107,44 +112,74 @@ public class Main {
     public static boolean rmSimulation(int endOfTimePeriod, ArrayList<PeriodicTask> input) {
         //sorting input by priority (highest priority first)
         Collections.sort(input);
+        
+        //create empty readyQ
         ArrayList<InstanceOfPeriodicTask> readyQ = new ArrayList<>();
+        
+        //set start time to the first phase
         int time = getMinPhi(input);
+        
+        //repeat until time the end of simulation
         while (time < endOfTimePeriod) {
+            
+            //activate all tasks that need to be activated at current time
             updateReadyQ(time, readyQ, input);
+            
+            //sort readyQ (lowest task period has the highest priority)
             Collections.sort(readyQ, InstanceOfPeriodicTask.Comparators.TASK_PERIOD);
+            
+            // find next activation of ANY task
             int timeOfNextInstanceActivation = getNextActivationTime(input, time);
-            //if there is no active instances, jump to time of next activation
+            
+            //if there are no active instances in readyQ at this time, 
+            //jump to the next activation time
             if (readyQ.isEmpty()) {
                 time = timeOfNextInstanceActivation;
-            } else {
+            } else { //if there are some active tasks in readyQ
+                
+                //get the highest priority instance (first in sorted readyQ)
                 InstanceOfPeriodicTask highestPriorityInstance = readyQ.get(0);
-                //if instance with highest priority misses own deadline
+                
+                //if instance with the highest priority misses its own deadline
                 if (time + highestPriorityInstance.getcExecutionTime()
                         > highestPriorityInstance.getdAbsoluteDeadline()) {
                     System.out.println("RM: NOT FEASIBLE! ( deadline passed at: "
                             + highestPriorityInstance.getdAbsoluteDeadline() + " )");
                     return false;
+                    //TODO-LOG close log and save to file
                 }
+                
                 //if  instance with highest priority can be executed before any 
-                //other tasks activate
+                //other task activates
                 if (time + highestPriorityInstance.getcExecutionTime()
                         <= timeOfNextInstanceActivation) {
-                    //dodati log
+                    
+                    //TODO-LOG log finish time for highestPriorityInstance
+                    
                     //execute task, set time to the end of execution
                     time += highestPriorityInstance.getcExecutionTime();
                     //remove task from readyQ
                     readyQ.remove(0);
-                } else {
+                }
+                // if instance with highest priority cannot be executed
+                //before any other task activates
+                else {
                     //execute task untill activation of some other task
                     highestPriorityInstance.setcExecutionTime(highestPriorityInstance.getcExecutionTime()
                             - (timeOfNextInstanceActivation - time));
                     //set time
                     time = timeOfNextInstanceActivation;
+                    
+                    //TODO-LOG log time of interupt
                 }
+                
                 //check if some instance with lower priority missed deadline
                 if (checkForMissedDeadline(readyQ, time) == true) {
                     System.out.println("RM: NOT FEASIBLE! ( deadline passed at: "
                             + time + " )");
+                    
+                    //TODO-LOG close log and save to file
+                    
                     return false;
                 }
 
