@@ -131,6 +131,15 @@ public class InstanceOfPeriodicTask {
                 return o1.getdAbsoluteDeadline() - o2.getdAbsoluteDeadline();
             }
         };
+        
+        public static Comparator<InstanceOfPeriodicTask> RELATIVE_DEADLINE = 
+                new Comparator<InstanceOfPeriodicTask>(){
+            @Override
+            public int compare(InstanceOfPeriodicTask o1, InstanceOfPeriodicTask o2) {
+                return (o1.getdAbsoluteDeadline()-o1.getrActivationTime()) - 
+                        (o2.getdAbsoluteDeadline() - o2.getrActivationTime());
+            }
+        };
         /* We can add other comparators here */
     }
     
