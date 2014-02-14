@@ -1,29 +1,35 @@
 package javaapplication1;
 
 import java.util.Comparator;
+import java.util.ArrayList;
 
 /**
  *
  * @author nikola
  */
 public class InstanceOfPeriodicTask {
-
+    
     private int id;
     private int taskPeriod;         // period
     private int phi;                // phase
     private int rActivationTime;    // activation time
     private int dAbsoluteDeadline;  // absolute deadline
     private int cExecutionTime;     // execution time
+    //collects time when any part of instance started beeing executed
+    private ArrayList<Integer> startOfExecutionTime;
+    //collects time when any part of instance stopped beeing executed
+    private ArrayList<Integer> endOfExecutionTime;
 
     /**
-    *constructor 
+     * constructor
+     *
      * @param pId
      * @param taskPeriod
      * @param phi
      * @param rActivationTime
      * @param dAbsoluteDeadline
      * @param cExecutionTime
-    */
+     */
     public InstanceOfPeriodicTask(int pId, int taskPeriod, int phi,
             int rActivationTime, int dAbsoluteDeadline, int cExecutionTime) {
         this.id = pId;
@@ -32,16 +38,50 @@ public class InstanceOfPeriodicTask {
         this.phi = phi;
         this.rActivationTime = rActivationTime;
         this.taskPeriod = taskPeriod;
+        this.startOfExecutionTime = new ArrayList<Integer>();
+        this.endOfExecutionTime = new ArrayList<Integer>();
+    }
+
+    public boolean checkIfStillExecuted(){
+        if(this.startOfExecutionTime.size() == this.endOfExecutionTime.size() + 1){
+            return true;
+        }
+        return false;
+    }
+    public void removeRedundantTimesFromLists() {
+        if (startOfExecutionTime.size() > 1 && startOfExecutionTime.size() == endOfExecutionTime.size()) {
+            //for each start time except first
+            for (int i = 1; i < startOfExecutionTime.size(); i++) {
+                //check if is equal to previous end time of execution
+                //which means at that time was no interruption
+                //so these times are redundant in list
+                if (startOfExecutionTime.get(i) == endOfExecutionTime.get(i - 1)) {
+                    //remove redundant times
+                    startOfExecutionTime.remove(i);
+                    endOfExecutionTime.remove(i-1);
+                }
+            }
+        }
+    }
+
+    //adds time to the end of list
+    public void addStartTimeOfExecution(int time) {
+        this.startOfExecutionTime.add(time);
+    }
+
+    //adds time to the end of list
+    public void addEndTimeOfExecution(int time) {
+        this.endOfExecutionTime.add(time);
     }
     
     public int getId() {
         return id;
     }
-
+    
     public void setId(int id) {
         this.id = id;
     }
-    
+
     /**
      * @return the taskPeriod
      */
@@ -113,33 +153,33 @@ public class InstanceOfPeriodicTask {
     }
     
     public static class Comparators {
-        
+
         //This comparator compares two InstanceOfPeriodicTask objects
         //using their taskPeriod property.
-        public static Comparator<InstanceOfPeriodicTask> TASK_PERIOD = 
-                new Comparator<InstanceOfPeriodicTask>() {
-            @Override
-            public int compare(InstanceOfPeriodicTask o1, InstanceOfPeriodicTask o2) {
-                return o1.getTaskPeriod() - o2.getTaskPeriod();
-            }
-        };
+        public static Comparator<InstanceOfPeriodicTask> TASK_PERIOD
+                = new Comparator<InstanceOfPeriodicTask>() {
+                    @Override
+                    public int compare(InstanceOfPeriodicTask o1, InstanceOfPeriodicTask o2) {
+                        return o1.getTaskPeriod() - o2.getTaskPeriod();
+                    }
+                };
         
-        public static Comparator<InstanceOfPeriodicTask> ABSOLUTE_DEADLINE = 
-                new Comparator<InstanceOfPeriodicTask>(){
-            @Override
-            public int compare(InstanceOfPeriodicTask o1, InstanceOfPeriodicTask o2) {
-                return o1.getdAbsoluteDeadline() - o2.getdAbsoluteDeadline();
-            }
-        };
+        public static Comparator<InstanceOfPeriodicTask> ABSOLUTE_DEADLINE
+                = new Comparator<InstanceOfPeriodicTask>() {
+                    @Override
+                    public int compare(InstanceOfPeriodicTask o1, InstanceOfPeriodicTask o2) {
+                        return o1.getdAbsoluteDeadline() - o2.getdAbsoluteDeadline();
+                    }
+                };
         
-        public static Comparator<InstanceOfPeriodicTask> RELATIVE_DEADLINE = 
-                new Comparator<InstanceOfPeriodicTask>(){
-            @Override
-            public int compare(InstanceOfPeriodicTask o1, InstanceOfPeriodicTask o2) {
-                return (o1.getdAbsoluteDeadline()-o1.getrActivationTime()) - 
-                        (o2.getdAbsoluteDeadline() - o2.getrActivationTime());
-            }
-        };
+        public static Comparator<InstanceOfPeriodicTask> RELATIVE_DEADLINE
+                = new Comparator<InstanceOfPeriodicTask>() {
+                    @Override
+                    public int compare(InstanceOfPeriodicTask o1, InstanceOfPeriodicTask o2) {
+                        return (o1.getdAbsoluteDeadline() - o1.getrActivationTime())
+                        - (o2.getdAbsoluteDeadline() - o2.getrActivationTime());
+                    }
+                };
         /* We can add other comparators here */
     }
     

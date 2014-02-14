@@ -9,12 +9,12 @@ import java.util.Collections;
  * @author nikola
  */
 public class Main {
-
+    
     public final static int RATE_MONOTONIC = 1;
     public final static int EARLIEST_DEADLINE_FIRST = 2;
     public final static int DEADLINE_MONOTONIC = 3;
     static int endOfTime = 0;
-
+    
     public static int getMinPhi(ArrayList<PeriodicTask> input) {
         int minPhi = input.get(0).getPhi();
         for (PeriodicTask temp : input) {
@@ -57,7 +57,7 @@ public class Main {
 
                 //add instance to readyQ 
                 readyQ.add(tempInstance);
-
+                
             }
         }
     }
@@ -98,7 +98,7 @@ public class Main {
             ArrayList<InstanceOfPeriodicTask> readyQ, int time) {
         for (InstanceOfPeriodicTask temp : readyQ) {
             if (temp.getdAbsoluteDeadline() < time) {
-
+                
                 System.out.println("NOT FEASIBLE! Task " + temp.getId() + " missed deadline at "
                         + temp.getdAbsoluteDeadline() + ". ");
 
@@ -120,7 +120,7 @@ public class Main {
      * @return true if input is feasible in time interval [0,endOfPeriodicTask]
      */
     public static boolean simulation(int endOfTimePeriod, ArrayList<PeriodicTask> input, int typeOfSimulation) {
-
+        
         if (typeOfSimulation == RATE_MONOTONIC) {
             System.out.println("Rate Monotonic:");
         } else if (typeOfSimulation == EARLIEST_DEADLINE_FIRST) {
@@ -169,25 +169,27 @@ public class Main {
                         > highestPriorityInstance.getdAbsoluteDeadline()) {
                     System.out.println("NOT FEASIBLE! Task " + highestPriorityInstance.getId() + " missed deadline at "
                             + highestPriorityInstance.getdAbsoluteDeadline() + ".");
-                    //TODO highestPriorityInstance.addToStartOfExecutionTimeList(time);
-                    //TODO highestPriorityInstance.addToEndOfExecutionTimeList(highestPriorityInstance.getdAbsoluteDeadline());
+                    highestPriorityInstance.addStartTimeOfExecution(time);
+                    highestPriorityInstance.addEndTimeOfExecution(highestPriorityInstance.getdAbsoluteDeadline());
                     //TODO highestPriorityInstance.setMissedDeadline();
-                    //TODO highestPriorityInstance.parseExecutionTimeLists() and save to file
+                    highestPriorityInstance.removeRedundantTimesFromLists();
+                    //and save to file
                     return false;
-
+                    
                 }
 
                 //if  instance with highest priority can be executed before any 
                 //other task activates
                 if (time + highestPriorityInstance.getcExecutionTime()
                         <= timeOfNextInstanceActivation) {
-
-                    //TODO highestPriorityInstance.addToStartOfExecutionTimeList(time);
+                    
+                    highestPriorityInstance.addStartTimeOfExecution(time);
                     //execute task, set time to the end of execution
                     time += highestPriorityInstance.getcExecutionTime();
-
-                    //TODO highestPriorityInstance.addToEndOfExecutionTimeList(time);
-                    //TODO highestPriorityInstance.parseExecutionTimeLists() and save to file
+                    
+                    highestPriorityInstance.addEndTimeOfExecution(time);
+                    highestPriorityInstance.removeRedundantTimesFromLists();
+                    // and save to file
                     //remove task from readyQ
                     readyQ.remove(0);
                 } // if instance with highest priority cannot be executed
@@ -197,9 +199,9 @@ public class Main {
                     highestPriorityInstance.setcExecutionTime(highestPriorityInstance.getcExecutionTime()
                             - (timeOfNextInstanceActivation - time));
                     //set time
-                    //TODO highestPriorityInstance.addToStartOfExecutionTimeList(time);
+                    highestPriorityInstance.addStartTimeOfExecution(time);
                     time = timeOfNextInstanceActivation;
-                    //TODO highestPriorityInstance.addToEndOfExecutionTimeList(time);
+                    highestPriorityInstance.addEndTimeOfExecution(time);
                 }
 
                 //check if some instance with lower priority missed deadline
@@ -207,28 +209,32 @@ public class Main {
                     //correct me if i'm wrong, but TODO nothing at all, everythig is allready done
                     return false;
                 }
-
+                
             }
         }
-
-        //TODO for each instance from readyQ 
-        //if size of StartExecList > size of EndExecList
-        //temp.addToEndOfExecutionTimeList(endOfTimePeriod);
-        //temp.parseExecutionTimeLists() and save to file
+        
+        for (InstanceOfPeriodicTask temp : readyQ) {
+            if (temp.checkIfStillExecuted() == true) {
+                temp.addEndTimeOfExecution(endOfTimePeriod);
+            }
+            temp.removeRedundantTimesFromLists();
+        }
+        
+        // and save to file
         System.out.println("FEASIBLE!");
         return true;
     }
-
+    
     public static void main(String[] args) {
         /* userInput(input);            //for user input
          File f = new File(args[0]);     //for command-line file name input */
-
+        
         ArrayList<PeriodicTask> input = new ArrayList<>();
         Parser.simpleReadInputFromFile(input, new File("inputUp1.txt"));
         boolean feasibilityTestRM = simulation(endOfTime, input, RATE_MONOTONIC);
         boolean feasibilityTestEDF = simulation(endOfTime, input, EARLIEST_DEADLINE_FIRST);
         boolean feasibilityTestRM2 = simulation(endOfTime, input, DEADLINE_MONOTONIC);
-
+        
     }
-
+    
 }
