@@ -55,7 +55,7 @@ public class InstanceOfPeriodicTask {
                 //check if is equal to previous end time of execution
                 //which means at that time was no interruption
                 //so these times are redundant in list
-                if (startOfExecutionTime.get(i) == endOfExecutionTime.get(i - 1)) {
+                if (startOfExecutionTime.get(i).equals(endOfExecutionTime.get(i - 1))) {
                     //remove redundant times
                     startOfExecutionTime.remove(i);
                     endOfExecutionTime.remove(i-1);
