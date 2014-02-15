@@ -201,28 +201,44 @@ public class InstanceOfPeriodicTask {
     public String toString() {
         StringBuilder sbResult = new StringBuilder();
         
+        //first line is task id
         sbResult.append(this.getId());
         sbResult.append(System.lineSeparator());
         
+        //second line is activation time
         sbResult.append(this.getrActivationTime());
         sbResult.append(System.lineSeparator());
         
+        //third line is absolute deadline
         sbResult.append(this.getdAbsoluteDeadline());
         sbResult.append(System.lineSeparator());
         
-        //TODO if start and end empty -1
-        for (Integer i : this.startOfExecutionTime) {
-            sbResult.append(i);
-            sbResult.append(" ");
+        //fourth line contains all the activation times.
+        //if startOfExecutionTime is empty add -1 instead
+        if (this.startOfExecutionTime.isEmpty()) {
+            sbResult.append("-1");
+        } else {
+            for (Integer i : this.startOfExecutionTime) {
+                sbResult.append(i);
+                sbResult.append(" ");
+            }
         }
         sbResult.append(System.lineSeparator());
     
-        for (Integer i : this.endOfExecutionTime) {
-            sbResult.append(i);
-            sbResult.append(" ");
+        //fifth line contains all the activation times.
+        //if endOfExecutionTime is empty add -1 instead
+        if (this.endOfExecutionTime.isEmpty()) {
+            sbResult.append("-1");
+        } else {
+            for (Integer i : this.endOfExecutionTime) {
+                sbResult.append(i);
+                sbResult.append(" ");
+            }
         }
         sbResult.append(System.lineSeparator());
         
+        //sixth line is -1 if the instance finished successfully.
+        //if the instance missed its deadline it contains the deadline it missed
         sbResult.append(this.missedDeadline);
         sbResult.append(System.lineSeparator());
         

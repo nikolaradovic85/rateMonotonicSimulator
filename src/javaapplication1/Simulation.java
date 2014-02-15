@@ -91,7 +91,7 @@ public class Simulation {
 
                 //set the missedDeadline property of the instance to the time
                 //and log the instance
-                temp.setMissedDeadline(time);
+                temp.setMissedDeadline(temp.getdAbsoluteDeadline());
                 logger.log(temp);
             }
         }
