@@ -1,22 +1,25 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package javaapplication1;
 
 /**
- *
+ * PeriodicTask class is used to make a "task set" (called input in Simulation).
+ * 
  * @author nikola
  */
 
 public class PeriodicTask implements Comparable <PeriodicTask>{
     private int id;
-    private int taskPeriod;         //perioda
-    private int phi;                //faza
-    private int cTaskExecutionTime; //vrijeme izvrsavanja
-    
-    //constructor
+    private int taskPeriod;         // period
+    private int phi;                // phase
+    private int cTaskExecutionTime; // execution time
+
+    /**
+     * Constructor.
+     * 
+     * @param pId
+     * @param taskPeriod
+     * @param phi
+     * @param cTaskExecutionTime
+     */
     public PeriodicTask(int pId, int taskPeriod, int phi, int cTaskExecutionTime){
         this.id = pId;
         this.cTaskExecutionTime = cTaskExecutionTime;
@@ -24,10 +27,16 @@ public class PeriodicTask implements Comparable <PeriodicTask>{
         this.taskPeriod = taskPeriod;
     }
 
+    /**
+     * @return the id
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * @param id the id to be set
+     */
     public void setId(int id) {
         this.id = id;
     }
@@ -74,7 +83,7 @@ public class PeriodicTask implements Comparable <PeriodicTask>{
         this.cTaskExecutionTime = cTaskExecutionTime;
     }
     
-    //@override
+    @Override
     public int compareTo(PeriodicTask other){
         return this.taskPeriod - other.getTaskPeriod();
     }
