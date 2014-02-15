@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Simulation class contains all necessary data to perform a task scheduling
+ * Simulation class contains all the necessary data to perform a task scheduling
  * simulation for periodic tasks, using Rate Monotonic, Earliest Deadline First
  * or Deadline Monotonic (these three are implemented right now).
  * 
@@ -73,23 +73,29 @@ public class Simulation {
      * @param time
      * @return false if every instance meets deadline, otherwise true
      */
-    private static boolean checkForMissedDeadline(
+    private boolean checkForMissedDeadline(
             ArrayList<InstanceOfPeriodicTask> readyQ, int time) {
         
+        boolean anyMissed = false;
+        
+        //check every instance in readyQ to see if some of them missed 
+        //their deadlines
         for (InstanceOfPeriodicTask temp : readyQ) {
             if (temp.getdAbsoluteDeadline() < time) {
+                
+                //at least one has missed its deadline
+                anyMissed = true;
                 
                 //print that current instance is not feasible
                 printNotFeasible(temp);
 
-                //add the end time as the time of this instance's deadline
-                temp.addEndTimeOfExecution(temp.getdAbsoluteDeadline());
-                
-                //TODO temp.setMissedDeadline();
-                return true;
+                //set the missedDeadline property of the instance to the time
+                //and log the instance
+                temp.setMissedDeadline(time);
+                logger.log(temp);
             }
         }
-        return false;
+        return anyMissed;
     }
     
     /**
@@ -190,11 +196,11 @@ public class Simulation {
                     //print that the current instance is not feasible
                     printNotFeasible(highestPriorityInstance);
                     
-                    //add start and end times to the instance
+                    //add start and end times to the instance, and add time when
+                    //the deadline was missed
                     highestPriorityInstance.addStartTimeOfExecution(time);
                     highestPriorityInstance.addEndTimeOfExecution(highestPriorityInstance.getdAbsoluteDeadline());
-                    
-                    //TODO highestPriorityInstance.setMissedDeadline();
+                    highestPriorityInstance.setMissedDeadline(time);
                     
                     //log current instance, end the simulate method unsuccessfully
                     //and save log to file
@@ -244,11 +250,12 @@ public class Simulation {
             }
         }
         
+        // check if there are some instances left unfinished after time has elapsed
         for (InstanceOfPeriodicTask temp : readyQ) {
             if (temp.checkIfStillBeingExecuted() == true) {
                 temp.addEndTimeOfExecution(endOfTimePeriod);
+                logger.log(temp);
             }
-            logger.log(temp);
         }
         
         //successfully end simulate and save log to file

@@ -15,6 +15,7 @@ public class InstanceOfPeriodicTask {
     private int rActivationTime;    // activation time
     private int dAbsoluteDeadline;  // absolute deadline
     private int cExecutionTime;     // execution time
+    private int missedDeadline;
     //collects time when any part of instance started beeing executed
     private ArrayList<Integer> startOfExecutionTime;
     //collects time when any part of instance stopped beeing executed
@@ -38,6 +39,7 @@ public class InstanceOfPeriodicTask {
         this.phi = phi;
         this.rActivationTime = rActivationTime;
         this.taskPeriod = taskPeriod;
+        this.missedDeadline = -1;
         this.startOfExecutionTime = new ArrayList<>();
         this.endOfExecutionTime = new ArrayList<>();
     }
@@ -70,6 +72,10 @@ public class InstanceOfPeriodicTask {
     //adds time to the end of list
     public void addEndTimeOfExecution(int time) {
         this.endOfExecutionTime.add(time);
+    }
+
+    public void setMissedDeadline(int missedDeadline) {
+        this.missedDeadline = missedDeadline;
     }
 
     public int getId() {
@@ -204,6 +210,7 @@ public class InstanceOfPeriodicTask {
         sbResult.append(this.getdAbsoluteDeadline());
         sbResult.append(System.lineSeparator());
         
+        //TODO if start and end empty -1
         for (Integer i : this.startOfExecutionTime) {
             sbResult.append(i);
             sbResult.append(" ");
@@ -214,6 +221,9 @@ public class InstanceOfPeriodicTask {
             sbResult.append(i);
             sbResult.append(" ");
         }
+        sbResult.append(System.lineSeparator());
+        
+        sbResult.append(this.missedDeadline);
         sbResult.append(System.lineSeparator());
         
         return sbResult.toString();
