@@ -1,4 +1,4 @@
-package javaapplication1;
+package TaskSchedulingSimulator;
 
 /**
  * PeriodicTask class is used to make a "task set" (called input in Simulation).

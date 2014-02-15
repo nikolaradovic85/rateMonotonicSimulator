@@ -1,4 +1,4 @@
-package javaapplication1;
+package TaskSchedulingSimulator;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;

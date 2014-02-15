@@ -1,4 +1,4 @@
-package javaapplication1;
+package TaskSchedulingSimulator;
 
 /**
  *
@@ -12,20 +12,20 @@ public class Main {
         
         System.out.println("Rate Monotonic: ");
         Simulation rm  = new Simulation(
-                "inputUp1.txt", 
-                "trace/rm.log",  
+                "io/input/inputUp1.txt", 
+                "io/trace/rm.log",  
                 InstanceOfPeriodicTask.Comparators.TASK_PERIOD);
         
         System.out.println("Earliest Deadline First: ");
         Simulation edf = new Simulation(
-                "inputUp1.txt", 
-                "trace/edf.log", 
+                "io/input/inputUp1.txt", 
+                "io/trace/edf.log", 
                 InstanceOfPeriodicTask.Comparators.ABSOLUTE_DEADLINE);
         
         System.out.println("Deadline Monotonic: ");
         Simulation rm2 = new Simulation(
-                "inputUp1.txt", 
-                "trace/rm2.log", 
+                "io/input/inputUp1.txt", 
+                "io/trace/rm2.log", 
                 InstanceOfPeriodicTask.Comparators.RELATIVE_DEADLINE);
         
         boolean feasibilityTestRM  = rm.simulate();

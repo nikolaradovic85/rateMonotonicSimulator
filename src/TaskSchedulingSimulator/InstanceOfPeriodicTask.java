@@ -1,4 +1,4 @@
-package javaapplication1;
+package TaskSchedulingSimulator;
 
 import java.util.Comparator;
 import java.util.ArrayList;
