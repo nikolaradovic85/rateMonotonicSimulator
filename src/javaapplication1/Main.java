@@ -3,6 +3,7 @@ package javaapplication1;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 /**
  *
@@ -10,10 +11,16 @@ import java.util.Collections;
  */
 public class Main {
     
-    public final static int RATE_MONOTONIC = 1;
-    public final static int EARLIEST_DEADLINE_FIRST = 2;
-    public final static int DEADLINE_MONOTONIC = 3;
     static int endOfTime = 0;
+    
+    private static void printNotFeasible(InstanceOfPeriodicTask instance) {
+        System.out.println(
+                "NOT FEASIBLE! Task " +  
+                instance.getId() + 
+                " missed deadline at " + 
+                instance.getdAbsoluteDeadline() + 
+                ".");
+    }
     
     private static int getMinPhi(ArrayList<PeriodicTask> input) {
         int minPhi = input.get(0).getPhi();
@@ -96,13 +103,16 @@ public class Main {
      */
     private static boolean checkForMissedDeadline(
             ArrayList<InstanceOfPeriodicTask> readyQ, int time) {
+        
         for (InstanceOfPeriodicTask temp : readyQ) {
             if (temp.getdAbsoluteDeadline() < time) {
                 
-                System.out.println("NOT FEASIBLE! Task " + temp.getId() + " missed deadline at "
-                        + temp.getdAbsoluteDeadline() + ". ");
+                //print that current instance is not feasible
+                printNotFeasible(temp);
 
+                //add the end time as the time of this instance's deadline
                 temp.addEndTimeOfExecution(temp.getdAbsoluteDeadline());
+                
                 //TODO temp.setMissedDeadline();
                 return true;
             }
@@ -116,24 +126,17 @@ public class Main {
      * @param input - input array list of periodic tasks
      * @param endOfTimePeriod - end of simulation period, implied begin of
      * simulation = 0
-     * @param typeOfSimulation - defines type of simulation where 1 is rate
-     * monotonic, 2 - earliest deadline first, 3 - deadline monotonic
+     * @param comparator Use appropriate comparator for the chosen algorithm
+     * from InstanceOfPeriodicTask's inner class Comparators
      * @param logger SimulatorLogger object that takes care of logging
      * @return true if input is feasible in time interval [0,endOfPeriodicTask]
      */
     public static boolean simulation(
             int endOfTimePeriod, 
             ArrayList<PeriodicTask> input, 
-            int typeOfSimulation,
+            Comparator<InstanceOfPeriodicTask> comparator,
             SimulatorLogger logger) {
         
-        if (typeOfSimulation == RATE_MONOTONIC) {
-            System.out.println("Rate Monotonic:");
-        } else if (typeOfSimulation == EARLIEST_DEADLINE_FIRST) {
-            System.out.println("Earliest Deadline First:");
-        } else if (typeOfSimulation == DEADLINE_MONOTONIC) {
-            System.out.println("Deadline Monotonic:");
-        }
         //sorting input by priority (highest priority first)
         Collections.sort(input);
 
@@ -149,15 +152,9 @@ public class Main {
             //activate all tasks that need to be activated at current time
             updateReadyQ(time, readyQ, input);
 
-            //sort readyQ (lowest task period has the highest priority) 
-            //with appropriate comparator based on type Of Simulation
-            if (typeOfSimulation == RATE_MONOTONIC) {
-                Collections.sort(readyQ, InstanceOfPeriodicTask.Comparators.TASK_PERIOD);
-            } else if (typeOfSimulation == EARLIEST_DEADLINE_FIRST) {
-                Collections.sort(readyQ, InstanceOfPeriodicTask.Comparators.ABSOLUTE_DEADLINE);
-            } else if (typeOfSimulation == DEADLINE_MONOTONIC) {
-                Collections.sort(readyQ, InstanceOfPeriodicTask.Comparators.RELATIVE_DEADLINE);
-            }
+            //sort readyQ with appropriate comparator for the chosen algorithm
+            Collections.sort(readyQ, comparator);
+            
             // find next activation of ANY task
             int timeOfNextInstanceActivation = getNextActivationTime(input, time);
 
@@ -174,13 +171,10 @@ public class Main {
                 if (time + highestPriorityInstance.getcExecutionTime()
                         > highestPriorityInstance.getdAbsoluteDeadline()) {
                     
-                    System.out.println(
-                            "NOT FEASIBLE! Task " + 
-                            highestPriorityInstance.getId() + 
-                            " missed deadline at " +
-                            highestPriorityInstance.getdAbsoluteDeadline() + 
-                            ".");
+                    //print that the current instance is not feasible
+                    printNotFeasible(highestPriorityInstance);
                     
+                    //add start and end times to the instance
                     highestPriorityInstance.addStartTimeOfExecution(time);
                     highestPriorityInstance.addEndTimeOfExecution(highestPriorityInstance.getdAbsoluteDeadline());
                     
@@ -215,7 +209,8 @@ public class Main {
                     //execute task until activation of some other task
                     highestPriorityInstance.setcExecutionTime(highestPriorityInstance.getcExecutionTime()
                             - (timeOfNextInstanceActivation - time));
-                    //set time
+                    
+                    //set times
                     highestPriorityInstance.addStartTimeOfExecution(time);
                     time = timeOfNextInstanceActivation;
                     highestPriorityInstance.addEndTimeOfExecution(time);
@@ -224,9 +219,10 @@ public class Main {
                 //check if some instance with lower priority missed deadline
                 if (checkForMissedDeadline(readyQ, time) == true) {
                     //correct me if i'm wrong, but TODO nothing at all, everythig is allready done
+                    
+                    //end simulation
                     return false;
                 }
-                
             }
         }
         
@@ -252,14 +248,13 @@ public class Main {
         SimulatorLogger loggerEDF = new SimulatorLogger("trace/edf.log");
         SimulatorLogger loggerRM2 = new SimulatorLogger("trace/rm2.log");
         
-        boolean feasibilityTestRM  = simulation(endOfTime, input, RATE_MONOTONIC, loggerRM);
-        boolean feasibilityTestEDF = simulation(endOfTime, input, EARLIEST_DEADLINE_FIRST, loggerEDF);
-        boolean feasibilityTestRM2 = simulation(endOfTime, input, DEADLINE_MONOTONIC, loggerRM2);
+        boolean feasibilityTestRM  = simulation(endOfTime, input, InstanceOfPeriodicTask.Comparators.TASK_PERIOD, loggerRM);
+        boolean feasibilityTestEDF = simulation(endOfTime, input, InstanceOfPeriodicTask.Comparators.ABSOLUTE_DEADLINE, loggerEDF);
+        boolean feasibilityTestRM2 = simulation(endOfTime, input, InstanceOfPeriodicTask.Comparators.RELATIVE_DEADLINE, loggerRM2);
         
         loggerRM.saveLogToFile();
         loggerEDF.saveLogToFile();
         loggerRM2.saveLogToFile();
-        
     }
     
 }

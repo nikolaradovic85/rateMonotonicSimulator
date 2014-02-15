@@ -152,8 +152,10 @@ public class InstanceOfPeriodicTask {
     
     public static class Comparators {
 
-        //This comparator compares two InstanceOfPeriodicTask objects
-        //using their taskPeriod property.
+        /**
+         * Used for Rate Monotonic algorithm. This comparator compares two 
+         * InstanceOfPeriodicTask objects using their taskPeriod property.
+         */
         public static Comparator<InstanceOfPeriodicTask> TASK_PERIOD
                 = new Comparator<InstanceOfPeriodicTask>() {
                     @Override
@@ -162,6 +164,10 @@ public class InstanceOfPeriodicTask {
                     }
                 };
         
+        /**
+         * Used for Earliest Deadline First algorithm. This comparator compares
+         * two InstanceOfPeriodicTask objects using their dAbsoluteDeadline property.
+         */
         public static Comparator<InstanceOfPeriodicTask> ABSOLUTE_DEADLINE
                 = new Comparator<InstanceOfPeriodicTask>() {
                     @Override
@@ -170,6 +176,9 @@ public class InstanceOfPeriodicTask {
                     }
                 };
         
+        /**
+         * Used for Deadline Monotonic algorithm.
+         */
         public static Comparator<InstanceOfPeriodicTask> RELATIVE_DEADLINE
                 = new Comparator<InstanceOfPeriodicTask>() {
                     @Override
@@ -178,6 +187,7 @@ public class InstanceOfPeriodicTask {
                         - (o2.getdAbsoluteDeadline() - o2.getrActivationTime());
                     }
                 };
+        
         /* We can add other comparators here */
     }
 
