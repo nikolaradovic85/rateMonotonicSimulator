@@ -38,16 +38,14 @@ public class InstanceOfPeriodicTask {
         this.phi = phi;
         this.rActivationTime = rActivationTime;
         this.taskPeriod = taskPeriod;
-        this.startOfExecutionTime = new ArrayList<Integer>();
-        this.endOfExecutionTime = new ArrayList<Integer>();
+        this.startOfExecutionTime = new ArrayList<>();
+        this.endOfExecutionTime = new ArrayList<>();
     }
 
-    public boolean checkIfStillExecuted(){
-        if(this.startOfExecutionTime.size() == this.endOfExecutionTime.size() + 1){
-            return true;
-        }
-        return false;
+    public boolean checkIfStillBeingExecuted(){
+        return this.startOfExecutionTime.size() == this.endOfExecutionTime.size() + 1;
     }
+    
     public void removeRedundantTimesFromLists() {
         if (startOfExecutionTime.size() > 1 && startOfExecutionTime.size() == endOfExecutionTime.size()) {
             //for each start time except first
@@ -73,7 +71,7 @@ public class InstanceOfPeriodicTask {
     public void addEndTimeOfExecution(int time) {
         this.endOfExecutionTime.add(time);
     }
-    
+
     public int getId() {
         return id;
     }
@@ -182,5 +180,32 @@ public class InstanceOfPeriodicTask {
                 };
         /* We can add other comparators here */
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sbResult = new StringBuilder();
+        
+        sbResult.append(this.getId());
+        sbResult.append(System.lineSeparator());
+        
+        sbResult.append(this.getrActivationTime());
+        sbResult.append(System.lineSeparator());
+        
+        sbResult.append(this.getdAbsoluteDeadline());
+        sbResult.append(System.lineSeparator());
+        
+        for (Integer i : this.startOfExecutionTime) {
+            sbResult.append(i);
+            sbResult.append(" ");
+        }
+        sbResult.append(System.lineSeparator());
     
+        for (Integer i : this.endOfExecutionTime) {
+            sbResult.append(i);
+            sbResult.append(" ");
+        }
+        sbResult.append(System.lineSeparator());
+        
+        return sbResult.toString();
+    }
 }

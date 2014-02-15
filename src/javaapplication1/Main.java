@@ -15,7 +15,7 @@ public class Main {
     public final static int DEADLINE_MONOTONIC = 3;
     static int endOfTime = 0;
     
-    public static int getMinPhi(ArrayList<PeriodicTask> input) {
+    private static int getMinPhi(ArrayList<PeriodicTask> input) {
         int minPhi = input.get(0).getPhi();
         for (PeriodicTask temp : input) {
             if (temp.getPhi() < minPhi) {
@@ -24,7 +24,7 @@ public class Main {
         }
         return minPhi;
     }
-
+    
     /**
      * adds instances of periodic task that activate at time = time to readyQ,
      * and sorts instances in readyQ by priority
@@ -33,7 +33,7 @@ public class Main {
      * @param readyQ
      * @param input
      */
-    public static void updateReadyQ(
+    private static void updateReadyQ(
             int time,
             ArrayList<InstanceOfPeriodicTask> readyQ,
             ArrayList<PeriodicTask> input) {
@@ -70,7 +70,7 @@ public class Main {
      * @param input set of periodic tasks
      * @param time
      */
-    public static int getNextActivationTime(ArrayList<PeriodicTask> input, int time) {
+    private static int getNextActivationTime(ArrayList<PeriodicTask> input, int time) {
         int nextActivationTime = time + 1;
         boolean found = false;
         while (!found) {
@@ -94,7 +94,7 @@ public class Main {
      * @param time
      * @return false if every instance meets deadline, otherwise true
      */
-    public static boolean checkForMissedDeadline(
+    private static boolean checkForMissedDeadline(
             ArrayList<InstanceOfPeriodicTask> readyQ, int time) {
         for (InstanceOfPeriodicTask temp : readyQ) {
             if (temp.getdAbsoluteDeadline() < time) {
@@ -102,6 +102,7 @@ public class Main {
                 System.out.println("NOT FEASIBLE! Task " + temp.getId() + " missed deadline at "
                         + temp.getdAbsoluteDeadline() + ". ");
 
+                temp.addEndTimeOfExecution(temp.getdAbsoluteDeadline());
                 //TODO temp.setMissedDeadline();
                 return true;
             }
@@ -110,16 +111,21 @@ public class Main {
     }
 
     /**
-     * simulates periodic task scheduling
+     * Simulates periodic task scheduling.
      *
      * @param input - input array list of periodic tasks
      * @param endOfTimePeriod - end of simulation period, implied begin of
      * simulation = 0
      * @param typeOfSimulation - defines type of simulation where 1 is rate
      * monotonic, 2 - earliest deadline first, 3 - deadline monotonic
+     * @param logger SimulatorLogger object that takes care of logging
      * @return true if input is feasible in time interval [0,endOfPeriodicTask]
      */
-    public static boolean simulation(int endOfTimePeriod, ArrayList<PeriodicTask> input, int typeOfSimulation) {
+    public static boolean simulation(
+            int endOfTimePeriod, 
+            ArrayList<PeriodicTask> input, 
+            int typeOfSimulation,
+            SimulatorLogger logger) {
         
         if (typeOfSimulation == RATE_MONOTONIC) {
             System.out.println("Rate Monotonic:");
@@ -159,7 +165,7 @@ public class Main {
             //jump to the next activation time
             if (readyQ.isEmpty()) {
                 time = timeOfNextInstanceActivation;
-            } else { //if there are some active tasks in readyQ
+            } else { //if there are some active instances in readyQ
 
                 //get the highest priority instance (first in sorted readyQ)
                 InstanceOfPeriodicTask highestPriorityInstance = readyQ.get(0);
@@ -167,35 +173,46 @@ public class Main {
                 //if instance with the highest priority misses its own deadline
                 if (time + highestPriorityInstance.getcExecutionTime()
                         > highestPriorityInstance.getdAbsoluteDeadline()) {
-                    System.out.println("NOT FEASIBLE! Task " + highestPriorityInstance.getId() + " missed deadline at "
-                            + highestPriorityInstance.getdAbsoluteDeadline() + ".");
+                    
+                    System.out.println(
+                            "NOT FEASIBLE! Task " + 
+                            highestPriorityInstance.getId() + 
+                            " missed deadline at " +
+                            highestPriorityInstance.getdAbsoluteDeadline() + 
+                            ".");
+                    
                     highestPriorityInstance.addStartTimeOfExecution(time);
                     highestPriorityInstance.addEndTimeOfExecution(highestPriorityInstance.getdAbsoluteDeadline());
-                    //TODO highestPriorityInstance.setMissedDeadline();
-                    highestPriorityInstance.removeRedundantTimesFromLists();
-                    //and save to file
-                    return false;
                     
+                    //TODO highestPriorityInstance.setMissedDeadline();
+                    
+                    //log current instance and end the simulation
+                    logger.log(highestPriorityInstance);
+                    return false;
                 }
 
-                //if  instance with highest priority can be executed before any 
+                //if instance with highest priority can be executed before any 
                 //other task activates
                 if (time + highestPriorityInstance.getcExecutionTime()
                         <= timeOfNextInstanceActivation) {
                     
                     highestPriorityInstance.addStartTimeOfExecution(time);
+                    
                     //execute task, set time to the end of execution
                     time += highestPriorityInstance.getcExecutionTime();
                     
                     highestPriorityInstance.addEndTimeOfExecution(time);
-                    highestPriorityInstance.removeRedundantTimesFromLists();
-                    // and save to file
-                    //remove task from readyQ
+                    
+                    //log current instance
+                    logger.log(highestPriorityInstance);
+                    
+                    //and remove it from readyQ
                     readyQ.remove(0);
-                } // if instance with highest priority cannot be executed
+                } 
+                //if instance with highest priority cannot be executed
                 //before any other task activates
                 else {
-                    //execute task untill activation of some other task
+                    //execute task until activation of some other task
                     highestPriorityInstance.setcExecutionTime(highestPriorityInstance.getcExecutionTime()
                             - (timeOfNextInstanceActivation - time));
                     //set time
@@ -214,13 +231,12 @@ public class Main {
         }
         
         for (InstanceOfPeriodicTask temp : readyQ) {
-            if (temp.checkIfStillExecuted() == true) {
+            if (temp.checkIfStillBeingExecuted() == true) {
                 temp.addEndTimeOfExecution(endOfTimePeriod);
             }
-            temp.removeRedundantTimesFromLists();
+            logger.log(temp);
         }
         
-        // and save to file
         System.out.println("FEASIBLE!");
         return true;
     }
@@ -231,9 +247,18 @@ public class Main {
         
         ArrayList<PeriodicTask> input = new ArrayList<>();
         Parser.simpleReadInputFromFile(input, new File("inputUp1.txt"));
-        boolean feasibilityTestRM = simulation(endOfTime, input, RATE_MONOTONIC);
-        boolean feasibilityTestEDF = simulation(endOfTime, input, EARLIEST_DEADLINE_FIRST);
-        boolean feasibilityTestRM2 = simulation(endOfTime, input, DEADLINE_MONOTONIC);
+        
+        SimulatorLogger loggerRM  = new SimulatorLogger("trace/rm.log");
+        SimulatorLogger loggerEDF = new SimulatorLogger("trace/edf.log");
+        SimulatorLogger loggerRM2 = new SimulatorLogger("trace/rm2.log");
+        
+        boolean feasibilityTestRM  = simulation(endOfTime, input, RATE_MONOTONIC, loggerRM);
+        boolean feasibilityTestEDF = simulation(endOfTime, input, EARLIEST_DEADLINE_FIRST, loggerEDF);
+        boolean feasibilityTestRM2 = simulation(endOfTime, input, DEADLINE_MONOTONIC, loggerRM2);
+        
+        loggerRM.saveLogToFile();
+        loggerEDF.saveLogToFile();
+        loggerRM2.saveLogToFile();
         
     }
     
