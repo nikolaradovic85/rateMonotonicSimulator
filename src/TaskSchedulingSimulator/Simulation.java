@@ -14,9 +14,12 @@ import java.util.logging.Logger;
  * simulation for periodic tasks, using Rate Monotonic, Earliest Deadline First
  * or Deadline Monotonic (these three are implemented right now).
  * 
+ * Simulation extends Thread so that multiple simulations could be run
+ * simultaneously, and (hopefully) benefit from multi core CPUs. 
+ * 
  * @author Ljubo Raicevic <rljubo90@gmail.com>
  */
-public class Simulation {
+public class Simulation extends Thread {
     
     private int endOfTimePeriod;
     private ArrayList<PeriodicTask> input;
@@ -26,15 +29,18 @@ public class Simulation {
     /**
      * Constructor for Simulation.
      * 
+     * @param threadName Name of the thread, passed to super constructor
      * @param inputFileName Path to input file
      * @param outputFileName Path to output file
      * @param pComparator
      */
     public Simulation(
+            String threadName,
             String inputFileName, 
             String outputFileName, 
             Comparator<InstanceOfPeriodicTask> pComparator) {
         
+        super(threadName);
         this.logger = new SimulatorLogger(outputFileName);
         this.comparator = pComparator;
         this.input = new ArrayList<>();
@@ -133,9 +139,10 @@ public class Simulation {
         }
     }
     
-    private static void printNotFeasible(InstanceOfPeriodicTask instance) {
+    private void printNotFeasible(InstanceOfPeriodicTask instance) {
         System.out.println(
-                "NOT FEASIBLE! Task " +  
+                this.getName() +
+                " NOT FEASIBLE! Task " +  
                 instance.getId() + 
                 " missed deadline at " + 
                 instance.getdAbsoluteDeadline() + 
@@ -154,10 +161,9 @@ public class Simulation {
     
     /**
      * Simulates periodic task scheduling.
-     *
-     * @return true if input is feasible in time interval [0,endOfPeriodicTask]
      */
-    public boolean simulate() {
+    @Override
+    public void run() {
         
         //sorting input by priority (highest priority first)
         Collections.sort(input);
@@ -206,7 +212,7 @@ public class Simulation {
                     //and save log to file
                     logger.log(highestPriorityInstance);
                     logger.saveLogToFile();
-                    return false;
+                    return; //return false;
                 }
 
                 //if instance with highest priority can be executed before any 
@@ -245,7 +251,7 @@ public class Simulation {
                     
                     //unsuccessfully end simulate and save log to file
                     logger.saveLogToFile();
-                    return false;
+                    return; //return false;
                 }
             }
         }
@@ -260,8 +266,8 @@ public class Simulation {
         
         //successfully end simulate and save log to file
         logger.saveLogToFile();
-        System.out.println("FEASIBLE!");
-        return true;
+        System.out.println(this.getName() + " FEASIBLE!");
+        //return true;
     }
     
     /**

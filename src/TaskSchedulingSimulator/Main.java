@@ -10,26 +10,25 @@ public class Main {
         /* userInput(input);            //for user input
          File f = new File(args[0]);    //for command-line file name input */
         
-        System.out.println("Rate Monotonic: ");
         Simulation rm  = new Simulation(
+                "Rate Monotonic",
                 "io/input/inputUp1.txt", 
                 "io/trace/rm.log",  
                 InstanceOfPeriodicTask.Comparators.TASK_PERIOD);
+        rm.start();
         
-        System.out.println("Earliest Deadline First: ");
         Simulation edf = new Simulation(
+                "Earliest Deadline First",
                 "io/input/inputUp1.txt", 
                 "io/trace/edf.log", 
                 InstanceOfPeriodicTask.Comparators.ABSOLUTE_DEADLINE);
+        edf.start();
         
-        System.out.println("Deadline Monotonic: ");
         Simulation rm2 = new Simulation(
+                "Deadline Monotonic",
                 "io/input/inputUp1.txt", 
                 "io/trace/rm2.log", 
                 InstanceOfPeriodicTask.Comparators.RELATIVE_DEADLINE);
-        
-        boolean feasibilityTestRM  = rm.simulate();
-        boolean feasibilityTestEDF = edf.simulate();
-        boolean feasibilityTestRM2 = rm2.simulate();
+        rm2.start();
     }
 }
