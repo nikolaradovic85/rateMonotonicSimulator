@@ -3,11 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/ljubo/Documents/rateMonotonicSimulator/src/javaapplication1/SimulatorLogger.java</file>
-            <file>file:/home/ljubo/Documents/rateMonotonicSimulator/src/javaapplication1/Main.java</file>
-            <file>file:/home/ljubo/Documents/rateMonotonicSimulator/src/javaapplication1/InstanceOfPeriodicTask.java</file>
-            <file>file:/home/ljubo/Documents/rateMonotonicSimulator/src/javaapplication1/PeriodicTask.java</file>
-            <file>file:/home/ljubo/Documents/rateMonotonicSimulator/src/javaapplication1/Simulation.java</file>
+            <file>file:/home/ljubo/Documents/rateMonotonicSimulator/src/TaskSchedulingSimulator/InstanceOfPeriodicTask.java</file>
+            <file>file:/home/ljubo/Documents/rateMonotonicSimulator/src/TaskSchedulingSimulator/Simulation.java</file>
+            <file>file:/home/ljubo/Documents/rateMonotonicSimulator/src/TaskSchedulingSimulator/SimulatorLogger.java</file>
+            <file>file:/home/ljubo/Documents/rateMonotonicSimulator/src/TaskSchedulingSimulator/Main.java</file>
         </group>
     </open-files>
 </project-private>

@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,7 +46,7 @@ public class Simulation extends Thread {
         this.logger = new SimulatorLogger(outputFileName);
         this.comparator = pComparator;
         this.input = new ArrayList<>();
-        simpleReadInputFromFile(new File(inputFileName));
+        readInputFromFile(new File(inputFileName));
     }
     
     /**
@@ -310,12 +312,48 @@ public class Simulation extends Thread {
                 int id = scan.nextInt();
                 int phi = scan.nextInt();
                 int taskPeriod = scan.nextInt();
-                int cMin = scan.nextInt();
-                int cMax = scan.nextInt();
-                int randomDistribution = scan.nextInt(); // not used
-                //at this time uniform distribution is used - Math.random()
-                int cTaskExecutionTime = cMin + (int) (Math.random() * (cMax - cMin + 1));
-                System.out.println(cTaskExecutionTime);
+                int cTaskExecutionTime = 0;
+                
+                String executionTimeType = scan.next();
+                
+                switch (executionTimeType) {
+                    case "FIXED": 
+                        cTaskExecutionTime = scan.nextInt();
+                        break;
+                    case "MIN_MAX_UNIFORM":
+                        int cMin = scan.nextInt();
+                        int cMax = scan.nextInt();
+                        int randomDistribution = scan.nextInt(); // not used
+                        //currently only uniform distribution is used - Math.random()
+                        cTaskExecutionTime = cMin + (int) (Math.random() * (cMax - cMin + 1));
+                        break;
+                    case "FREQUENCY_TABLE":
+                        int noOfEntries = scan.nextInt();
+                        int cumulativeProbability = 0;
+                        Map<Integer, Integer> freqTable = new HashMap<>();
+                        
+                        /* populate hashmap with the frequency table 
+                        with cumulative probabilies, e.g., probabilities 
+                        for a group of three tasks are 10%, 50%, 40%, but the 
+                        hashmap contains 10,60,100 */
+                        for (int iCount = 0; iCount < noOfEntries; iCount++) {
+                            int execTime = scan.nextInt();
+                            cumulativeProbability += scan.nextInt();
+                            freqTable.put(execTime, cumulativeProbability);
+                        }
+                        
+                        // find a random number [1,100] (uniform distribution)
+                        int random100 = (int) Math.ceil(Math.random() * 100);
+                        
+                        // find its match in the hashmap
+                        for (Map.Entry<Integer, Integer> entry : freqTable.entrySet()) {
+                            if (random100 <= entry.getValue()) {
+                                cTaskExecutionTime = entry.getKey();
+                            }
+                        }
+                        break;
+                }
+                
                 PeriodicTask temp = new PeriodicTask(id, taskPeriod, phi, cTaskExecutionTime);
                 input.add(temp);
             }
