@@ -59,6 +59,7 @@ public class InstanceOfPeriodicTask {
                     //remove redundant times
                     startOfExecutionTime.remove(i);
                     endOfExecutionTime.remove(i-1);
+                    i--;//best fix ever
                 }
             }
         }
