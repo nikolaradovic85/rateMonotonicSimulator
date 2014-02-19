@@ -15,6 +15,7 @@ public class InstanceOfPeriodicTask {
     private int rActivationTime;    // activation time
     private int dAbsoluteDeadline;  // absolute deadline
     private int cExecutionTime;     // execution time
+    private final int totalExecutionTime;
     private int missedDeadline;
     //collects time when any part of instance started beeing executed
     private ArrayList<Integer> startOfExecutionTime;
@@ -34,7 +35,7 @@ public class InstanceOfPeriodicTask {
     public InstanceOfPeriodicTask(int pId, int taskPeriod, int phi,
             int rActivationTime, int dAbsoluteDeadline, int cExecutionTime) {
         this.id = pId;
-        this.cExecutionTime = cExecutionTime;
+        this.cExecutionTime = this.totalExecutionTime = cExecutionTime;      
         this.dAbsoluteDeadline = dAbsoluteDeadline;
         this.phi = phi;
         this.rActivationTime = rActivationTime;
@@ -214,7 +215,11 @@ public class InstanceOfPeriodicTask {
         sbResult.append(this.getdAbsoluteDeadline());
         sbResult.append(System.lineSeparator());
         
-        //fourth line contains all the activation times.
+        //fourth line is total time needed to execute instance
+        sbResult.append(this.totalExecutionTime);
+        sbResult.append(System.lineSeparator());
+        
+        //fifth line contains all the activation times.
         //if startOfExecutionTime is empty add -1 instead
         if (this.startOfExecutionTime.isEmpty()) {
             sbResult.append("-1");
