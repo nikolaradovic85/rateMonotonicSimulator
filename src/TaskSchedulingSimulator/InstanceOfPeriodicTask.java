@@ -66,6 +66,14 @@ public class InstanceOfPeriodicTask {
         }
     }
 
+    private int getLastEndOfExecutionTime() {
+        if (this.endOfExecutionTime.isEmpty()) {
+            return 0;
+        } else {
+            return this.endOfExecutionTime.get(this.endOfExecutionTime.size() - 1);
+        }
+    }
+    
     //adds time to the end of list
     public void addStartTimeOfExecution(int time) {
         this.startOfExecutionTime.add(time);
@@ -168,7 +176,14 @@ public class InstanceOfPeriodicTask {
                 = new Comparator<InstanceOfPeriodicTask>() {
                     @Override
                     public int compare(InstanceOfPeriodicTask o1, InstanceOfPeriodicTask o2) {
-                        return o1.getTaskPeriod() - o2.getTaskPeriod();
+                        int result = o1.getTaskPeriod() - o2.getTaskPeriod();
+
+                        //if both objects have the same period, discriminate 
+                        //by the end of last execution 
+                        if (result == 0) {
+                            result = (-1) * (o1.getLastEndOfExecutionTime() - o2.getLastEndOfExecutionTime());
+                        }
+                        return result;
                     }
                 };
         
@@ -180,7 +195,14 @@ public class InstanceOfPeriodicTask {
                 = new Comparator<InstanceOfPeriodicTask>() {
                     @Override
                     public int compare(InstanceOfPeriodicTask o1, InstanceOfPeriodicTask o2) {
-                        return o1.getdAbsoluteDeadline() - o2.getdAbsoluteDeadline();
+                        int result = o1.getdAbsoluteDeadline() - o2.getdAbsoluteDeadline();
+                        
+                        //if both objects have the same abslolute deadline,  
+                        //discriminate by the end of last execution 
+                        if (result == 0) {
+                            result = (-1) * (o1.getLastEndOfExecutionTime() - o2.getLastEndOfExecutionTime());
+                        }
+                        return result;
                     }
                 };
         
@@ -191,8 +213,15 @@ public class InstanceOfPeriodicTask {
                 = new Comparator<InstanceOfPeriodicTask>() {
                     @Override
                     public int compare(InstanceOfPeriodicTask o1, InstanceOfPeriodicTask o2) {
-                        return (o1.getdAbsoluteDeadline() - o1.getrActivationTime())
+                        int result = (o1.getdAbsoluteDeadline() - o1.getrActivationTime())
                         - (o2.getdAbsoluteDeadline() - o2.getrActivationTime());
+                        
+                        //if both objects have the same relative deadline,  
+                        //discriminate by the end of last execution 
+                        if (result == 0) {
+                            result = (-1) * (o1.getLastEndOfExecutionTime() - o2.getLastEndOfExecutionTime());
+                        }
+                        return result;
                     }
                 };
         

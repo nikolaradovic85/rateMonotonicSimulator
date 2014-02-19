@@ -15,10 +15,10 @@ import java.util.logging.Logger;
  * Simulation class contains all the necessary data to perform a task scheduling
  * simulation for periodic tasks, using Rate Monotonic, Earliest Deadline First
  * or Deadline Monotonic (these three are implemented right now).
- *
+ * 
  * Simulation extends Thread so that multiple simulations could be run
- * simultaneously, and (hopefully) benefit from multi core CPUs.
- *
+ * simultaneously, and (hopefully) benefit from multi core CPUs. 
+ * 
  * @author Ljubo Raicevic <rljubo90@gmail.com>
  */
 public class Simulation extends Thread {
@@ -38,7 +38,7 @@ public class Simulation extends Thread {
 
     /**
      * Constructor for Simulation.
-     *
+     * 
      * @param threadName Name of the thread, passed to super constructor
      * @param inputType Simulation type
      * @param inputFileName Path to input file
@@ -161,7 +161,7 @@ public class Simulation extends Thread {
             }
         }
     }
-
+    
     private void printNotFeasible(InstanceOfPeriodicTask instance) {
         System.out.println(
                 this.getName()
@@ -187,7 +187,7 @@ public class Simulation extends Thread {
      */
     @Override
     public void run() {
-
+        
         //sorting input by priority (highest priority first)
         Collections.sort(input);
 
@@ -227,7 +227,9 @@ public class Simulation extends Thread {
                     highestPriorityInstance.addStartTimeOfExecution(time);
                     highestPriorityInstance.addEndTimeOfExecution(highestPriorityInstance.getdAbsoluteDeadline());
                     highestPriorityInstance.setMissedDeadline(time);
+                    
                     //log current instance, end the simulate method unsuccessfully
+
                     logger.log(highestPriorityInstance);
 
                     if (this.typeOfSimulation == SimulationTypes.HARD) {
@@ -258,13 +260,14 @@ public class Simulation extends Thread {
 
                     //and remove it from readyQ
                     readyQ.remove(0);
-                } //if instance with highest priority cannot be executed
+                } 
+                //if instance with highest priority cannot be executed
                 //before any other task activates
                 else {
                     //execute task until activation of some other task
                     highestPriorityInstance.setcExecutionTime(highestPriorityInstance.getcExecutionTime()
                             - (timeOfNextInstanceActivation - time));
-
+                    
                     //set times
                     highestPriorityInstance.addStartTimeOfExecution(time);
                     time = timeOfNextInstanceActivation;
@@ -280,7 +283,7 @@ public class Simulation extends Thread {
                 }
             }
         }
-
+        
         // check if there are some instances left unfinished after time has elapsed
         for (InstanceOfPeriodicTask temp : readyQ) {
             if (temp.checkIfStillBeingExecuted() == true) {
@@ -288,7 +291,7 @@ public class Simulation extends Thread {
                 logger.log(temp);
             }
         }
-
+        
         //successfully end simulate and save log to file
         logger.saveLogToFile();
         if (typeOfSimulation == SimulationTypes.HARD) {
@@ -296,30 +299,6 @@ public class Simulation extends Thread {
             //return true;
         }
     }
-
-    /**
-     * Manual user input.
-     */
-    /*private void userInput() {
-     Scanner scan = new Scanner(System.in);
-     System.out.print("Number of periodic tasks: ");
-     final int numberOfPeriodicTasks = scan.nextInt();
-
-     for (int i = 0; i < numberOfPeriodicTasks; i++) {
-     System.out.println((i + 1) + ". periodic task:");
-     System.out.print("Phase: ");
-     int phi = scan.nextInt();
-     System.out.print("Period: ");
-     int taskPeriod = scan.nextInt();
-     System.out.print("Execution Time: ");
-     int cTaskExecutionTime = scan.nextInt();
-     PeriodicTask temp = new PeriodicTask(i + 1, taskPeriod, phi, cTaskExecutionTime);
-     input.add(temp);
-     }
-
-     System.out.print("End of time period: ");
-     endOfTimePeriod = scan.nextInt();
-     }*/
     
     /**
      * Reads a file and populates input, execution time calculated from uniform
@@ -338,11 +317,11 @@ public class Simulation extends Thread {
                 int phi = scan.nextInt();
                 int taskPeriod = scan.nextInt();
                 int cTaskExecutionTime = 0;
-
+                
                 String executionTimeType = scan.next();
-
+                
                 switch (executionTimeType) {
-                    case "FIXED":
+                    case "FIXED": 
                         cTaskExecutionTime = scan.nextInt();
                         break;
                     case "MIN_MAX_UNIFORM":
@@ -356,20 +335,20 @@ public class Simulation extends Thread {
                         int noOfEntries = scan.nextInt();
                         int cumulativeProbability = 0;
                         Map<Integer, Integer> freqTable = new HashMap<>();
-
+                        
                         /* populate hashmap with the frequency table 
-                         with cumulative probabilies, e.g., probabilities 
-                         for a group of three tasks are 10%, 50%, 40%, but the 
-                         hashmap contains 10,60,100 */
+                        with cumulative probabilies, e.g., probabilities 
+                        for a group of three tasks are 10%, 50%, 40%, but the 
+                        hashmap contains 10,60,100 */
                         for (int iCount = 0; iCount < noOfEntries; iCount++) {
                             int execTime = scan.nextInt();
                             cumulativeProbability += scan.nextInt();
                             freqTable.put(execTime, cumulativeProbability);
                         }
-
+                        
                         // find a random number [1,100] (uniform distribution)
                         int random100 = (int) Math.ceil(Math.random() * 100);
-
+                        
                         // find its match in the hashmap
                         for (Map.Entry<Integer, Integer> entry : freqTable.entrySet()) {
                             if (random100 <= entry.getValue()) {
@@ -378,7 +357,7 @@ public class Simulation extends Thread {
                         }
                         break;
                 }
-
+                
                 PeriodicTask temp = new PeriodicTask(id, taskPeriod, phi, cTaskExecutionTime);
                 input.add(temp);
             }
@@ -390,34 +369,5 @@ public class Simulation extends Thread {
             System.out.println("File not found!");
         }
 
-    }
-
-    /**
-     * Reads a file and populates input
-     *
-     * @param f file which is parsed
-     */
-    private void simpleReadInputFromFile(File f) {
-
-        try {
-            Scanner scan = new Scanner(f);
-
-            int numberOfPeriodicTasks = scan.nextInt();
-
-            for (int i = 0; i < numberOfPeriodicTasks; i++) {
-                int id = scan.nextInt();
-                int phi = scan.nextInt();
-                int taskPeriod = scan.nextInt();
-                int cTaskExecutionTime = scan.nextInt();
-                PeriodicTask temp = new PeriodicTask(id, taskPeriod, phi, cTaskExecutionTime);
-                input.add(temp);
-            }
-
-            endOfTimePeriod = scan.nextInt();
-
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("File not found!");
-        }
     }
 }
