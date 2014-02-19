@@ -24,7 +24,6 @@ import java.util.logging.Logger;
 public class Simulation extends Thread {
 
     public enum SimulationTypes {
-
         SOFT,
         HARD,
         HYBRID
@@ -47,21 +46,14 @@ public class Simulation extends Thread {
      */
     public Simulation(
             String threadName,
-            String inputType,
+            Simulation.SimulationTypes inputType,
             String inputFileName,
             String outputFileName,
             Comparator<InstanceOfPeriodicTask> pComparator) {
 
         super(threadName);
-
-        if (inputType.equalsIgnoreCase("SOFT")) {
-            this.typeOfSimulation = SimulationTypes.SOFT;
-        } else if (inputType.equalsIgnoreCase("HARD")) {
-            this.typeOfSimulation = SimulationTypes.HARD;
-        } else {
-            this.typeOfSimulation = SimulationTypes.HYBRID;
-        }
-
+        
+        this.typeOfSimulation = inputType;
         this.logger = new SimulatorLogger(outputFileName);
         this.comparator = pComparator;
         this.input = new ArrayList<>();
