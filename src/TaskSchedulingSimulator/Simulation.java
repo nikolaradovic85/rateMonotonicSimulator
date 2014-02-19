@@ -273,30 +273,6 @@ public class Simulation extends Thread {
     }
     
     /**
-     * Manual user input. 
-     */
-    /*private void userInput() {
-        Scanner scan = new Scanner(System.in);
-        System.out.print("Number of periodic tasks: ");
-        final int numberOfPeriodicTasks = scan.nextInt();
-
-        for (int i = 0; i < numberOfPeriodicTasks; i++) {
-            System.out.println((i + 1) + ". periodic task:");
-            System.out.print("Phase: ");
-            int phi = scan.nextInt();
-            System.out.print("Period: ");
-            int taskPeriod = scan.nextInt();
-            System.out.print("Execution Time: ");
-            int cTaskExecutionTime = scan.nextInt();
-            PeriodicTask temp = new PeriodicTask(i + 1, taskPeriod, phi, cTaskExecutionTime);
-            input.add(temp);
-        }
-
-        System.out.print("End of time period: ");
-        endOfTimePeriod = scan.nextInt();
-    }*/
-    
-    /**
      * Reads a file and populates input, execution time calculated from uniform
      * distribution
      *
@@ -365,34 +341,5 @@ public class Simulation extends Thread {
             System.out.println("File not found!");
         }
 
-    }
-
-    /**
-     * Reads a file and populates input
-     *
-     * @param f file which is parsed
-     */
-    private void simpleReadInputFromFile(File f) {
-        
-        try {
-            Scanner scan = new Scanner(f);
-
-            int numberOfPeriodicTasks = scan.nextInt();
-
-            for (int i = 0; i < numberOfPeriodicTasks; i++) {
-                int id = scan.nextInt();
-                int phi = scan.nextInt();
-                int taskPeriod = scan.nextInt();
-                int cTaskExecutionTime = scan.nextInt();
-                PeriodicTask temp = new PeriodicTask(id, taskPeriod, phi, cTaskExecutionTime);
-                input.add(temp);
-            }
-
-            endOfTimePeriod = scan.nextInt();
-
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("File not found!");
-        }
     }
 }
