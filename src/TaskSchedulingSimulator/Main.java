@@ -8,6 +8,54 @@ public class Main {
 
     public static void main(String[] args) {
 
+        Simulation rmHard = new Simulation(
+                "Rate Monotonic Hard",
+                Simulation.SimulationTypes.HARD,
+                "io/input/input.txt",
+                "io/trace/rmHard.log",
+                InstanceOfPeriodicTask.Comparators.TASK_PERIOD);
+        rmHard.start();
+
+        Simulation rmSoft = new Simulation(
+                "Rate Monotonic Soft",
+                Simulation.SimulationTypes.SOFT,
+                "io/input/input.txt",
+                "io/trace/rmSoft.log",
+                InstanceOfPeriodicTask.Comparators.TASK_PERIOD);
+        rmSoft.start();
+
+        Simulation edfHard = new Simulation(
+                "Earliest Deadline First Hard",
+                Simulation.SimulationTypes.HARD,
+                "io/input/input.txt",
+                "io/trace/edfHard.log",
+                InstanceOfPeriodicTask.Comparators.ABSOLUTE_DEADLINE);
+        edfHard.start();
+
+        Simulation edfSoft = new Simulation(
+                "Earliest Deadline First Soft",
+                Simulation.SimulationTypes.SOFT,
+                "io/input/input.txt",
+                "io/trace/edfSoft.log",
+                InstanceOfPeriodicTask.Comparators.ABSOLUTE_DEADLINE);
+        edfSoft.start();
+
+        Simulation dmHard = new Simulation(
+                "Deadline Monotonic Hard",
+                Simulation.SimulationTypes.HARD,
+                "io/input/input.txt",
+                "io/trace/dmHard.log",
+                InstanceOfPeriodicTask.Comparators.RELATIVE_DEADLINE);
+        dmHard.start();
+
+        Simulation dmSoft = new Simulation(
+                "Deadline Monotonic Soft",
+                Simulation.SimulationTypes.SOFT,
+                "io/input/input.txt",
+                "io/trace/dmSoft.log",
+                InstanceOfPeriodicTask.Comparators.RELATIVE_DEADLINE);
+        dmSoft.start();
+
         TraceFileStatisticAnalyzer tr1 = new TraceFileStatisticAnalyzer(
                 "io/trace/rmHard.log");
         SimulatorLogger logger = new SimulatorLogger("io/statistic/log1.log");
@@ -44,53 +92,5 @@ public class Main {
         logger6.log(tr6);
         logger6.saveLogToFile();
 
-//        Simulation rmHard  = new Simulation(
-//                "Rate Monotonic Hard",
-//                Simulation.SimulationTypes.HARD,
-//                "io/input/input.txt", 
-//                "io/trace/rmHard.log",  
-//                InstanceOfPeriodicTask.Comparators.TASK_PERIOD);
-//        rmHard.start();
-//       
-//        Simulation rmSoft  = new Simulation(
-//                "Rate Monotonic Soft",
-//                Simulation.SimulationTypes.SOFT,
-//                "io/input/simpleInput.txt", 
-//                "io/trace/rmSoft.log",  
-//                InstanceOfPeriodicTask.Comparators.TASK_PERIOD);
-//        rmSoft.start();
-        
-
-//        Simulation edfHard = new Simulation(
-//                "Earliest Deadline First Hard",
-//                Simulation.SimulationTypes.SOFT,
-//                "io/input/specialinput.txt", 
-//                "io/trace/edfSoftSpecial.log", 
-//                InstanceOfPeriodicTask.Comparators.ABSOLUTE_DEADLINE);
-//        edfHard.start();
-////        
-//        Simulation edfSoft = new Simulation(
-//                "Earliest Deadline First Soft",
-//                Simulation.SimulationTypes.SOFT,
-//                "io/input/input.txt", 
-//                "io/trace/edfSoft.log", 
-//                InstanceOfPeriodicTask.Comparators.ABSOLUTE_DEADLINE);
-//        edfSoft.start();
-//        
-//        Simulation dmHard = new Simulation(
-//                "Deadline Monotonic Hard",
-//                Simulation.SimulationTypes.HARD,
-//                "io/input/input.txt", 
-//                "io/trace/dmHard.log", 
-//                InstanceOfPeriodicTask.Comparators.RELATIVE_DEADLINE);
-//        dmHard.start();
-//        
-//        Simulation dmSoft = new Simulation(
-//                "Deadline Monotonic Soft",
-//                Simulation.SimulationTypes.SOFT,
-//                "io/input/input.txt", 
-//                "io/trace/dmSoft.log", 
-//                InstanceOfPeriodicTask.Comparators.RELATIVE_DEADLINE);
-//        dmSoft.start();
     }
 }

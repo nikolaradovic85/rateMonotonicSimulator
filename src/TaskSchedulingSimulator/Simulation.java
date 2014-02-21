@@ -15,15 +15,16 @@ import java.util.logging.Logger;
  * Simulation class contains all the necessary data to perform a task scheduling
  * simulation for periodic tasks, using Rate Monotonic, Earliest Deadline First
  * or Deadline Monotonic (these three are implemented right now).
- * 
+ *
  * Simulation extends Thread so that multiple simulations could be run
- * simultaneously, and (hopefully) benefit from multi core CPUs. 
- * 
+ * simultaneously, and (hopefully) benefit from multi core CPUs.
+ *
  * @author Ljubo Raicevic <rljubo90@gmail.com>
  */
 public class Simulation extends Thread {
 
     public enum SimulationTypes {
+
         SOFT,
         HARD,
         HYBRID
@@ -37,7 +38,7 @@ public class Simulation extends Thread {
 
     /**
      * Constructor for Simulation.
-     * 
+     *
      * @param threadName Name of the thread, passed to super constructor
      * @param inputType Simulation type
      * @param inputFileName Path to input file
@@ -52,7 +53,7 @@ public class Simulation extends Thread {
             Comparator<InstanceOfPeriodicTask> pComparator) {
 
         super(threadName);
-        
+
         this.typeOfSimulation = inputType;
         this.logger = new SimulatorLogger(outputFileName);
         this.comparator = pComparator;
@@ -96,11 +97,15 @@ public class Simulation extends Thread {
             ArrayList<InstanceOfPeriodicTask> readyQ, int time) {
 
         boolean anyMissed = false;
-
         //check every instance in readyQ to see if some of them missed 
         //their deadlines
         for (InstanceOfPeriodicTask temp : readyQ) {
-            if (temp.getdAbsoluteDeadline() < time) {
+            
+            //tests for less or equal - solves BUG(so far, only tested for less)
+            //at moment when checkForMissedDeadline() is called in simulation
+            //all instances in readyQ have remaining execution time > 0 (let's pray for this)
+            //if temp.deadline == time and temp.remainingexecu...>0 => temp missed deadline
+            if (temp.getdAbsoluteDeadline() <= time) {
 
                 //at least one has missed its deadline
                 anyMissed = true;
@@ -109,13 +114,22 @@ public class Simulation extends Thread {
                 if (this.typeOfSimulation == SimulationTypes.HARD) {
                     printNotFeasible(temp);
                 }
-                readyQ.remove(temp);
+
                 //set the missedDeadline property of the instance to the time
                 //and log the instance
                 temp.setMissedDeadline(temp.getdAbsoluteDeadline());
                 logger.log(temp);
+                    
+                //prevents for loop conditioning when last element(even if it is also only element)
+                //of list is removed -- BUG fixed
+                if (readyQ.get(readyQ.size() - 1).equals(temp)) {
+                    readyQ.remove(temp);
+                    return anyMissed;
+                }
+                readyQ.remove(temp);
             }
         }
+        
         return anyMissed;
     }
 
@@ -153,7 +167,7 @@ public class Simulation extends Thread {
             }
         }
     }
-    
+
     private void printNotFeasible(InstanceOfPeriodicTask instance) {
         System.out.println(
                 this.getName()
@@ -179,7 +193,7 @@ public class Simulation extends Thread {
      */
     @Override
     public void run() {
-        
+
         //sorting input by priority (highest priority first)
         Collections.sort(input);
 
@@ -219,9 +233,8 @@ public class Simulation extends Thread {
                     highestPriorityInstance.addStartTimeOfExecution(time);
                     highestPriorityInstance.addEndTimeOfExecution(highestPriorityInstance.getdAbsoluteDeadline());
                     highestPriorityInstance.setMissedDeadline(time);
-                    
-                    //log current instance, end the simulate method unsuccessfully
 
+                    //log current instance, end the simulate method unsuccessfully
                     logger.log(highestPriorityInstance);
 
                     if (this.typeOfSimulation == SimulationTypes.HARD) {
@@ -252,14 +265,13 @@ public class Simulation extends Thread {
 
                     //and remove it from readyQ
                     readyQ.remove(0);
-                } 
-                //if instance with highest priority cannot be executed
+                } //if instance with highest priority cannot be executed
                 //before any other task activates
                 else {
                     //execute task until activation of some other task
                     highestPriorityInstance.setcExecutionTime(highestPriorityInstance.getcExecutionTime()
                             - (timeOfNextInstanceActivation - time));
-                    
+
                     //set times
                     highestPriorityInstance.addStartTimeOfExecution(time);
                     time = timeOfNextInstanceActivation;
@@ -275,7 +287,7 @@ public class Simulation extends Thread {
                 }
             }
         }
-        
+
         // check if there are some instances left unfinished after time has elapsed
         for (InstanceOfPeriodicTask temp : readyQ) {
             if (temp.checkIfStillBeingExecuted() == true) {
@@ -283,7 +295,7 @@ public class Simulation extends Thread {
                 logger.log(temp);
             }
         }
-        
+
         //successfully end simulate and save log to file
         logger.saveLogToFile();
         if (typeOfSimulation == SimulationTypes.HARD) {
@@ -291,7 +303,7 @@ public class Simulation extends Thread {
             //return true;
         }
     }
-    
+
     /**
      * Reads a file and populates input, execution time calculated from uniform
      * distribution
@@ -309,11 +321,11 @@ public class Simulation extends Thread {
                 int phi = scan.nextInt();
                 int taskPeriod = scan.nextInt();
                 int cTaskExecutionTime = 0;
-                
+
                 String executionTimeType = scan.next();
-                
+
                 switch (executionTimeType) {
-                    case "FIXED": 
+                    case "FIXED":
                         cTaskExecutionTime = scan.nextInt();
                         break;
                     case "MIN_MAX_UNIFORM":
@@ -327,20 +339,20 @@ public class Simulation extends Thread {
                         int noOfEntries = scan.nextInt();
                         int cumulativeProbability = 0;
                         Map<Integer, Integer> freqTable = new HashMap<>();
-                        
+
                         /* populate hashmap with the frequency table 
-                        with cumulative probabilies, e.g., probabilities 
-                        for a group of three tasks are 10%, 50%, 40%, but the 
-                        hashmap contains 10,60,100 */
+                         with cumulative probabilies, e.g., probabilities 
+                         for a group of three tasks are 10%, 50%, 40%, but the 
+                         hashmap contains 10,60,100 */
                         for (int iCount = 0; iCount < noOfEntries; iCount++) {
                             int execTime = scan.nextInt();
                             cumulativeProbability += scan.nextInt();
                             freqTable.put(execTime, cumulativeProbability);
                         }
-                        
+
                         // find a random number [1,100] (uniform distribution)
                         int random100 = (int) Math.ceil(Math.random() * 100);
-                        
+
                         // find its match in the hashmap
                         for (Map.Entry<Integer, Integer> entry : freqTable.entrySet()) {
                             if (random100 <= entry.getValue()) {
@@ -349,7 +361,7 @@ public class Simulation extends Thread {
                         }
                         break;
                 }
-                
+
                 PeriodicTask temp = new PeriodicTask(id, taskPeriod, phi, cTaskExecutionTime);
                 input.add(temp);
             }
