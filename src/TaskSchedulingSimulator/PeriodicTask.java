@@ -6,11 +6,11 @@ package TaskSchedulingSimulator;
  * @author nikola
  */
 
-public class PeriodicTask implements Comparable <PeriodicTask>{
+public abstract class PeriodicTask implements Comparable <PeriodicTask>{
     private int id;
     private int taskPeriod;         // period
     private int phi;                // phase
-    private int cTaskExecutionTime; // execution time
+    //private int cTaskExecutionTime; // execution time
 
     /**
      * Constructor.
@@ -20,9 +20,9 @@ public class PeriodicTask implements Comparable <PeriodicTask>{
      * @param phi
      * @param cTaskExecutionTime
      */
-    public PeriodicTask(int pId, int taskPeriod, int phi, int cTaskExecutionTime){
+    public PeriodicTask(int pId, int taskPeriod, int phi){
         this.id = pId;
-        this.cTaskExecutionTime = cTaskExecutionTime;
+        //this.cTaskExecutionTime = cTaskExecutionTime;
         this.phi = phi;
         this.taskPeriod = taskPeriod;
     }
@@ -70,19 +70,14 @@ public class PeriodicTask implements Comparable <PeriodicTask>{
     }
 
     /**
+     * Each implementation of PeriodicTask should have its own implementation
+     * of this method (e.g. PeriodicTaskMinMaxUniform needs to calculate a 
+     * random value between min and max and return this as the execution time.
+     * 
      * @return the cTaskExecutionTime
      */
-    public int getcTaskExecutionTime() {
-        return cTaskExecutionTime;
-    }
+    public abstract int getcTaskExecutionTime();
 
-    /**
-     * @param cTaskExecutionTime the cTaskExecutionTime to set
-     */
-    public void setcTaskExecutionTime(int cTaskExecutionTime) {
-        this.cTaskExecutionTime = cTaskExecutionTime;
-    }
-    
     @Override
     public int compareTo(PeriodicTask other){
         return this.taskPeriod - other.getTaskPeriod();

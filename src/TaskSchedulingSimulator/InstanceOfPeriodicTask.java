@@ -1,7 +1,7 @@
 package TaskSchedulingSimulator;
 
-import java.util.Comparator;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 /**
  *
@@ -23,23 +23,22 @@ public class InstanceOfPeriodicTask {
     private ArrayList<Integer> endOfExecutionTime;
 
     /**
-     * constructor
+     * Constructor.
      *
      * @param pId
      * @param taskPeriod
      * @param phi
      * @param rActivationTime
      * @param dAbsoluteDeadline
-     * @param cExecutionTime
+     * @param pcExecutionTime
      */
-    public InstanceOfPeriodicTask(int pId, int taskPeriod, int phi,
-            int rActivationTime, int dAbsoluteDeadline, int cExecutionTime) {
-        this.id = pId;
-        this.cExecutionTime = this.totalExecutionTime = cExecutionTime;      
-        this.dAbsoluteDeadline = dAbsoluteDeadline;
-        this.phi = phi;
-        this.rActivationTime = rActivationTime;
-        this.taskPeriod = taskPeriod;
+    public InstanceOfPeriodicTask(PeriodicTask task, int pRActivationTime) {
+        this.rActivationTime = pRActivationTime;
+        this.id = task.getId();
+        this.cExecutionTime = this.totalExecutionTime = task.getcTaskExecutionTime();      
+        this.dAbsoluteDeadline = task.getTaskPeriod() + rActivationTime;
+        this.phi = task.getPhi();
+        this.taskPeriod = task.getTaskPeriod();
         this.missedDeadline = -1;
         this.startOfExecutionTime = new ArrayList<>();
         this.endOfExecutionTime = new ArrayList<>();

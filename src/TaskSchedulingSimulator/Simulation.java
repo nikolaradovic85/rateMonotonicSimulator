@@ -152,18 +152,8 @@ public class Simulation extends Thread {
             if (time - temp.getPhi() >= 0
                     && (time - temp.getPhi()) % temp.getTaskPeriod() == 0) {
 
-                //create instance
-                InstanceOfPeriodicTask tempInstance;
-                tempInstance = new InstanceOfPeriodicTask(
-                        temp.getId(),
-                        temp.getTaskPeriod(),
-                        temp.getPhi(),
-                        time,
-                        temp.getTaskPeriod() + time,
-                        temp.getcTaskExecutionTime());
-
                 //add instance to readyQ 
-                readyQ.add(tempInstance);
+                readyQ.add(new InstanceOfPeriodicTask(temp, time));
             }
         }
     }
@@ -246,6 +236,12 @@ public class Simulation extends Thread {
                         logger.saveLogToFile();
                         return; //return false;
                     }
+                    
+                    /* POSSIBLE BUG - shouldn't highestPriorityInstance
+                     * be removed from the readyQ here, and continue to the next
+                     * iteration of the while loop?
+                     */
+                    
                 }
 
                 //if instance with highest priority can be executed before any 
@@ -323,17 +319,18 @@ public class Simulation extends Thread {
                 int cTaskExecutionTime = 0;
 
                 String executionTimeType = scan.next();
+                PeriodicTask temp = null;
 
                 switch (executionTimeType) {
                     case "FIXED":
                         cTaskExecutionTime = scan.nextInt();
+                        temp = new PeriodicTaskFixed(id, taskPeriod, phi, cTaskExecutionTime);
                         break;
                     case "MIN_MAX_UNIFORM":
                         int cMin = scan.nextInt();
                         int cMax = scan.nextInt();
                         int randomDistribution = scan.nextInt(); // not used
-                        //currently only uniform distribution is used - Math.random()
-                        cTaskExecutionTime = cMin + (int) (Math.random() * (cMax - cMin + 1));
+                        temp = new PeriodicTaskMinMaxUniform(id, taskPeriod, phi, cMin, cMax, randomDistribution);
                         break;
                     case "FREQUENCY_TABLE":
                         int noOfEntries = scan.nextInt();
@@ -350,19 +347,11 @@ public class Simulation extends Thread {
                             freqTable.put(execTime, cumulativeProbability);
                         }
 
-                        // find a random number [1,100] (uniform distribution)
-                        int random100 = (int) Math.ceil(Math.random() * 100);
-
-                        // find its match in the hashmap
-                        for (Map.Entry<Integer, Integer> entry : freqTable.entrySet()) {
-                            if (random100 <= entry.getValue()) {
-                                cTaskExecutionTime = entry.getKey();
-                            }
-                        }
+                        temp = new PeriodicTaskFrequencyTable(id, taskPeriod, phi, freqTable);
                         break;
                 }
 
-                PeriodicTask temp = new PeriodicTask(id, taskPeriod, phi, cTaskExecutionTime);
+                //PeriodicTask temp = new PeriodicTask(id, taskPeriod, phi, cTaskExecutionTime);
                 input.add(temp);
             }
 
