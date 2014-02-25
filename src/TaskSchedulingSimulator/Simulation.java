@@ -216,7 +216,8 @@ public class Simulation extends Thread {
 
                 //if instance with the highest priority misses its own deadline
                 if (time + highestPriorityInstance.getcExecutionTime()
-                        > highestPriorityInstance.getdAbsoluteDeadline()) {
+                        > highestPriorityInstance.getdAbsoluteDeadline()
+                        && this.typeOfSimulation == SimulationTypes.HARD) {
 
                     //add start and end times to the instance, and add time when
                     //the deadline was missed

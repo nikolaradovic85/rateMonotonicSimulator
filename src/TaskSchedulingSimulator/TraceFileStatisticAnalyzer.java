@@ -263,13 +263,13 @@ public class TraceFileStatisticAnalyzer {
                 sbResult.append(System.lineSeparator());
             }
             if (!this.missedCounterList.get(listIndex).equals(0)) {
-                sbResult.append("Average ratio (executed time / total time");
+                sbResult.append("Average ratio (executed time / total time): ");
                 sbResult.append(this.avgExecutionTimesRatioList.get(listIndex));
                 sbResult.append(System.lineSeparator());
-                sbResult.append("Min ratio (executed time / total time");
+                sbResult.append("Min ratio (executed time / total time): ");
                 sbResult.append(this.minExecutionTimesRatioList.get(listIndex));
                 sbResult.append(System.lineSeparator());
-                sbResult.append("Max ratio (executed time / total time");
+                sbResult.append("Max ratio (executed time / total time): ");
                 sbResult.append(this.maxExecutionTimesRatioList.get(listIndex));
                 sbResult.append(System.lineSeparator());
             }
