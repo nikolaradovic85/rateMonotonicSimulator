@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package TaskSchedulingSimulator;
 
 import java.util.ArrayList;
@@ -241,15 +236,23 @@ public class TraceFileStatisticAnalyzer {
         StringBuilder sbResult = new StringBuilder();
         for (int id = 1; id <= map.size(); id++) {
             int listIndex = map.get(id);
+            
+            double noFinishedInstances = this.executedCounterList.get(listIndex);
+            double noMissedDeadlines = this.missedCounterList.get(listIndex);
+            double deadlineMissProbability = noMissedDeadlines / noFinishedInstances;
+            
             sbResult.append(id);
             sbResult.append(" - task statistic: ");
             sbResult.append(System.lineSeparator());
             sbResult.append(System.lineSeparator());
             sbResult.append("Number of finished instances: ");
-            sbResult.append(this.executedCounterList.get(listIndex));
+            sbResult.append(noFinishedInstances);
             sbResult.append(System.lineSeparator());
             sbResult.append("Number of missed deadline: ");
-            sbResult.append(this.missedCounterList.get(listIndex));
+            sbResult.append(noMissedDeadlines);
+            sbResult.append(System.lineSeparator());
+            sbResult.append("Deadline miss probability: ");
+            sbResult.append(deadlineMissProbability);
             sbResult.append(System.lineSeparator());
             if (!this.executedCounterList.get(listIndex).equals(0)) {
                 sbResult.append("Average response time (for finished instances): ");

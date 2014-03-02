@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -97,9 +98,13 @@ public class Simulation extends Thread {
             ArrayList<InstanceOfPeriodicTask> readyQ, int time) {
 
         boolean anyMissed = false;
+        Iterator<InstanceOfPeriodicTask> it = readyQ.iterator();
+        
         //check every instance in readyQ to see if some of them missed 
         //their deadlines
-        for (InstanceOfPeriodicTask temp : readyQ) {
+        while (it.hasNext()) {
+            
+            InstanceOfPeriodicTask temp = (InstanceOfPeriodicTask)it.next();
             
             //tests for less or equal - solves BUG(so far, only tested for less)
             //at moment when checkForMissedDeadline() is called in simulation
@@ -123,10 +128,10 @@ public class Simulation extends Thread {
                 //prevents for loop conditioning when last element(even if it is also only element)
                 //of list is removed -- BUG fixed
                 if (readyQ.get(readyQ.size() - 1).equals(temp)) {
-                    readyQ.remove(temp);
+                    it.remove();
                     return anyMissed;
                 }
-                readyQ.remove(temp);
+                it.remove();
             }
         }
         
