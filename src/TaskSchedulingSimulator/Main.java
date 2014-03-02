@@ -13,7 +13,7 @@ public class Main {
 
         for (int i = 1; i <= 20; i++) {
         
-        //create a simulation, set it up and start it
+//        create a simulation, set it up and start it
         Simulation rmSoft1 = new Simulation(
                 "Rate Monotonic Soft 1",
                 Simulation.SimulationTypes.SOFT,

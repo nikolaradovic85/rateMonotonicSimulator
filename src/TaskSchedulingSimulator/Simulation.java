@@ -99,13 +99,13 @@ public class Simulation extends Thread {
 
         boolean anyMissed = false;
         Iterator<InstanceOfPeriodicTask> it = readyQ.iterator();
-        
+
         //check every instance in readyQ to see if some of them missed 
         //their deadlines
         while (it.hasNext()) {
-            
-            InstanceOfPeriodicTask temp = (InstanceOfPeriodicTask)it.next();
-            
+
+            InstanceOfPeriodicTask temp = (InstanceOfPeriodicTask) it.next();
+
             //tests for less or equal - solves BUG(so far, only tested for less)
             //at moment when checkForMissedDeadline() is called in simulation
             //all instances in readyQ have remaining execution time > 0 (let's pray for this)
@@ -124,17 +124,11 @@ public class Simulation extends Thread {
                 //and log the instance
                 temp.setMissedDeadline(temp.getdAbsoluteDeadline());
                 logger.log(temp);
-                    
-                //prevents for loop conditioning when last element(even if it is also only element)
-                //of list is removed -- BUG fixed
-                if (readyQ.get(readyQ.size() - 1).equals(temp)) {
-                    it.remove();
-                    return anyMissed;
-                }
+
                 it.remove();
             }
         }
-        
+
         return anyMissed;
     }
 
@@ -161,6 +155,8 @@ public class Simulation extends Thread {
                 readyQ.add(new InstanceOfPeriodicTask(temp, time));
             }
         }
+        //sort readyQ with appropriate comparator for the chosen algorithm
+        Collections.sort(readyQ, comparator);
     }
 
     private void printNotFeasible(InstanceOfPeriodicTask instance) {
@@ -204,56 +200,17 @@ public class Simulation extends Thread {
             //activate all tasks that need to be activated at current time
             updateReadyQ(time, readyQ);
 
-            //sort readyQ with appropriate comparator for the chosen algorithm
-            Collections.sort(readyQ, comparator);
-
-            // find next activation of ANY task
-            int timeOfNextInstanceActivation = getNextActivationTime(time);
-
             //if there are no active instances in readyQ at this time, 
             //jump to the next activation time
             if (readyQ.isEmpty()) {
-                time = timeOfNextInstanceActivation;
+                time = getNextActivationTime(time);
             } else { //if there are some active instances in readyQ
 
                 //get the highest priority instance (first in sorted readyQ)
                 InstanceOfPeriodicTask highestPriorityInstance = readyQ.get(0);
+                int nextStop = findNextCharacteristicTime(getNextActivationTime(time), highestPriorityInstance);
 
-                //if instance with the highest priority misses its own deadline
-                if (time + highestPriorityInstance.getcExecutionTime()
-                        > highestPriorityInstance.getdAbsoluteDeadline()
-                        && this.typeOfSimulation == SimulationTypes.HARD) {
-
-                    //add start and end times to the instance, and add time when
-                    //the deadline was missed
-                    highestPriorityInstance.addStartTimeOfExecution(time);
-                    highestPriorityInstance.addEndTimeOfExecution(highestPriorityInstance.getdAbsoluteDeadline());
-                    highestPriorityInstance.setMissedDeadline(time);
-
-                    //log current instance, end the simulate method unsuccessfully
-                    logger.log(highestPriorityInstance);
-
-                    if (this.typeOfSimulation == SimulationTypes.HARD) {
-
-                        //print that the current instance is not feasible
-                        printNotFeasible(highestPriorityInstance);
-
-                        //and save log to file
-                        logger.saveLogToFile();
-                        return; //return false;
-                    }
-                    
-                    /* POSSIBLE BUG - shouldn't highestPriorityInstance
-                     * be removed from the readyQ here, and continue to the next
-                     * iteration of the while loop?
-                     */
-                    
-                }
-
-                //if instance with highest priority can be executed before any 
-                //other task activates
-                if (time + highestPriorityInstance.getcExecutionTime()
-                        <= timeOfNextInstanceActivation) {
+                if (time + highestPriorityInstance.getcExecutionTime() <= nextStop) {
 
                     highestPriorityInstance.addStartTimeOfExecution(time);
 
@@ -267,22 +224,23 @@ public class Simulation extends Thread {
 
                     //and remove it from readyQ
                     readyQ.remove(0);
-                } //if instance with highest priority cannot be executed
-                //before any other task activates
-                else {
-                    //execute task until activation of some other task
-                    highestPriorityInstance.setcExecutionTime(highestPriorityInstance.getcExecutionTime()
-                            - (timeOfNextInstanceActivation - time));
+                } else {
 
-                    //set times
                     highestPriorityInstance.addStartTimeOfExecution(time);
-                    time = timeOfNextInstanceActivation;
+                    highestPriorityInstance.setcExecutionTime(highestPriorityInstance.getcExecutionTime() + time - nextStop);
+                    time = nextStop;
                     highestPriorityInstance.addEndTimeOfExecution(time);
+
+                    if (logAndCheckForAbort(time, highestPriorityInstance) == true) {
+                        logger.saveLogToFile();
+                        return;
+                    }
+                    readyQ.remove(0);
+
                 }
 
                 //check if some instance with lower priority missed deadline
-                if (checkForMissedDeadline(readyQ, time) == true && typeOfSimulation == SimulationTypes.HARD) {
-
+                if (checkForMissedHardDeadline(readyQ, time) == true) {
                     //unsuccessfully end simulate and save log to file
                     logger.saveLogToFile();
                     return; //return false;
@@ -368,5 +326,49 @@ public class Simulation extends Thread {
             System.out.println("File not found!");
         }
 
+    }
+
+    private int findNextCharacteristicTime(int time, InstanceOfPeriodicTask activeInstance) {
+        return (time < activeInstance.getdAbsoluteDeadline()) ? time : activeInstance.getdAbsoluteDeadline();
+    }
+
+    private boolean logAndCheckForAbort(int time, InstanceOfPeriodicTask activeInstance) {
+        //if missed deadline
+        if (time >= activeInstance.getdAbsoluteDeadline() && activeInstance.getcExecutionTime() > 0) {
+            activeInstance.setMissedDeadline(time);
+            logger.log(activeInstance);
+            if (typeOfSimulation == SimulationTypes.HARD) {
+                logger.saveLogToFile();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean checkForMissedHardDeadline(ArrayList<InstanceOfPeriodicTask> readyQ, int time) {
+        boolean anyMissedHard = false;
+        Iterator<InstanceOfPeriodicTask> it = readyQ.iterator();
+
+        //check every instance in readyQ to see if some of them missed 
+        //their deadlines
+        while (it.hasNext()) {
+
+            InstanceOfPeriodicTask temp = (InstanceOfPeriodicTask) it.next();
+
+            if (temp.getdAbsoluteDeadline() <= time) {
+
+                temp.setMissedDeadline(temp.getdAbsoluteDeadline());
+                logger.log(temp);
+                //print that current instance is not feasible
+                if (this.typeOfSimulation == SimulationTypes.HARD) {
+                    printNotFeasible(temp);
+                    anyMissedHard = true;
+                }
+                
+                it.remove();
+            }
+        }
+
+        return anyMissedHard;
     }
 }
