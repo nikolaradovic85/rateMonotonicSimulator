@@ -208,7 +208,8 @@ public class Simulation extends Thread {
 
                 //get the highest priority instance (first in sorted readyQ)
                 InstanceOfPeriodicTask highestPriorityInstance = readyQ.get(0);
-                int nextStop = findNextCharacteristicTime(getNextActivationTime(time), highestPriorityInstance);
+                int nextStop = findNextCharacteristicTime(getNextActivationTime(time),
+                        highestPriorityInstance);
 
                 if (time + highestPriorityInstance.getcExecutionTime() <= nextStop) {
 
@@ -230,21 +231,29 @@ public class Simulation extends Thread {
                     highestPriorityInstance.setcExecutionTime(highestPriorityInstance.getcExecutionTime() + time - nextStop);
                     time = nextStop;
                     highestPriorityInstance.addEndTimeOfExecution(time);
-
-                    if (logAndCheckForAbort(time, highestPriorityInstance) == true) {
-                        logger.saveLogToFile();
-                        return;
+                    if (time >= highestPriorityInstance.getdAbsoluteDeadline()
+                            && highestPriorityInstance.getcExecutionTime() > 0) {
+                        highestPriorityInstance.setMissedDeadline(time);
+                        logger.log(highestPriorityInstance);
+                        readyQ.remove(0);
+                        if (typeOfSimulation == SimulationTypes.HARD) {
+                            logger.saveLogToFile();
+                            return;
+                        }
                     }
-                    readyQ.remove(0);
-
+//                    if (logAndCheckForAbort(time, highestPriorityInstance) == true) {
+//                        logger.saveLogToFile();
+//                        return;
                 }
+                // readyQ.remove(0);
 
-                //check if some instance with lower priority missed deadline
-                if (checkForMissedHardDeadline(readyQ, time) == true) {
-                    //unsuccessfully end simulate and save log to file
-                    logger.saveLogToFile();
-                    return; //return false;
-                }
+            }
+
+            //check if some instance with lower priority missed deadline
+            if (checkForMissedHardDeadline(readyQ, time) == true) {
+                //unsuccessfully end simulate and save log to file
+                logger.saveLogToFile();
+                return; //return false;
             }
         }
 
@@ -322,8 +331,10 @@ public class Simulation extends Thread {
             endOfTimePeriod = scan.nextInt();
 
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("File not found!");
+            Logger.getLogger(Main.class
+                    .getName()).log(Level.SEVERE, null, ex);
+            System.out.println(
+                    "File not found!");
         }
 
     }
@@ -364,7 +375,7 @@ public class Simulation extends Thread {
                     printNotFeasible(temp);
                     anyMissedHard = true;
                 }
-                
+
                 it.remove();
             }
         }
