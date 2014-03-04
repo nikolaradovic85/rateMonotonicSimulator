@@ -217,7 +217,7 @@ public class Simulation extends Thread {
 
                     //execute task, set time to the end of execution
                     time += highestPriorityInstance.getcExecutionTime();
-
+                    highestPriorityInstance.setcExecutionTime(0);
                     highestPriorityInstance.addEndTimeOfExecution(time);
 
                     //log current instance
@@ -225,27 +225,28 @@ public class Simulation extends Thread {
 
                     //and remove it from readyQ
                     readyQ.remove(0);
-                } else {
+                } else {//if instance can't be finished before other
 
                     highestPriorityInstance.addStartTimeOfExecution(time);
+                    
                     highestPriorityInstance.setcExecutionTime(highestPriorityInstance.getcExecutionTime() + time - nextStop);
+                    
                     time = nextStop;
+                    
                     highestPriorityInstance.addEndTimeOfExecution(time);
-                    if (time >= highestPriorityInstance.getdAbsoluteDeadline()
-                            && highestPriorityInstance.getcExecutionTime() > 0) {
+                    
+                    if (time >= highestPriorityInstance.getdAbsoluteDeadline()) {
                         highestPriorityInstance.setMissedDeadline(time);
                         logger.log(highestPriorityInstance);
                         readyQ.remove(0);
                         if (typeOfSimulation == SimulationTypes.HARD) {
+                            printNotFeasible(highestPriorityInstance);
                             logger.saveLogToFile();
                             return;
                         }
                     }
-//                    if (logAndCheckForAbort(time, highestPriorityInstance) == true) {
-//                        logger.saveLogToFile();
-//                        return;
                 }
-                // readyQ.remove(0);
+
 
             }
 
@@ -364,7 +365,7 @@ public class Simulation extends Thread {
         //their deadlines
         while (it.hasNext()) {
 
-            InstanceOfPeriodicTask temp = (InstanceOfPeriodicTask) it.next();
+            InstanceOfPeriodicTask temp = /*(InstanceOfPeriodicTask)*/ it.next();
 
             if (temp.getdAbsoluteDeadline() <= time) {
 

@@ -26,6 +26,7 @@ public class TraceFileStatisticAnalyzer {
     private ArrayList<Double> maxExecutionTimesRatioList;
     private ArrayList<Integer> executedCounterList;//counts instances that executed before deadline
     private ArrayList<Integer> missedCounterList;//counts instances that missed to execute before deadline
+    private ArrayList<Double> deadlineMissProbability;
     private HashMap<Integer, Integer> map;
 
     public TraceFileStatisticAnalyzer(String traceFile) {
@@ -37,11 +38,17 @@ public class TraceFileStatisticAnalyzer {
         this.maxExecutionTimesRatioList = new ArrayList<>();
         this.executedCounterList = new ArrayList<>();
         this.missedCounterList = new ArrayList<>();
+        this.deadlineMissProbability = new ArrayList<>();
         this.map = new HashMap<>();
         parseTraceFile(traceFile);
-
+        for(int i=0; i<missedCounterList.size();i++){
+            deadlineMissProbability.add((1.0*missedCounterList.get(i))/(missedCounterList.get(i)+executedCounterList.get(i)));
+        }
     }
-
+    
+    public double getDeadlineMissProbability(int index){
+        return deadlineMissProbability.get(map.get(index));
+    }
     /**
      * reads trace file and calculates statistic parameters
      *
@@ -239,8 +246,7 @@ public class TraceFileStatisticAnalyzer {
             
             double noFinishedInstances = this.executedCounterList.get(listIndex);
             double noMissedDeadlines = this.missedCounterList.get(listIndex);
-            double deadlineMissProbability = noMissedDeadlines / noFinishedInstances;
-            
+            double deadlineMissProbabilityLocal = noMissedDeadlines / (noFinishedInstances + noMissedDeadlines);
             sbResult.append(id);
             sbResult.append(" - task statistic: ");
             sbResult.append(System.lineSeparator());
@@ -252,7 +258,7 @@ public class TraceFileStatisticAnalyzer {
             sbResult.append(noMissedDeadlines);
             sbResult.append(System.lineSeparator());
             sbResult.append("Deadline miss probability: ");
-            sbResult.append(deadlineMissProbability);
+            sbResult.append(deadlineMissProbabilityLocal);
             sbResult.append(System.lineSeparator());
             if (!this.executedCounterList.get(listIndex).equals(0)) {
                 sbResult.append("Average response time (for finished instances): ");
