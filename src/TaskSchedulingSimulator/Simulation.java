@@ -36,6 +36,9 @@ public class Simulation extends Thread {
     private final SimulatorLogger logger;
     private final Comparator<InstanceOfPeriodicTask> comparator;
     private final SimulationTypes typeOfSimulation;
+    private ArrayList<InstanceOfPeriodicTask> readyQ;
+    private int time;
+    
 
     /**
      * Constructor for Simulation.
@@ -54,12 +57,14 @@ public class Simulation extends Thread {
             Comparator<InstanceOfPeriodicTask> pComparator) {
 
         super(threadName);
-
+        
+        this.readyQ = new ArrayList<>();
         this.typeOfSimulation = inputType;
         this.logger = new SimulatorLogger(outputFileName);
         this.comparator = pComparator;
         this.input = new ArrayList<>();
         readInputFromFile(new File(inputFileName));
+        time = getMinPhiFromInput();
     }
 
     /**
@@ -70,7 +75,7 @@ public class Simulation extends Thread {
      * @param input set of periodic tasks
      * @param time
      */
-    private int getNextActivationTime(int time) {
+    private int getNextActivationTime() {
         int nextActivationTime = time + 1;
         boolean found = false;
         while (!found) {
@@ -87,52 +92,6 @@ public class Simulation extends Thread {
     }
 
     /**
-     * checks if any task from readyQ missed own deadline in time period
-     * [0,time] and removes these instances from readyQ
-     *
-     * @param readyQ
-     * @param time
-     * @return false if every instance meets deadline, otherwise true
-     */
-    private boolean checkForMissedDeadline(
-            ArrayList<InstanceOfPeriodicTask> readyQ, int time) {
-
-        boolean anyMissed = false;
-        Iterator<InstanceOfPeriodicTask> it = readyQ.iterator();
-
-        //check every instance in readyQ to see if some of them missed 
-        //their deadlines
-        while (it.hasNext()) {
-
-            InstanceOfPeriodicTask temp = (InstanceOfPeriodicTask) it.next();
-
-            //tests for less or equal - solves BUG(so far, only tested for less)
-            //at moment when checkForMissedDeadline() is called in simulation
-            //all instances in readyQ have remaining execution time > 0 (let's pray for this)
-            //if temp.deadline == time and temp.remainingexecu...>0 => temp missed deadline
-            if (temp.getdAbsoluteDeadline() <= time) {
-
-                //at least one has missed its deadline
-                anyMissed = true;
-
-                //print that current instance is not feasible
-                if (this.typeOfSimulation == SimulationTypes.HARD) {
-                    printNotFeasible(temp);
-                }
-
-                //set the missedDeadline property of the instance to the time
-                //and log the instance
-                temp.setMissedDeadline(temp.getdAbsoluteDeadline());
-                logger.log(temp);
-
-                it.remove();
-            }
-        }
-
-        return anyMissed;
-    }
-
-    /**
      * adds instances of periodic task that activate at time = time to readyQ,
      * and sorts instances in readyQ by priority
      *
@@ -140,9 +99,7 @@ public class Simulation extends Thread {
      * @param readyQ
      * @param input
      */
-    private void updateReadyQ(
-            int time,
-            ArrayList<InstanceOfPeriodicTask> readyQ) {
+    private void updateReadyQ() {
 
         //for each task from input set of periodic tasks
         for (PeriodicTask temp : input) {
@@ -188,28 +145,21 @@ public class Simulation extends Thread {
         //sorting input by priority (highest priority first)
         Collections.sort(input);
 
-        //create empty readyQ
-        ArrayList<InstanceOfPeriodicTask> readyQ = new ArrayList<>();
-
-        //set start time to the first phase
-        int time = getMinPhiFromInput();
-
         //repeat until time the end of simulate
         while (time < endOfTimePeriod) {
 
             //activate all tasks that need to be activated at current time
-            updateReadyQ(time, readyQ);
+            updateReadyQ();
 
             //if there are no active instances in readyQ at this time, 
             //jump to the next activation time
             if (readyQ.isEmpty()) {
-                time = getNextActivationTime(time);
+                time = getNextActivationTime();
             } else { //if there are some active instances in readyQ
 
                 //get the highest priority instance (first in sorted readyQ)
                 InstanceOfPeriodicTask highestPriorityInstance = readyQ.get(0);
-                int nextStop = findNextCharacteristicTime(getNextActivationTime(time),
-                        highestPriorityInstance);
+                int nextStop = findNextCharacteristicTime(highestPriorityInstance);
 
                 if (time + highestPriorityInstance.getcExecutionTime() <= nextStop) {
 
@@ -251,7 +201,7 @@ public class Simulation extends Thread {
             }
 
             //check if some instance with lower priority missed deadline
-            if (checkForMissedHardDeadline(readyQ, time) == true) {
+            if (checkForMissedHardDeadline() == true) {
                 //unsuccessfully end simulate and save log to file
                 logger.saveLogToFile();
                 return; //return false;
@@ -340,24 +290,14 @@ public class Simulation extends Thread {
 
     }
 
-    private int findNextCharacteristicTime(int time, InstanceOfPeriodicTask activeInstance) {
-        return (time < activeInstance.getdAbsoluteDeadline()) ? time : activeInstance.getdAbsoluteDeadline();
+    private int findNextCharacteristicTime(InstanceOfPeriodicTask activeInstance) {
+        int nextActivationTime = getNextActivationTime();
+        return (nextActivationTime < activeInstance.getdAbsoluteDeadline()) ? 
+                nextActivationTime : 
+                activeInstance.getdAbsoluteDeadline();
     }
 
-    private boolean logAndCheckForAbort(int time, InstanceOfPeriodicTask activeInstance) {
-        //if missed deadline
-        if (time >= activeInstance.getdAbsoluteDeadline() && activeInstance.getcExecutionTime() > 0) {
-            activeInstance.setMissedDeadline(time);
-            logger.log(activeInstance);
-            if (typeOfSimulation == SimulationTypes.HARD) {
-                logger.saveLogToFile();
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean checkForMissedHardDeadline(ArrayList<InstanceOfPeriodicTask> readyQ, int time) {
+    private boolean checkForMissedHardDeadline() {
         boolean anyMissedHard = false;
         Iterator<InstanceOfPeriodicTask> it = readyQ.iterator();
 
@@ -365,12 +305,13 @@ public class Simulation extends Thread {
         //their deadlines
         while (it.hasNext()) {
 
-            InstanceOfPeriodicTask temp = /*(InstanceOfPeriodicTask)*/ it.next();
+            InstanceOfPeriodicTask temp = it.next();
 
             if (temp.getdAbsoluteDeadline() <= time) {
 
                 temp.setMissedDeadline(temp.getdAbsoluteDeadline());
                 logger.log(temp);
+                
                 //print that current instance is not feasible
                 if (this.typeOfSimulation == SimulationTypes.HARD) {
                     printNotFeasible(temp);

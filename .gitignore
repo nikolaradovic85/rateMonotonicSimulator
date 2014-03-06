@@ -1,2 +1,4 @@
 /build/
 /dist/
+/io/trace
+/io/statistic
