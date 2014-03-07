@@ -10,10 +10,11 @@ public class PeriodicTaskFixed extends PeriodicTask {
     public PeriodicTaskFixed(
             int pId, 
             int taskPeriod, 
+            int deadline,
             int phi, 
             int pCFixedExecutionTime) {
         
-        super(pId, taskPeriod, phi);
+        super(pId, taskPeriod, deadline, phi);
         this.cFixedExecutionTime = pCFixedExecutionTime;
     }
     

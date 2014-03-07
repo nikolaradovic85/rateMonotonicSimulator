@@ -13,10 +13,11 @@ public class PeriodicTaskFrequencyTable extends PeriodicTask {
     public PeriodicTaskFrequencyTable(
             int pId, 
             int taskPeriod, 
+            int deadline,
             int phi, 
             Map<Integer, Integer> pTable) {
         
-        super(pId, taskPeriod, phi);
+        super(pId, taskPeriod, deadline, phi);
         this.table = pTable;
     }
 
@@ -32,6 +33,7 @@ public class PeriodicTaskFrequencyTable extends PeriodicTask {
         for (Map.Entry<Integer, Integer> entry : this.table.entrySet()) {
             if (random100 <= entry.getValue()) {
                 cTaskExecutionTime = entry.getKey();
+                return cTaskExecutionTime;
             }
         }
         

@@ -36,7 +36,7 @@ public class InstanceOfPeriodicTask {
         this.rActivationTime = pRActivationTime;
         this.id = task.getId();
         this.cExecutionTime = this.totalExecutionTime = task.getcTaskExecutionTime();      
-        this.dAbsoluteDeadline = task.getTaskPeriod() + rActivationTime;
+        this.dAbsoluteDeadline = task.getDeadline() + rActivationTime;
         this.phi = task.getPhi();
         this.taskPeriod = task.getTaskPeriod();
         this.missedDeadline = -1;
@@ -44,6 +44,12 @@ public class InstanceOfPeriodicTask {
         this.endOfExecutionTime = new ArrayList<>();
     }
 
+    public boolean missedDeadline(){
+        if(missedDeadline == -1)
+            return false;
+        else 
+            return true;
+    }
     public boolean checkIfStillBeingExecuted(){
         return this.startOfExecutionTime.size() == this.endOfExecutionTime.size() + 1;
     }
@@ -178,7 +184,12 @@ public class InstanceOfPeriodicTask {
                         int result = o1.getTaskPeriod() - o2.getTaskPeriod();
 
                         //if both objects have the same period, discriminate 
-                        //by the end of last execution 
+                        //by time of activation 
+                        if (result == 0) {
+                            result = o1.getrActivationTime() - o2.getrActivationTime();
+                        }
+                         //if both objects have the same period, discriminate 
+                        //by the end of last execution
                         if (result == 0) {
                             result = (-1) * (o1.getLastEndOfExecutionTime() - o2.getLastEndOfExecutionTime());
                         }
@@ -196,6 +207,11 @@ public class InstanceOfPeriodicTask {
                     public int compare(InstanceOfPeriodicTask o1, InstanceOfPeriodicTask o2) {
                         int result = o1.getdAbsoluteDeadline() - o2.getdAbsoluteDeadline();
                         
+                        //if both objects have the same period, discriminate 
+                        //by time of activation 
+                        if (result == 0) {
+                            result = o1.getrActivationTime() - o2.getrActivationTime();
+                        }
                         //if both objects have the same abslolute deadline,  
                         //discriminate by the end of last execution 
                         if (result == 0) {

@@ -13,12 +13,13 @@ public class PeriodicTaskMinMaxUniform extends PeriodicTask {
     public PeriodicTaskMinMaxUniform(
             int pId, 
             int taskPeriod, 
+            int deadline,
             int phi, 
             int pCMin, 
             int pCMax,
             int pRandomDistribution) {
         
-        super(pId, taskPeriod, phi);
+        super(pId, taskPeriod, deadline, phi);
         this.cMin = pCMin;
         this.cMax = pCMax;
         this.randomDistribution = pRandomDistribution;

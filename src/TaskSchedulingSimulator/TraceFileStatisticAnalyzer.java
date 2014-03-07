@@ -41,14 +41,15 @@ public class TraceFileStatisticAnalyzer {
         this.deadlineMissProbability = new ArrayList<>();
         this.map = new HashMap<>();
         parseTraceFile(traceFile);
-        for(int i=0; i<missedCounterList.size();i++){
-            deadlineMissProbability.add((1.0*missedCounterList.get(i))/(missedCounterList.get(i)+executedCounterList.get(i)));
+        for (int i = 0; i < missedCounterList.size(); i++) {
+            deadlineMissProbability.add((1.0 * missedCounterList.get(i)) / (missedCounterList.get(i) + executedCounterList.get(i)));
         }
     }
-    
-    public double getDeadlineMissProbability(int index){
+
+    public double getDeadlineMissProbability(int index) {
         return deadlineMissProbability.get(map.get(index));
     }
+
     /**
      * reads trace file and calculates statistic parameters
      *
@@ -83,14 +84,26 @@ public class TraceFileStatisticAnalyzer {
                     Scanner lineSecond = new Scanner(endTimes);
 
                     int missedDeadline = scan.nextInt();
-                    
+
                     //if this is first occurance of any instance with this id
                     if (!map.containsKey(id)) {
                         //add id to map
                         map.put(id, periodicTaskCounter);
                         //count new periodic task
                         periodicTaskCounter++;
-                       
+                        //get last int from second line (time when last part of instace finished execution)
+                        int finishTime = -1;
+                        while (lineSecond.hasNextInt()) {
+                            finishTime = lineSecond.nextInt();
+                        }
+
+                        responseTime = finishTime - activationTime;
+
+                        //this is first instance with this id and deadline isn't missed, so
+                        //avg, min, max response time = response time of instance => add it to end of lists
+                        avgResponseTimeList.add(responseTime);
+                        minResponseTimeList.add(responseTime);
+                        maxResponseTimeList.add(responseTime);
                         //if not missed deadline
                         if (missedDeadline == -1) {
                             //set appropriate counters
@@ -100,27 +113,25 @@ public class TraceFileStatisticAnalyzer {
                             executedCounterList.add(1);
                             missedCounterList.add(0);
 
-                            //get last int from second line (time when last part of instace finished execution)
-                            int finishTime = -1;
-                            while (lineSecond.hasNextInt()) {
-                                finishTime = lineSecond.nextInt();
-                            }
-
-                            responseTime = finishTime - activationTime;
-
-                            //this is first instance with this id and deadline isn't missed, so
-                            //avg, min, max response time = response time of instance => add it to end of lists
-                            avgResponseTimeList.add(responseTime);
-                            minResponseTimeList.add(responseTime);
-                            maxResponseTimeList.add(responseTime);
-
+//                            //get last int from second line (time when last part of instace finished execution)
+//                            int finishTime = -1;
+//                            while (lineSecond.hasNextInt()) {
+//                                finishTime = lineSecond.nextInt();
+//                            }
+//
+//                            responseTime = finishTime - activationTime;
+//
+//                            //this is first instance with this id and deadline isn't missed, so
+//                            //avg, min, max response time = response time of instance => add it to end of lists
+//                            avgResponseTimeList.add(responseTime);
+//                            minResponseTimeList.add(responseTime);
+//                            maxResponseTimeList.add(responseTime);
                             //initializing ratio lists with values appropriate for later usage
                             //avg = 0, min = highest possible Double, so next instance with this id 
                             //that missed deadline will set own ratio as min
-                            this.avgExecutionTimesRatioList.add(0.);
-                            this.minExecutionTimesRatioList.add(Double.POSITIVE_INFINITY);
-                            this.maxExecutionTimesRatioList.add(Double.NEGATIVE_INFINITY);
-
+//                            this.avgExecutionTimesRatioList.add(0.);
+//                            this.minExecutionTimesRatioList.add(Double.POSITIVE_INFINITY);
+//                            this.maxExecutionTimesRatioList.add(Double.NEGATIVE_INFINITY);
                         } else {//if missed deadline
 
                             //set appropriate counters
@@ -130,94 +141,117 @@ public class TraceFileStatisticAnalyzer {
                             missedCounterList.add(1);
                             executedCounterList.add(0);
 
-                            //for each piece of execution substract finishtime - starttime and 
-                            //add result to realExecutionTime(which is set to zero in begining)
-                            while (lineFirst.hasNextInt() && lineSecond.hasNextInt()) {
-                                int start = lineFirst.nextInt();
-                                int end = lineSecond.nextInt();
-                                realExecutionTime += end - start;
-                            }
-
-                            //initializing response time lists with values appropriate for later usage
-                            //avg = 0, min = highest possible Double, so next instance with this id 
-                            //that didn't miss deadline will set own respons time as min
-                            avgResponseTimeList.add(0.);
-                            minResponseTimeList.add(Double.POSITIVE_INFINITY);
-                            maxResponseTimeList.add(Double.NEGATIVE_INFINITY);
-
-                            //this is first instance with this id and deadline is missed, so
-                            //avg, min, max ratio = instance's ratio => add it to end of lists
-                            this.avgExecutionTimesRatioList.add(realExecutionTime / totalExecutionTime);//add to empty list
-                            this.minExecutionTimesRatioList.add(realExecutionTime / totalExecutionTime);
-                            this.maxExecutionTimesRatioList.add(realExecutionTime / totalExecutionTime);
-
+//                            //for each piece of execution substract finishtime - starttime and 
+//                            //add result to realExecutionTime(which is set to zero in begining)
+//                            while (lineFirst.hasNextInt() && lineSecond.hasNextInt()) {
+//                                int start = lineFirst.nextInt();
+//                                int end = lineSecond.nextInt();
+//                                realExecutionTime += end - start;
+//                            }
+//
+//                            //initializing response time lists with values appropriate for later usage
+//                            //avg = 0, min = highest possible Double, so next instance with this id 
+//                            //that didn't miss deadline will set own respons time as min
+//                            avgResponseTimeList.add(0.);
+//                            minResponseTimeList.add(Double.POSITIVE_INFINITY);
+//                            maxResponseTimeList.add(Double.NEGATIVE_INFINITY);
+//
+//                            //this is first instance with this id and deadline is missed, so
+//                            //avg, min, max ratio = instance's ratio => add it to end of lists
+//                            this.avgExecutionTimesRatioList.add(realExecutionTime / totalExecutionTime);//add to empty list
+//                            this.minExecutionTimesRatioList.add(realExecutionTime / totalExecutionTime);
+//                            this.maxExecutionTimesRatioList.add(realExecutionTime / totalExecutionTime);
                         }
 
                     } else {//if id is allready in map
-                        
+
                         //get list index for this id from map
                         listIndex = map.get(id);
 
+                        //get last int from second line (time when last part of instace finished execution)
+                        int finishTime = -1;
+                        while (lineSecond.hasNextInt()) {
+                            finishTime = lineSecond.nextInt();
+                        }
+
+                        responseTime = finishTime - activationTime;
+
+                        if (minResponseTimeList.get(listIndex).compareTo(responseTime) > 0) {
+                            minResponseTimeList.set(listIndex, responseTime);
+                        } else if (maxResponseTimeList.get(listIndex).compareTo(responseTime) < 0) {
+                            maxResponseTimeList.set(listIndex, responseTime);
+                        }
+                        //if this is not first instance of task that is executed properly
+                        if (!executedCounterList.get(listIndex).equals(1)) {
+                            //newAvgValue = (newValue + oldAvgValue * oldCounter) / newCounter
+                            avgResponseTimeList.set(listIndex,
+                                    (responseTime
+                                    + avgResponseTimeList.get(listIndex)
+                                    * (executedCounterList.get(listIndex) - 1))
+                                    / executedCounterList.get(listIndex));
+                        } else {//if first instance executed before deadline
+                            avgResponseTimeList.set(listIndex, responseTime);
+                        }
                         if (missedDeadline == -1) {//if not missed deadline
 
                             //appropriate counter ++
                             executedCounterList.set(listIndex, executedCounterList.get(listIndex) + 1);
 
-                            //get last int from second line (time when last part of instace finished execution)
-                            int finishTime = -1;
-                            while (lineSecond.hasNextInt()) {
-                                finishTime = lineSecond.nextInt();
-                            }
-
-                            responseTime = finishTime - activationTime;
-
-                            if (minResponseTimeList.get(listIndex).compareTo(responseTime) > 0) {
-                                minResponseTimeList.set(listIndex, responseTime);
-                            } else if (maxResponseTimeList.get(listIndex).compareTo(responseTime) < 0) {
-                                maxResponseTimeList.set(listIndex, responseTime);
-                            }
-                            //if this is not first instance of task that is executed properly
-                            if (!executedCounterList.get(listIndex).equals(1)) {
-                                //newAvgValue = (newValue + oldAvgValue * oldCounter) / newCounter
-                                avgResponseTimeList.set(listIndex,
-                                        (responseTime
-                                        + avgResponseTimeList.get(listIndex)
-                                        * (executedCounterList.get(listIndex) - 1))
-                                        / executedCounterList.get(listIndex));
-                            } else {//if first instance executed before deadline
-                                avgResponseTimeList.set(listIndex, responseTime);
-                            }
+//                            //get last int from second line (time when last part of instace finished execution)
+//                            int finishTime = -1;
+//                            while (lineSecond.hasNextInt()) {
+//                                finishTime = lineSecond.nextInt();
+//                            }
+//
+//                            responseTime = finishTime - activationTime;
+//
+//                            if (minResponseTimeList.get(listIndex).compareTo(responseTime) > 0) {
+//                                minResponseTimeList.set(listIndex, responseTime);
+//                            } else if (maxResponseTimeList.get(listIndex).compareTo(responseTime) < 0) {
+//                                maxResponseTimeList.set(listIndex, responseTime);
+//                            }
+//                            //if this is not first instance of task that is executed properly
+//                            if (!executedCounterList.get(listIndex).equals(1)) {
+//                                //newAvgValue = (newValue + oldAvgValue * oldCounter) / newCounter
+//                                avgResponseTimeList.set(listIndex,
+//                                        (responseTime
+//                                        + avgResponseTimeList.get(listIndex)
+//                                        * (executedCounterList.get(listIndex) - 1))
+//                                        / executedCounterList.get(listIndex));
+//                            } else {//if first instance executed before deadline
+//                                avgResponseTimeList.set(listIndex, responseTime);
+//                            }
                         } else {//if missed deadline
 
                             //appropriate counter ++
                             missedCounterList.set(listIndex, missedCounterList.get(listIndex) + 1);
 
-                            //for each piece of execution substract finishtime - starttime and 
-                            //add result to realExecutionTime(which is set to zero in begining)
-                            while (lineFirst.hasNextInt() && lineSecond.hasNextInt()) {
-                                int start = lineFirst.nextInt();
-                                int end = lineSecond.nextInt();
-                                realExecutionTime += end - start;
-                            }
-                            
-                            double ratio = realExecutionTime / totalExecutionTime;
-                            
-                            if (minExecutionTimesRatioList.get(listIndex).compareTo(ratio) > 0) {
-                                minExecutionTimesRatioList.set(listIndex, ratio);
-                            } else if (maxExecutionTimesRatioList.get(listIndex).compareTo(ratio) < 0) {
-                                maxExecutionTimesRatioList.set(listIndex, ratio);
-                            }
-                            
-                            //if not first instance of task that missed deadline
-                            if (!missedCounterList.get(listIndex).equals(1)) {
-                                //newAvgValue = (newValue + oldAvgValue * oldCounter) / newCounter
-                                avgExecutionTimesRatioList.set(listIndex,
-                                        (ratio + avgExecutionTimesRatioList.get(listIndex)
-                                        * (missedCounterList.get(listIndex) - 1))
-                                        / missedCounterList.get(listIndex));
-                            } else {//if first ratio is avgRatio
-                                avgExecutionTimesRatioList.set(listIndex, ratio);
-                            }
+//                            //for each piece of execution substract finishtime - starttime and 
+//                            //add result to realExecutionTime(which is set to zero in begining)
+//                            while (lineFirst.hasNextInt() && lineSecond.hasNextInt()) {
+//                                int start = lineFirst.nextInt();
+//                                int end = lineSecond.nextInt();
+//                                realExecutionTime += end - start;
+//                            }
+//
+//                            double ratio = realExecutionTime / totalExecutionTime;
+//
+//                            if (minExecutionTimesRatioList.get(listIndex).compareTo(ratio) > 0) {
+//                                minExecutionTimesRatioList.set(listIndex, ratio);
+//                            } else if (maxExecutionTimesRatioList.get(listIndex).compareTo(ratio) < 0) {
+//                                maxExecutionTimesRatioList.set(listIndex, ratio);
+//                            }
+//
+//                            //if not first instance of task that missed deadline
+//                            if (!missedCounterList.get(listIndex).equals(1)) {
+//                                //newAvgValue = (newValue + oldAvgValue * oldCounter) / newCounter
+//                                avgExecutionTimesRatioList.set(listIndex,
+//                                        (ratio + avgExecutionTimesRatioList.get(listIndex)
+//                                        * (missedCounterList.get(listIndex) - 1))
+//                                        / missedCounterList.get(listIndex));
+//                            } else {//if first ratio is avgRatio
+//                                avgExecutionTimesRatioList.set(listIndex, ratio);
+//                            }
                         }
 
                     }
@@ -243,7 +277,7 @@ public class TraceFileStatisticAnalyzer {
         StringBuilder sbResult = new StringBuilder();
         for (int id = 1; id <= map.size(); id++) {
             int listIndex = map.get(id);
-            
+
             double noFinishedInstances = this.executedCounterList.get(listIndex);
             double noMissedDeadlines = this.missedCounterList.get(listIndex);
             double deadlineMissProbabilityLocal = noMissedDeadlines / (noFinishedInstances + noMissedDeadlines);
@@ -271,17 +305,17 @@ public class TraceFileStatisticAnalyzer {
                 sbResult.append(this.maxResponseTimeList.get(listIndex));
                 sbResult.append(System.lineSeparator());
             }
-            if (!this.missedCounterList.get(listIndex).equals(0)) {
-                sbResult.append("Average ratio (executed time / total time): ");
-                sbResult.append(this.avgExecutionTimesRatioList.get(listIndex));
-                sbResult.append(System.lineSeparator());
-                sbResult.append("Min ratio (executed time / total time): ");
-                sbResult.append(this.minExecutionTimesRatioList.get(listIndex));
-                sbResult.append(System.lineSeparator());
-                sbResult.append("Max ratio (executed time / total time): ");
-                sbResult.append(this.maxExecutionTimesRatioList.get(listIndex));
-                sbResult.append(System.lineSeparator());
-            }
+//            if (!this.missedCounterList.get(listIndex).equals(0)) {
+//                sbResult.append("Average ratio (executed time / total time): ");
+//                sbResult.append(this.avgExecutionTimesRatioList.get(listIndex));
+//                sbResult.append(System.lineSeparator());
+//                sbResult.append("Min ratio (executed time / total time): ");
+//                sbResult.append(this.minExecutionTimesRatioList.get(listIndex));
+//                sbResult.append(System.lineSeparator());
+//                sbResult.append("Max ratio (executed time / total time): ");
+//                sbResult.append(this.maxExecutionTimesRatioList.get(listIndex));
+//                sbResult.append(System.lineSeparator());
+//            }
             sbResult.append(System.lineSeparator());
             sbResult.append(System.lineSeparator());
         }

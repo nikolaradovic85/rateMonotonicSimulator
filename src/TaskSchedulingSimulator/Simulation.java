@@ -6,9 +6,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.InputMismatchException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,7 +40,6 @@ public class Simulation extends Thread {
     private final SimulationTypes typeOfSimulation;
     private ArrayList<InstanceOfPeriodicTask> readyQ;
     private int time;
-    
 
     /**
      * Constructor for Simulation.
@@ -57,7 +58,7 @@ public class Simulation extends Thread {
             Comparator<InstanceOfPeriodicTask> pComparator) {
 
         super(threadName);
-        
+
         this.readyQ = new ArrayList<>();
         this.typeOfSimulation = inputType;
         this.logger = new SimulatorLogger(outputFileName);
@@ -142,9 +143,6 @@ public class Simulation extends Thread {
     @Override
     public void run() {
 
-        //sorting input by priority (highest priority first)
-        Collections.sort(input);
-
         //repeat until time the end of simulate
         while (time < endOfTimePeriod) {
 
@@ -159,7 +157,8 @@ public class Simulation extends Thread {
 
                 //get the highest priority instance (first in sorted readyQ)
                 InstanceOfPeriodicTask highestPriorityInstance = readyQ.get(0);
-                int nextStop = findNextCharacteristicTime(highestPriorityInstance);
+                //int nextStop = findNextCharacteristicTime(highestPriorityInstance);
+                int nextStop = getNextActivationTime();
 
                 if (time + highestPriorityInstance.getcExecutionTime() <= nextStop) {
 
@@ -178,25 +177,26 @@ public class Simulation extends Thread {
                 } else {//if instance can't be finished before other
 
                     highestPriorityInstance.addStartTimeOfExecution(time);
-                    
+
                     highestPriorityInstance.setcExecutionTime(highestPriorityInstance.getcExecutionTime() + time - nextStop);
-                    
+
                     time = nextStop;
-                    
+
                     highestPriorityInstance.addEndTimeOfExecution(time);
-                    
-                    if (time >= highestPriorityInstance.getdAbsoluteDeadline()) {
+
+                    if (time >= highestPriorityInstance.getdAbsoluteDeadline()
+                            && !highestPriorityInstance.missedDeadline()) {
                         highestPriorityInstance.setMissedDeadline(time);
-                        logger.log(highestPriorityInstance);
-                        readyQ.remove(0);
+
+                        //     readyQ.remove(0);
                         if (typeOfSimulation == SimulationTypes.HARD) {
+                            logger.log(highestPriorityInstance);
                             printNotFeasible(highestPriorityInstance);
                             logger.saveLogToFile();
                             return;
                         }
                     }
                 }
-
 
             }
 
@@ -234,32 +234,47 @@ public class Simulation extends Thread {
         try {
             Scanner scan = new Scanner(f);
 
-            int numberOfPeriodicTasks = scan.nextInt();
+            boolean deadlineIsNotPeriod = false;
+            int firstInt = scan.nextInt();
 
+            int numberOfPeriodicTasks = -1;
+            if (firstInt == 0) {//special case: if first int is 0, then deadline is not equal task period, number of tasks is in next line of file
+                deadlineIsNotPeriod = true;
+                numberOfPeriodicTasks = scan.nextInt();
+            } else if(firstInt > 0){//if first int is not 0, then deadline = period, and that int is number of periodic tasks
+                numberOfPeriodicTasks = firstInt;
+            } else {
+                throw (new InputMismatchException());
+            }
             for (int i = 0; i < numberOfPeriodicTasks; i++) {
                 int id = scan.nextInt();
                 int phi = scan.nextInt();
                 int taskPeriod = scan.nextInt();
+                int deadline = 0;
+                if (deadlineIsNotPeriod) {
+                    deadline = scan.nextInt();
+                } else {
+                    deadline = taskPeriod;
+                }
                 int cTaskExecutionTime = 0;
-
                 String executionTimeType = scan.next();
                 PeriodicTask temp = null;
 
                 switch (executionTimeType) {
                     case "FIXED":
                         cTaskExecutionTime = scan.nextInt();
-                        temp = new PeriodicTaskFixed(id, taskPeriod, phi, cTaskExecutionTime);
+                        temp = new PeriodicTaskFixed(id, taskPeriod, deadline, phi, cTaskExecutionTime);
                         break;
                     case "MIN_MAX_UNIFORM":
                         int cMin = scan.nextInt();
                         int cMax = scan.nextInt();
                         int randomDistribution = scan.nextInt(); // not used
-                        temp = new PeriodicTaskMinMaxUniform(id, taskPeriod, phi, cMin, cMax, randomDistribution);
+                        temp = new PeriodicTaskMinMaxUniform(id, taskPeriod, deadline, phi, cMin, cMax, randomDistribution);
                         break;
                     case "FREQUENCY_TABLE":
                         int noOfEntries = scan.nextInt();
                         int cumulativeProbability = 0;
-                        Map<Integer, Integer> freqTable = new HashMap<>();
+                        Map<Integer, Integer> freqTable = new TreeMap<>();
 
                         /* populate hashmap with the frequency table 
                          with cumulative probabilies, e.g., probabilities 
@@ -271,7 +286,7 @@ public class Simulation extends Thread {
                             freqTable.put(execTime, cumulativeProbability);
                         }
 
-                        temp = new PeriodicTaskFrequencyTable(id, taskPeriod, phi, freqTable);
+                        temp = new PeriodicTaskFrequencyTable(id, taskPeriod, deadline, phi, freqTable);
                         break;
                 }
 
@@ -286,15 +301,17 @@ public class Simulation extends Thread {
                     .getName()).log(Level.SEVERE, null, ex);
             System.out.println(
                     "File not found!");
-        }
+        } catch (InputMismatchException e){
+            System.out.println(
+                    "Input mismatch!");}
 
     }
 
     private int findNextCharacteristicTime(InstanceOfPeriodicTask activeInstance) {
         int nextActivationTime = getNextActivationTime();
-        return (nextActivationTime < activeInstance.getdAbsoluteDeadline()) ? 
-                nextActivationTime : 
-                activeInstance.getdAbsoluteDeadline();
+        return (nextActivationTime < activeInstance.getdAbsoluteDeadline())
+                ? nextActivationTime
+                : activeInstance.getdAbsoluteDeadline();
     }
 
     private boolean checkForMissedHardDeadline() {
@@ -310,15 +327,15 @@ public class Simulation extends Thread {
             if (temp.getdAbsoluteDeadline() <= time) {
 
                 temp.setMissedDeadline(temp.getdAbsoluteDeadline());
-                logger.log(temp);
-                
+                //logger.log(temp);
+
                 //print that current instance is not feasible
                 if (this.typeOfSimulation == SimulationTypes.HARD) {
                     printNotFeasible(temp);
                     anyMissedHard = true;
                 }
 
-                it.remove();
+                //  it.remove();
             }
         }
 

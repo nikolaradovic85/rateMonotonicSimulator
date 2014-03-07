@@ -10,6 +10,7 @@ public abstract class PeriodicTask implements Comparable <PeriodicTask>{
     private int id;
     private int taskPeriod;         // period
     private int phi;                // phase
+    private int deadline;
     //private int cTaskExecutionTime; // execution time
 
     /**
@@ -20,11 +21,12 @@ public abstract class PeriodicTask implements Comparable <PeriodicTask>{
      * @param phi
      * @param cTaskExecutionTime
      */
-    public PeriodicTask(int pId, int taskPeriod, int phi){
+    public PeriodicTask(int pId, int taskPeriod, int deadline, int phi){
         this.id = pId;
         //this.cTaskExecutionTime = cTaskExecutionTime;
         this.phi = phi;
         this.taskPeriod = taskPeriod;
+        this.deadline = deadline;
     }
 
     /**
@@ -67,6 +69,10 @@ public abstract class PeriodicTask implements Comparable <PeriodicTask>{
      */
     public void setPhi(int phi) {
         this.phi = phi;
+    }
+    
+    public int getDeadline(){
+        return this.deadline;
     }
 
     /**
