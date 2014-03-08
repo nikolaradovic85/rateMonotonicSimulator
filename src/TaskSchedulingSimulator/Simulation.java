@@ -168,7 +168,18 @@ public class Simulation extends Thread {
                     time += highestPriorityInstance.getcExecutionTime();
                     highestPriorityInstance.setcExecutionTime(0);
                     highestPriorityInstance.addEndTimeOfExecution(time);
-
+//====================
+                    if (time > highestPriorityInstance.getdAbsoluteDeadline()
+                            && !highestPriorityInstance.missedDeadline()) {
+                        highestPriorityInstance.setMissedDeadline(time);
+                        if (typeOfSimulation == SimulationTypes.HARD) {
+                            logger.log(highestPriorityInstance);
+                            printNotFeasible(highestPriorityInstance);
+                            logger.saveLogToFile();
+                            return;
+                        }
+                    }
+                    
                     //log current instance
                     logger.log(highestPriorityInstance);
 
@@ -183,12 +194,11 @@ public class Simulation extends Thread {
                     time = nextStop;
 
                     highestPriorityInstance.addEndTimeOfExecution(time);
-
-                    if (time >= highestPriorityInstance.getdAbsoluteDeadline()
+//====================
+                    if (time > highestPriorityInstance.getdAbsoluteDeadline()
                             && !highestPriorityInstance.missedDeadline()) {
                         highestPriorityInstance.setMissedDeadline(time);
 
-                        //     readyQ.remove(0);
                         if (typeOfSimulation == SimulationTypes.HARD) {
                             logger.log(highestPriorityInstance);
                             printNotFeasible(highestPriorityInstance);
@@ -327,15 +337,14 @@ public class Simulation extends Thread {
             if (temp.getdAbsoluteDeadline() <= time) {
 
                 temp.setMissedDeadline(temp.getdAbsoluteDeadline());
-                //logger.log(temp);
 
                 //print that current instance is not feasible
                 if (this.typeOfSimulation == SimulationTypes.HARD) {
+                    logger.log(temp);
                     printNotFeasible(temp);
                     anyMissedHard = true;
                 }
 
-                //  it.remove();
             }
         }
 
