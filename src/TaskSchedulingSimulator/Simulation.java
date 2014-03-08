@@ -244,28 +244,13 @@ public class Simulation extends Thread {
         try {
             Scanner scan = new Scanner(f);
 
-            boolean deadlineIsNotPeriod = false;
-            int firstInt = scan.nextInt();
+            int numberOfPeriodicTasks = scan.nextInt();
 
-            int numberOfPeriodicTasks = -1;
-            if (firstInt == 0) {//special case: if first int is 0, then deadline is not equal task period, number of tasks is in next line of file
-                deadlineIsNotPeriod = true;
-                numberOfPeriodicTasks = scan.nextInt();
-            } else if(firstInt > 0){//if first int is not 0, then deadline = period, and that int is number of periodic tasks
-                numberOfPeriodicTasks = firstInt;
-            } else {
-                throw (new InputMismatchException());
-            }
             for (int i = 0; i < numberOfPeriodicTasks; i++) {
                 int id = scan.nextInt();
                 int phi = scan.nextInt();
                 int taskPeriod = scan.nextInt();
-                int deadline = 0;
-                if (deadlineIsNotPeriod) {
-                    deadline = scan.nextInt();
-                } else {
-                    deadline = taskPeriod;
-                }
+                int deadline = scan.nextInt();
                 int cTaskExecutionTime = 0;
                 String executionTimeType = scan.next();
                 PeriodicTask temp = null;
