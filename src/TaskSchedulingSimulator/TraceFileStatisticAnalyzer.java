@@ -28,9 +28,10 @@ public final class TraceFileStatisticAnalyzer {
     }
 
     /**
-     * reads trace file and calculates statistic parameters
+     * Parses trace file. Basically, it transforms a trace file into a
+     * HashMap<Integer, TraceTask>.
      *
-     * @param traceFile input trace file
+     * @param traceFile path to trace file
      */
     public void parseTraceFile(String traceFile) {
         try {
@@ -41,22 +42,22 @@ public final class TraceFileStatisticAnalyzer {
                 try {
                     //first int in trace is periodic task id
                     int id = scan.nextInt();
-                    //creating helper variables
-                    Integer responseTime;
 
                     //scanning next three integers from trace file
                     int activationTime = scan.nextInt();
                     int deadline = scan.nextInt();
                     int totalExecutionTime = scan.nextInt();
-                    //moving scanner on next line !!!!!
+                    //moving scanner to next line !!!!!
                     scan.nextLine();
 
+                    //these two lines in trace file represent every start
+                    //of execution, and every end of execution of this instance
                     String startTimes = scan.nextLine();
                     Scanner lineFirst = new Scanner(startTimes);
-
                     String endTimes = scan.nextLine();
                     Scanner lineSecond = new Scanner(endTimes);
 
+                    //scan the row which contains -1 if deadline isn't missed
                     int missedDeadline = scan.nextInt();
 
                     //if this is first occurance of any instance with this id
@@ -65,29 +66,35 @@ public final class TraceFileStatisticAnalyzer {
                         map.put(id, new TraceTask());
                     }
 
-                    //get last int from second line (time when last part of 
-                    //instace finished execution)
+                    //get last end of execution (actual finish time)
                     int finishTime = -1;
                     while (lineSecond.hasNextInt()) {
                         finishTime = lineSecond.nextInt();
                     }
 
-                    responseTime = finishTime - activationTime;
+                    //response time is calculated
+                    int responseTime = finishTime - activationTime;
                     
+                    //current task is the task with id that has been read from
+                    //the trace file
                     TraceTask currentTask = map.get(id);
                     
+                    //add response time to frequency table of response times
+                    //and check if it's min or max
                     currentTask.addPossibleMinResponseTime(responseTime);
                     currentTask.addPossibleMaxResponseTime(responseTime);
                     currentTask.addResponseTimeToFreqTable(responseTime);
 
-                    //if deadline isn't missed
-                     if (missedDeadline == -1) {
-                         currentTask.incrementExecutedCounter();
-                     } 
-                     //if deadline IS missed
-                     else {
-                         currentTask.incrementMissedCounter();
-                     }
+                    //if deadline isn't missed, increment counter for executed
+                    //instances
+                    if (missedDeadline == -1) {
+                        currentTask.incrementExecutedCounter();
+                    } 
+                    //if deadline IS missed, increment counter for instances
+                    //which missed their deadline
+                    else {
+                        currentTask.incrementMissedCounter();
+                    }
                     
                     //moving scanner to the next instance
                     scan.nextLine();
@@ -110,9 +117,9 @@ public final class TraceFileStatisticAnalyzer {
     @Override
     public String toString() {
         StringBuilder sbResult = new StringBuilder();
-        //for (int id = 1; id <= map.size(); id++) {
+
+        //for each task in map, print important statistical data
         for (Map.Entry<Integer, TraceTask> e : map.entrySet()) {
-            //int listIndex = map.get(id);
 
             int noFinishedInstances = e.getValue().getExecutedCounter();
             int noMissedDeadlines = e.getValue().getMissedCounter();
