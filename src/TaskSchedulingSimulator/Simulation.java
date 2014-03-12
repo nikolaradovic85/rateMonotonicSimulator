@@ -33,11 +33,11 @@ public class Simulation extends Thread {
     }
 
     private int endOfTimePeriod;
-    private ArrayList<PeriodicTask> input;
+    private final ArrayList<PeriodicTask> input;
     private final SimulatorLogger logger;
     private final Comparator<InstanceOfPeriodicTask> comparator;
     private final SimulationTypes typeOfSimulation;
-    private ArrayList<InstanceOfPeriodicTask> readyQ;
+    private final ArrayList<InstanceOfPeriodicTask> readyQ;
     private int time;
 
     /**
@@ -299,13 +299,6 @@ public class Simulation extends Thread {
             System.out.println(
                     "Input mismatch!");}
 
-    }
-
-    private int findNextCharacteristicTime(InstanceOfPeriodicTask activeInstance) {
-        int nextActivationTime = getNextActivationTime();
-        return (nextActivationTime < activeInstance.getdAbsoluteDeadline())
-                ? nextActivationTime
-                : activeInstance.getdAbsoluteDeadline();
     }
 
     private boolean checkForMissedHardDeadline() {
