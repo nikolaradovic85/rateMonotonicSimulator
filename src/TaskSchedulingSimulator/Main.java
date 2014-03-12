@@ -76,7 +76,7 @@ public class Main {
                         comparator);
             }
 
-            //start all simulations
+            //start all simulations in this repetition
             for (Simulation s : simulationArray) {
                 s.start();
             }
@@ -90,8 +90,8 @@ public class Main {
                 }
             }
 
-            //at this point all simulations are finished, and now the analysis
-            //of trace files begins
+            //at this point all simulations in this repetition are finished,
+            //and now the analysis of trace files begins
 
             //for each input file
             for (String input : inputFiles) {
