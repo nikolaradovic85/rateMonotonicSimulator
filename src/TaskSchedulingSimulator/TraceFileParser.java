@@ -14,11 +14,11 @@ import java.util.NoSuchElementException;
  *
  * @author nikola
  */
-public final class TraceFileStatisticAnalyzer {
+public final class TraceFileParser {
 
     private final HashMap<Integer, TraceTask> map;
 
-    public TraceFileStatisticAnalyzer(String traceFile) {
+    public TraceFileParser(String traceFile) {
         this.map = new HashMap<>();
         parseTraceFile(traceFile);
     }
@@ -127,78 +127,74 @@ public final class TraceFileStatisticAnalyzer {
 
             // while not end of file
             while (scan.hasNextLine()) {
-                try {
-                    //first int in trace is periodic task id
-                    int id = scan.nextInt();
+                //first int in trace is periodic task id
+                int id = scan.nextInt();
 
-                    //scanning next three integers from trace file
-                    int activationTime = scan.nextInt();
-                    int deadline = scan.nextInt();
-                    int totalExecutionTime = scan.nextInt();
-                    //moving scanner to next line !!!!!
-                    scan.nextLine();
+                //scanning next three integers from trace file
+                int activationTime = scan.nextInt();
+                int deadline = scan.nextInt();
+                int totalExecutionTime = scan.nextInt();
+                //moving scanner to next line !!!!!
+                scan.nextLine();
 
-                    //these two lines in trace file represent every start
-                    //of execution, and every end of execution of this instance
-                    String startTimes = scan.nextLine();
-                    Scanner lineFirst = new Scanner(startTimes);
-                    String endTimes = scan.nextLine();
-                    Scanner lineSecond = new Scanner(endTimes);
+                //these two lines in trace file represent every start
+                //of execution, and every end of execution of this instance
+                String startTimes = scan.nextLine();
+                Scanner lineFirst = new Scanner(startTimes);
+                String endTimes = scan.nextLine();
+                Scanner lineSecond = new Scanner(endTimes);
 
-                    //scan the row which contains -1 if deadline isn't missed
-                    int missedDeadline = scan.nextInt();
+                //scan the row which contains -1 if deadline isn't missed
+                int missedDeadline = scan.nextInt();
 
-                    //if this is first occurance of any instance with this id
-                    //add a new task to the map
-                    if (!map.containsKey(id)) {
-                        map.put(id, new TraceTask());
-                    }
-
-                    //get last end of execution (actual finish time)
-                    int finishTime = -1;
-                    while (lineSecond.hasNextInt()) {
-                        finishTime = lineSecond.nextInt();
-                    }
-
-                    //response time is calculated
-                    int responseTime = finishTime - activationTime;
-                    
-                    //current task is the task with id that has been read from
-                    //the trace file
-                    TraceTask currentTask = map.get(id);
-                    
-                    //add response time to frequency table of response times
-                    //and check if it's min or max
-                    currentTask.addPossibleMinResponseTime(responseTime);
-                    currentTask.addPossibleMaxResponseTime(responseTime);
-                    currentTask.addResponseTimeToFreqTable(responseTime);
-
-                    //if deadline isn't missed, increment counter for executed
-                    //instances
-                    if (missedDeadline == -1) {
-                        currentTask.incrementExecutedCounter();
-                    } 
-                    //if deadline IS missed, increment counter for instances
-                    //which missed their deadline
-                    else {
-                        currentTask.incrementMissedCounter();
-                    }
-                    
-                    //moving scanner to the next instance
-                    scan.nextLine();
-                    scan.nextLine();
-
-                } catch (InputMismatchException e) {
-                    System.out.println("File not found1.");
-
-                } catch (NoSuchElementException e) {
-                    System.out.println("File not found2.");
+                //if this is first occurance of any instance with this id
+                //add a new task to the map
+                if (!map.containsKey(id)) {
+                    map.put(id, new TraceTask());
                 }
+
+                //get last end of execution (actual finish time)
+                int finishTime = -1;
+                while (lineSecond.hasNextInt()) {
+                    finishTime = lineSecond.nextInt();
+                }
+
+                //response time is calculated
+                int responseTime = finishTime - activationTime;
+
+                //current task is the task with id that has been read from
+                //the trace file
+                TraceTask currentTask = map.get(id);
+
+                //add response time to frequency table of response times
+                //and check if it's min or max
+                currentTask.addPossibleMinResponseTime(responseTime);
+                currentTask.addPossibleMaxResponseTime(responseTime);
+                currentTask.addResponseTimeToFreqTable(responseTime);
+
+                //if deadline isn't missed, increment counter for executed
+                //instances
+                if (missedDeadline == -1) {
+                    currentTask.incrementExecutedCounter();
+                } 
+                //if deadline IS missed, increment counter for instances
+                //which missed their deadline
+                else {
+                    currentTask.incrementMissedCounter();
+                }
+
+                //moving scanner to the next instance
+                scan.nextLine();
+                scan.nextLine();
             }
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("File not found!");
+        } catch (InputMismatchException e) {
+            System.out.println("File not found1.");
+        } catch (NoSuchElementException e) {
+            System.out.println("File not found2.");
         }
     }
 }

@@ -36,9 +36,7 @@ public class SimulatorLogger {
         instance.removeRedundantTimesFromLists();
         writer.println(instance);
     }
-    public void log(TraceFileStatisticAnalyzer a){
-        writer.println(a);
-    }
+
     /**
      *Saves log to file.
      */

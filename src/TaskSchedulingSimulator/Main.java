@@ -34,7 +34,7 @@ public class Main {
         
         int noOfSimulations = Integer.parseInt(args[0]);
         int noOfRepetitions = Integer.parseInt(args[noOfSimulations * 3 + 1]);
-        HashMap<String, TraceFileStatisticAnalyzer[]> stats = new HashMap<>();
+        HashMap<String, TraceFileParser[]> stats = new HashMap<>();
         
         
         String inputFiles[] = new String[noOfSimulations];
@@ -51,7 +51,7 @@ public class Main {
                 String simType      = args[iCount * 3 + 3];
                 
                 if (!stats.containsKey(inputFile)) {
-                    stats.put(inputFile, new TraceFileStatisticAnalyzer[noOfRepetitions]);
+                    stats.put(inputFile, new TraceFileParser[noOfRepetitions]);
                 }
 
                 switch (simAlghoritm) {
@@ -91,23 +91,25 @@ public class Main {
             }
 
             //at this point all simulations in this repetition are finished,
-            //and now the analysis of trace files begins
+            //and now stats hashmap can be populated
 
             //for each input file
             for (String input : inputFiles) {
-                TraceFileStatisticAnalyzer tfsa = 
-                        new TraceFileStatisticAnalyzer(traceDir + repetition + input + ".trc");
+                TraceFileParser tfsa = new TraceFileParser(
+                        traceDir + repetition + input + ".trc");
                 
-                TraceFileStatisticAnalyzer t[] = stats.get(input);
+                TraceFileParser t[] = stats.get(input);
                 t[repetition - 1] = tfsa;
                 stats.put(input, t);
             }
         
         }
         
+        //we can now calculate averages, for each task of each simulation.
         //for each simulation
-        for (Entry<String, TraceFileStatisticAnalyzer[]> e : stats.entrySet()) {
+        for (Entry<String, TraceFileParser[]> e : stats.entrySet()) {
 
+            //get the number of tasks and print simulation input file name
             int noOfTasks = e.getValue()[0].getNumberOfTasks();
             
             System.out.println(e.getKey());
