@@ -1,8 +1,8 @@
 package TaskSchedulingSimulator;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,17 +20,17 @@ public class Main {
         
         //Manualy editing args will be removed when ready for distribution.
         args = new String[10];
-        args[0] = "2";
+        args[0] = "2";                  //number of simulations (inputs)
         
-        args[1] = "input1.txt";
-        args[2] = "RM";
-        args[3] = "SOFT";
+        args[1] = "input1.txt";         //path to input file
+        args[2] = "RM";                 //algorithm
+        args[3] = "SOFT";               //type of simulation
         
-        args[4] = "specialinput.txt";
+        args[4] = "specialinput.txt";   //...
         args[5] = "RM";
         args[6] = "SOFT";
         
-        args[7] = "5";
+        args[7] = "5";                  //number of repetitions
         
         int noOfSimulations = Integer.parseInt(args[0]);
         int noOfRepetitions = Integer.parseInt(args[noOfSimulations * 3 + 1]);
@@ -101,294 +101,87 @@ public class Main {
                 TraceFileStatisticAnalyzer t[] = stats.get(input);
                 t[repetition - 1] = tfsa;
                 stats.put(input, t);
-                /*SimulatorLogger logger = new SimulatorLogger(statsDir + repetition + input + ".log");
-                logger.log(tfsa);
-                logger.saveLogToFile();*/
             }
         
         }
         
-        
-        
-        
-//        int numberOfTests = 100;
-//        ArrayList<Double> avgProbability1 = new ArrayList<>();
-//        ArrayList<Double> avgProbability2 = new ArrayList<>();
-//        ArrayList<Double> avgProbability3 = new ArrayList<>();
-//        
-//        for(int i=0;i<3;i++){
-//            avgProbability1.add(0.0);
-//            avgProbability2.add(0.0);
-//            avgProbability3.add(0.0);
-//        }
-//        for (int i = 1; i <= numberOfTests; i++) {
-//        
-//        //create a simulation, set it up and start it
-//        Simulation rmSoft1 = new Simulation(
-//                "Rate Monotonic Soft 1",
-//                Simulation.SimulationTypes.SOFT,
-//                "io/input/soft1.txt",
-//                "io/trace/soft1.trc",
-//                InstanceOfPeriodicTask.Comparators.ABSOLUTE_DEADLINE);
-//        rmSoft1.start();
-//        Simulation rmSoft2 = new Simulation(
-//                "Rate Monotonic Soft 2",
-//                Simulation.SimulationTypes.SOFT,
-//                "io/input/soft2.txt",
-//                "io/trace/soft2.trc",
-//                InstanceOfPeriodicTask.Comparators.ABSOLUTE_DEADLINE);
-//        rmSoft2.start();
-//        
-//        Simulation rmSoft3 = new Simulation(
-//                "Rate Monotonic Soft 3",
-//                Simulation.SimulationTypes.SOFT,
-//                "io/input/soft3.txt",
-//                "io/trace/soft3.trc",
-//                InstanceOfPeriodicTask.Comparators.ABSOLUTE_DEADLINE);
-//        rmSoft3.start();
-//        
-//        //use someThread.join() to wait until the thread is finished
-//        try {
-//            rmSoft1.join();
-//            rmSoft2.join();
-//            rmSoft3.join();
-//        } catch (InterruptedException ex) {
-//            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//
-//        //analyze trace file created by the simulation
-//        TraceFileStatisticAnalyzer tr1 = new TraceFileStatisticAnalyzer(
-//                "io/trace/soft1.trc");
-//        SimulatorLogger logger1 = new SimulatorLogger("io/statistic/"+ i +"-edfsoft1.log");
-//        logger1.log(tr1);
-//        logger1.saveLogToFile();
-//        avgProbability1.set(0, avgProbability1.get(0) + tr1.getDeadlineMissProbability(1));
-//        avgProbability1.set(1, avgProbability1.get(1) + tr1.getDeadlineMissProbability(2));
-//        avgProbability1.set(2, avgProbability1.get(2) + tr1.getDeadlineMissProbability(3));
-//
-//        TraceFileStatisticAnalyzer tr2 = new TraceFileStatisticAnalyzer(
-//                "io/trace/soft2.trc");
-//        SimulatorLogger logger2 = new SimulatorLogger("io/statistic/"+ i +"-edfsoft2a.log");
-//        logger2.log(tr2);
-//        logger2.saveLogToFile();
-//        avgProbability2.set(0, avgProbability2.get(0) + tr2.getDeadlineMissProbability(1));
-//        avgProbability2.set(1, avgProbability2.get(1) + tr2.getDeadlineMissProbability(2));
-//        avgProbability2.set(2, avgProbability2.get(2) + tr2.getDeadlineMissProbability(3));    
-//        
-//        TraceFileStatisticAnalyzer tr3 = new TraceFileStatisticAnalyzer(
-//                "io/trace/soft3.trc");
-//        SimulatorLogger logger3 = new SimulatorLogger("io/statistic/"+ i +"-edfsoft3a.log");
-//        logger3.log(tr3);
-//        logger3.saveLogToFile();
-//        avgProbability3.set(0, avgProbability3.get(0) + tr3.getDeadlineMissProbability(1));
-//        avgProbability3.set(1, avgProbability3.get(1) + tr3.getDeadlineMissProbability(2));
-//        avgProbability3.set(2, avgProbability3.get(2) + tr3.getDeadlineMissProbability(3));
-//        }
-//        
-//        for(Double i : avgProbability1){
-//            i=i/numberOfTests;
-//            System.out.println(i);
-//        }
-//        System.out.println();
-//        for(Double i : avgProbability2){
-//            i=i/numberOfTests;
-//            System.out.println(i);
-//        }
-//        System.out.println();
-//        for(Double i : avgProbability3){
-//            i=i/numberOfTests;
-//            System.out.println(i);
-//        }
-//        System.out.println();
-//
-//  ---------------------------------------------      
-        
-        
-        
-        
-//        int numberOfTests = 100;
-//        ArrayList<Double> avgProbability1 = new ArrayList<Double>();
-//        ArrayList<Double> avgProbability2 = new ArrayList<Double>();
-//        ArrayList<Double> avgProbability3 = new ArrayList<Double>();
-//       
-//        for (int i = 0; i < 2; i++) {
-//            avgProbability1.add(0.0);
-//            avgProbability2.add(0.0);
-//            avgProbability3.add(0.0);
-//        }
-//        for (int i = 1; i <= numberOfTests; i++) {
-//
-////        create a simulation, set it up and start it
-//            Simulation rmSoft1 = new Simulation(
-//                    "Rate Monotonic Soft 1",
-//                    Simulation.SimulationTypes.SOFT,
-//                    "io/input/input1.txt",
-//                    "io/trace/rmsoft1.trc",
-//                    InstanceOfPeriodicTask.Comparators.TASK_PERIOD);
-//            rmSoft1.start();
-//            Simulation rmSoft2 = new Simulation(
-//                    "Rate Monotonic Soft 2",
-//                    Simulation.SimulationTypes.SOFT,
-//                    "io/input/input2.txt",
-//                    "io/trace/rmsoft2.trc",
-//                    InstanceOfPeriodicTask.Comparators.TASK_PERIOD);
-//            rmSoft2.start();
-//
-//            Simulation rmSoft3 = new Simulation(
-//                    "Rate Monotonic Soft 3",
-//                    Simulation.SimulationTypes.SOFT,
-//                    "io/input/input3.txt",
-//                    "io/trace/rmsoft3.trc",
-//                    InstanceOfPeriodicTask.Comparators.TASK_PERIOD);
-//            rmSoft3.start();
-//
-//            //use someThread.join() to wait until the thread is finished
-//            try {
-//                rmSoft1.join();
-//                rmSoft2.join();
-//                rmSoft3.join();
-//            } catch (InterruptedException ex) {
-//                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//
-//            //analyze trace file created by the simulation
-//            TraceFileStatisticAnalyzer tr1 = new TraceFileStatisticAnalyzer(
-//                    "io/trace/rmsoft1.trc");
-//            SimulatorLogger logger1 = new SimulatorLogger("io/statistic/" + i + "-rmsoft1.log");
-//            logger1.log(tr1);
-//            logger1.saveLogToFile();
-//            avgProbability1.set(0, avgProbability1.get(0) + tr1.getDeadlineMissProbability(1));
-//            avgProbability1.set(1, avgProbability1.get(1) + tr1.getDeadlineMissProbability(2));
-//
-//            TraceFileStatisticAnalyzer tr2 = new TraceFileStatisticAnalyzer(
-//                    "io/trace/rmsoft2.trc");
-//            SimulatorLogger logger2 = new SimulatorLogger("io/statistic/" + i + "-rmsoft2.log");
-//            logger2.log(tr2);
-//            logger2.saveLogToFile();
-//            avgProbability2.set(0, avgProbability2.get(0) + tr2.getDeadlineMissProbability(1));
-//            avgProbability2.set(1, avgProbability2.get(1) + tr2.getDeadlineMissProbability(2));
-//
-//            TraceFileStatisticAnalyzer tr3 = new TraceFileStatisticAnalyzer(
-//                    "io/trace/rmsoft3.trc");
-//            SimulatorLogger logger3 = new SimulatorLogger("io/statistic/" + i + "-rmsoft3.log");
-//            logger3.log(tr3);
-//            logger3.saveLogToFile();
-//            avgProbability3.set(0, avgProbability3.get(0) + tr3.getDeadlineMissProbability(1));
-//            avgProbability3.set(1, avgProbability3.get(1) + tr3.getDeadlineMissProbability(2));
-//        }
-//
-//        for (Double i : avgProbability1) {
-//            i = i / numberOfTests;
-//            System.out.println(i);
-//        }
-//        System.out.println();
-//        for (Double i : avgProbability2) {
-//            i = i / numberOfTests;
-//            System.out.println(i);
-//        }
-//        System.out.println();
-//        for (Double i : avgProbability3) {
-//            i = i / numberOfTests;
-//            System.out.println(i);
-//        }
-//        System.out.println();
+        //for each simulation
+        for (Entry<String, TraceFileStatisticAnalyzer[]> e : stats.entrySet()) {
 
-        
-//        //specialinput.txt
-//        
-//        int numberOfTests = 1;
-//        ArrayList<Double> avgProbability1 = new ArrayList<Double>();
-//
-//        for(int i=0;i<3;i++){
-//            avgProbability1.add(0.0);
-//
-//        }
-//        for (int i = 1; i <= numberOfTests; i++) {
-//        
-//        //create a simulation, set it up and start it
-//        Simulation rmSoft1 = new Simulation(
-//                "Rate Monotonic Soft 1",
-//                Simulation.SimulationTypes.SOFT,
-//                "io/input/specialinput.txt",
-//                "io/trace/soft100.trc",
-//                InstanceOfPeriodicTask.Comparators.ABSOLUTE_DEADLINE);
-//        rmSoft1.start();
-//
-//        //use someThread.join() to wait until the thread is finished
-//        try {
-//            rmSoft1.join();
-//
-//        } catch (InterruptedException ex) {
-//            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//
-//        //analyze trace file created by the simulation
-//        TraceFileStatisticAnalyzer tr1 = new TraceFileStatisticAnalyzer(
-//                "io/trace/soft100.trc");
-//        SimulatorLogger logger1 = new SimulatorLogger("io/statistic/"+ i +"-edfsoft100.log");
-//        logger1.log(tr1);
-//        logger1.saveLogToFile();
-//        avgProbability1.set(0, avgProbability1.get(0) + tr1.getDeadlineMissProbability(1));
-//        avgProbability1.set(1, avgProbability1.get(1) + tr1.getDeadlineMissProbability(2));
-//        avgProbability1.set(2, avgProbability1.get(2) + tr1.getDeadlineMissProbability(3));
-//
-//
-//
-//        }
-//        
-//        for(Double i : avgProbability1){
-//            i=i/numberOfTests;
-//            System.out.println(i);
-//        }
-//        System.out.println();
-        
-        
-        //inputFT.txt
-        
-//        int numberOfTests = 100;
-//        ArrayList<Double> avgProbability1 = new ArrayList<Double>();
-//
-//        for(int i=0;i<2;i++){
-//            avgProbability1.add(0.0);
-//
-//        }
-//        for (int i = 1; i <= numberOfTests; i++) {
-//        
-//        //create a simulation, set it up and start it
-//        Simulation rmSoft1 = new Simulation(
-//                "Rate Monotonic Soft 1",
-//                Simulation.SimulationTypes.SOFT,
-//                "io/input/inputFT.txt",
-//                "io/trace/FTedf.trc",
-//                InstanceOfPeriodicTask.Comparators.ABSOLUTE_DEADLINE);
-//        rmSoft1.start();
-//
-//        //use someThread.join() to wait until the thread is finished
-//        try {
-//            rmSoft1.join();
-//
-//        } catch (InterruptedException ex) {
-//            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//
-//        //analyze trace file created by the simulation
-//        TraceFileStatisticAnalyzer tr1 = new TraceFileStatisticAnalyzer(
-//                "io/trace/FTedf.trc");
-//        SimulatorLogger logger1 = new SimulatorLogger("io/statistic/"+ i +"-ftEDF.log");
-//        logger1.log(tr1);
-//        logger1.saveLogToFile();
-//        avgProbability1.set(0, avgProbability1.get(0) + tr1.getDeadlineMissProbability(1));
-//        avgProbability1.set(1, avgProbability1.get(1) + tr1.getDeadlineMissProbability(2));
-//
-//
-//
-//        }
-//        
-//        for(Double i : avgProbability1){
-//            i=i/numberOfTests;
-//            System.out.println(i);
-//        }
-//        System.out.println();
- 
+            int noOfTasks = e.getValue()[0].getNumberOfTasks();
+            
+            System.out.println(e.getKey());
+            System.out.println("");
+
+            //after all the calculations, these variables will contain
+            //average values over all repetitions (per task - that's why
+            //they are arrays)
+            double noOfFinishedInstancesPerTask[]   = new double[noOfTasks];
+            double noOfMissedDeadlinesPerTask[]     = new double[noOfTasks];
+            double deadlineMissProbabilityPerTask[] = new double[noOfTasks];
+            double minimumResponseTimePerTask[]     = new double[noOfTasks];
+            double maximumResponseTimePerTask[]     = new double[noOfTasks];
+            double averageResponseTimePerTask[]     = new double[noOfTasks];
+
+            //add up all the values (per task)
+            for (int iCount = 0; iCount < noOfRepetitions; iCount++) {
+                int finished[] = e.getValue()[iCount].getNoOfFinishedInstancesPerTask();
+                int missed[] = e.getValue()[iCount].getNoOfMissedDeadlinesPerTask();
+                double missProb[] = e.getValue()[iCount].getDeadlineMissProbabilityPerTask();
+                int min[] = e.getValue()[iCount].getMinimumResponseTimePerTask();
+                int max[] = e.getValue()[iCount].getMaximumResponseTimePerTask();
+                double avgResponse[] = e.getValue()[iCount].getAverageResponseTimePerTask();
+
+                for (int jCount = 0; jCount < noOfTasks; jCount++) {
+                    noOfFinishedInstancesPerTask[jCount] += finished[jCount];
+                    noOfMissedDeadlinesPerTask[jCount] += missed[jCount];
+                    deadlineMissProbabilityPerTask[jCount] += missProb[jCount];
+                    minimumResponseTimePerTask[jCount] += min[jCount];
+                    maximumResponseTimePerTask[jCount] += max[jCount];
+                    averageResponseTimePerTask[jCount] += avgResponse[jCount];
+                }
+            }
+            
+            //divide every value (per taks) by the number of repetitions
+            //in order to get the average over repetitions
+            for (int iCount = 0; iCount < noOfTasks; iCount++) {
+                noOfFinishedInstancesPerTask[iCount] /= noOfRepetitions;
+                noOfMissedDeadlinesPerTask[iCount] /= noOfRepetitions;
+                deadlineMissProbabilityPerTask[iCount] /= noOfRepetitions;
+                minimumResponseTimePerTask[iCount] /= noOfRepetitions;
+                maximumResponseTimePerTask[iCount] /= noOfRepetitions;
+                averageResponseTimePerTask[iCount] /= noOfRepetitions;
+                
+                //print values - TODO - print to file
+                System.out.println("Task " + iCount);
+                
+                System.out.print("Finished instances: ");
+                System.out.print(noOfFinishedInstancesPerTask[iCount]);
+                System.out.println("");
+                
+                System.out.print("Missed deadlines: ");
+                System.out.print(noOfMissedDeadlinesPerTask[iCount]);
+                System.out.println("");
+                
+                System.out.print("Deadline miss probability: ");
+                System.out.print(deadlineMissProbabilityPerTask[iCount]);
+                System.out.println("");
+                
+                System.out.print("Minimum response time: ");
+                System.out.print(minimumResponseTimePerTask[iCount]);
+                System.out.println("");
+                
+                System.out.print("Maximum response time: ");
+                System.out.print(maximumResponseTimePerTask[iCount]);
+                System.out.println("");
+                
+                System.out.print("Average response time: ");
+                System.out.print(averageResponseTimePerTask[iCount]);
+                System.out.println("");
+                System.out.println("");
+            }
+            
+            System.out.println("-----------------------------------------");
+        }
     }
 }

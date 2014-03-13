@@ -7,7 +7,7 @@ import java.io.FileNotFoundException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.InputMismatchException;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 
 /**
@@ -25,6 +25,94 @@ public final class TraceFileStatisticAnalyzer {
 
     public double getDeadlineMissProbability(int id) {
         return map.get(id).getDeadlineMissProbability();
+    }
+    
+    public int getNumberOfTasks() {
+        return map.size();
+    }
+    
+    public int[] getTaskIDsPerTask() {
+        int[] result = new int[map.size()];
+        int counter = 0;
+        
+        for (Entry<Integer, TraceTask> e : map.entrySet()) {
+            result[counter] = e.getKey();
+            counter++;
+        }
+        
+        return result;
+    }
+    
+    public int[] getNoOfFinishedInstancesPerTask() {
+        int[] result = new int[map.size()];
+        int counter = 0;
+        
+        for (Entry<Integer, TraceTask> e : map.entrySet()) {
+            result[counter] = e.getValue().getExecutedCounter();
+            counter++;
+        }
+        
+        return result;
+    }
+    
+    public int[] getNoOfMissedDeadlinesPerTask() {
+        int[] result = new int[map.size()];
+        int counter = 0;
+        
+        for (Entry<Integer, TraceTask> e : map.entrySet()) {
+            result[counter] = e.getValue().getMissedCounter();
+            counter++;
+        }
+        
+        return result;
+    }
+    
+    public double[] getDeadlineMissProbabilityPerTask() {
+        double[] result = new double[map.size()];
+        int counter = 0;
+        
+        for (Entry<Integer, TraceTask> e : map.entrySet()) {
+            result[counter] = e.getValue().getDeadlineMissProbability();
+            counter++;
+        }
+        
+        return result;
+    }
+    
+    public double[] getAverageResponseTimePerTask() {
+        double[] result = new double[map.size()];
+        int counter = 0;
+        
+        for (Entry<Integer, TraceTask> e : map.entrySet()) {
+            result[counter] = e.getValue().getAverageResponseTime();
+            counter++;
+        }
+        
+        return result;
+    }
+    
+    public int[] getMinimumResponseTimePerTask() {
+        int[] result = new int[map.size()];
+        int counter = 0;
+        
+        for (Entry<Integer, TraceTask> e : map.entrySet()) {
+            result[counter] = e.getValue().getMinResponseTime();
+            counter++;
+        }
+        
+        return result;
+    }
+    
+    public int[] getMaximumResponseTimePerTask() {
+        int[] result = new int[map.size()];
+        int counter = 0;
+        
+        for (Entry<Integer, TraceTask> e : map.entrySet()) {
+            result[counter] = e.getValue().getMaxResponseTime();
+            counter++;
+        }
+        
+        return result;
     }
 
     /**
@@ -112,48 +200,5 @@ public final class TraceFileStatisticAnalyzer {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("File not found!");
         }
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sbResult = new StringBuilder();
-
-        //for each task in map, print important statistical data
-        for (Map.Entry<Integer, TraceTask> e : map.entrySet()) {
-
-            int noFinishedInstances = e.getValue().getExecutedCounter();
-            int noMissedDeadlines = e.getValue().getMissedCounter();
-            double deadlineMissProbabilityLocal = e.getValue().getDeadlineMissProbability();
-            
-            sbResult.append(e.getKey());
-            sbResult.append(" - task statistic: ");
-            sbResult.append(System.lineSeparator());
-            sbResult.append(System.lineSeparator());
-            sbResult.append("Number of finished instances: ");
-            sbResult.append(noFinishedInstances);
-            sbResult.append(System.lineSeparator());
-            sbResult.append("Number of missed deadline: ");
-            sbResult.append(noMissedDeadlines);
-            sbResult.append(System.lineSeparator());
-            sbResult.append("Deadline miss probability: ");
-            sbResult.append(deadlineMissProbabilityLocal);
-            sbResult.append(System.lineSeparator());
-            
-            if (noFinishedInstances != 0) {
-                sbResult.append("Average response time (for all instances): ");
-                sbResult.append(e.getValue().getAverageResponseTime());
-                sbResult.append(System.lineSeparator());
-                sbResult.append("Minimum response time (for finished instances): ");
-                sbResult.append(e.getValue().getMinResponseTime());
-                sbResult.append(System.lineSeparator());
-                sbResult.append("Maximum response time (for finished instances): ");
-                sbResult.append(e.getValue().getMaxResponseTime());
-                sbResult.append(System.lineSeparator());
-            }
-            sbResult.append(System.lineSeparator());
-            sbResult.append(System.lineSeparator());
-        }
-
-        return sbResult.toString();
     }
 }
