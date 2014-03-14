@@ -142,71 +142,68 @@ public class Simulation extends Thread {
     @Override
     public void run() {
 
-        //repeat until time the end of simulate
+        //repeat until the end of simulation time
         while (time < endOfTimePeriod) {
 
             //activate all tasks that need to be activated at current time
             updateReadyQ();
 
             //if there are no active instances in readyQ at this time, 
-            //jump to the next activation time
+            //fast forward to the next activation time
             if (readyQ.isEmpty()) {
                 time = getNextActivationTime();
-            } else { //if there are some active instances in readyQ
-
+            } 
+            //if there are some active instances in readyQ
+            else {
                 //get the highest priority instance (first in sorted readyQ)
                 InstanceOfPeriodicTask highestPriorityInstance = readyQ.get(0);
-                //int nextStop = findNextCharacteristicTime(highestPriorityInstance);
+                
+                //get the next event that simulation should fast forward to
                 int nextStop = getNextActivationTime();
+                
+                //add start of execution time to current instance
+                highestPriorityInstance.addStartTimeOfExecution(time);
+                
+                //time to be executed in this iteration:
+                //if instance CAN be finished before next stop
+                //execution length is all the remaining time of execution
+                //for this instance; if it CAN'T than calculate how much 
+                //can be executed
+                int executionLength = 
+                        time + highestPriorityInstance.getcExecutionTime() <= nextStop ?
+                        highestPriorityInstance.getcExecutionTime() :
+                        nextStop - time;
+                
+                //execute task, fast forward time to the end of execution
+                time += executionLength;
 
-                if (time + highestPriorityInstance.getcExecutionTime() <= nextStop) {
+                //subtract time executed from current instance execution time
+                highestPriorityInstance.subtractFromExecutionTime(executionLength);
 
-                    highestPriorityInstance.addStartTimeOfExecution(time);
-
-                    //execute task, set time to the end of execution
-                    time += highestPriorityInstance.getcExecutionTime();
-                    highestPriorityInstance.setcExecutionTime(0);
-                    highestPriorityInstance.addEndTimeOfExecution(time);
-//====================
-                    if (time > highestPriorityInstance.getdAbsoluteDeadline()
+                //add end of execution time to current instance
+                highestPriorityInstance.addEndTimeOfExecution(time);
+ 
+                //check whatever
+                if (time > highestPriorityInstance.getdAbsoluteDeadline()
                             && !highestPriorityInstance.missedDeadline()) {
+                        
                         highestPriorityInstance.setMissedDeadline(time);
+
                         if (typeOfSimulation == SimulationTypes.HARD) {
                             logger.log(highestPriorityInstance);
                             printNotFeasible(highestPriorityInstance);
                             logger.saveLogToFile();
                             return;
                         }
-                    }
-                    
+                }
+                
+                if (highestPriorityInstance.isFinished()) {
                     //log current instance
                     logger.log(highestPriorityInstance);
 
                     //and remove it from readyQ
                     readyQ.remove(0);
-                } else {//if instance can't be finished before other
-
-                    highestPriorityInstance.addStartTimeOfExecution(time);
-
-                    highestPriorityInstance.setcExecutionTime(highestPriorityInstance.getcExecutionTime() + time - nextStop);
-
-                    time = nextStop;
-
-                    highestPriorityInstance.addEndTimeOfExecution(time);
-//====================
-                    if (time > highestPriorityInstance.getdAbsoluteDeadline()
-                            && !highestPriorityInstance.missedDeadline()) {
-                        highestPriorityInstance.setMissedDeadline(time);
-
-                        if (typeOfSimulation == SimulationTypes.HARD) {
-                            logger.log(highestPriorityInstance);
-                            printNotFeasible(highestPriorityInstance);
-                            logger.saveLogToFile();
-                            return;
-                        }
-                    }
                 }
-
             }
 
             //check if some instance with lower priority missed deadline
@@ -215,7 +212,7 @@ public class Simulation extends Thread {
                 logger.saveLogToFile();
                 return; //return false;
             }
-        }
+        } //END OF SIMULATION
 
         // check if there are some instances left unfinished after time has elapsed
         for (InstanceOfPeriodicTask temp : readyQ) {
@@ -291,14 +288,10 @@ public class Simulation extends Thread {
             endOfTimePeriod = scan.nextInt();
 
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(Main.class
-                    .getName()).log(Level.SEVERE, null, ex);
-            System.out.println(
-                    "File not found!");
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("File not found!");
         } catch (InputMismatchException e){
-            System.out.println(
-                    "Input mismatch!");}
-
+            System.out.println("Input mismatch!");}
     }
 
     private boolean checkForMissedHardDeadline() {

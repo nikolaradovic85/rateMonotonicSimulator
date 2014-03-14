@@ -14,23 +14,33 @@ public class InstanceOfPeriodicTask {
     private int phi;                // phase
     private int rActivationTime;    // activation time
     private int dAbsoluteDeadline;  // absolute deadline
-    private int cExecutionTime;     // execution time
+    /**
+     * Remaining time of execution (changes over time)
+     */
+    private int cExecutionTime;
+    /**
+     * Instance execution time (doesn't change over time)
+     */
     private final int totalExecutionTime;
+    /**
+     * Gets set to time at which instances misses its deadline;
+     * -1 if instance doesn't miss deadline
+     */
     private int missedDeadline;
-    //collects time when any part of instance started beeing executed
-    private ArrayList<Integer> startOfExecutionTime;
-    //collects time when any part of instance stopped beeing executed
-    private ArrayList<Integer> endOfExecutionTime;
+    /**
+     * Contains times of any part of instance started being executed
+     */
+    private final ArrayList<Integer> startOfExecutionTime;
+    /**
+     * Collects time when any part of instance stopped being executed
+     */
+    private final ArrayList<Integer> endOfExecutionTime;
 
     /**
      * Constructor.
      *
-     * @param pId
-     * @param taskPeriod
-     * @param phi
-     * @param rActivationTime
-     * @param dAbsoluteDeadline
-     * @param pcExecutionTime
+     * @param task Tells the instance which task it is an instance of.
+     * @param pRActivationTime
      */
     public InstanceOfPeriodicTask(PeriodicTask task, int pRActivationTime) {
         this.rActivationTime = pRActivationTime;
@@ -44,12 +54,19 @@ public class InstanceOfPeriodicTask {
         this.endOfExecutionTime = new ArrayList<>();
     }
 
-    public boolean missedDeadline(){
-        if(missedDeadline == -1)
-            return false;
-        else 
-            return true;
+    /**
+     * Checks if instance is finished.
+     * 
+     * @return true if remaining execution time is 0, false otherwise
+     */
+    public boolean isFinished() {
+        return this.cExecutionTime == 0;
     }
+    
+    public boolean missedDeadline(){
+        return missedDeadline != -1;
+    }
+    
     public boolean checkIfStillBeingExecuted(){
         return this.startOfExecutionTime.size() == this.endOfExecutionTime.size() + 1;
     }
@@ -79,16 +96,34 @@ public class InstanceOfPeriodicTask {
         }
     }
     
-    //adds time to the end of list
+    /**
+     * Adds time to the list of execution start times
+     * 
+     * @param time time to be added
+     */
     public void addStartTimeOfExecution(int time) {
         this.startOfExecutionTime.add(time);
     }
 
-    //adds time to the end of list
+    /**
+     * Adds time to the list of execution ending times
+     * 
+     * @param time time to be added
+     */
     public void addEndTimeOfExecution(int time) {
         this.endOfExecutionTime.add(time);
     }
 
+    /**
+     * Subtracts length of time for which the instance was executed from
+     * remaining time of execution
+     * 
+     * @param executedTimeUnits length of time to be subtracted
+     */
+    public void subtractFromExecutionTime(int executedTimeUnits) {
+        this.cExecutionTime -= executedTimeUnits;
+    }
+    
     public void setMissedDeadline(int missedDeadline) {
         this.missedDeadline = missedDeadline;
     }
