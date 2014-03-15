@@ -9,28 +9,53 @@ import java.util.Comparator;
  */
 public class InstanceOfPeriodicTask {
     
+    /**
+     * Id of the task.
+     */
     private int id;
-    private int taskPeriod;         // period
-    private int phi;                // phase
-    private int rActivationTime;    // activation time
-    private int dAbsoluteDeadline;  // absolute deadline
+    
+    /**
+     * Period of periodic task.
+     */
+    private int taskPeriod;
+    
+    /**
+     * Phase of the task.
+     */
+    private int phi;
+    
+    /**
+     * Time at which instance is created (and added to readyQ in Simulation.java)
+     */
+    private int rActivationTime;
+    
+    /**
+     * Absolute deadline of the instance (time of activation + relative deadline
+     * from input task set)
+     */
+    private int dAbsoluteDeadline;
+    
     /**
      * Remaining time of execution (changes over time)
      */
     private int cExecutionTime;
+    
     /**
      * Instance execution time (doesn't change over time)
      */
     private final int totalExecutionTime;
+    
     /**
      * Gets set to time at which instances misses its deadline;
      * -1 if instance doesn't miss deadline
      */
     private int missedDeadline;
+    
     /**
      * Contains times of any part of instance started being executed
      */
     private final ArrayList<Integer> startOfExecutionTime;
+    
     /**
      * Collects time when any part of instance stopped being executed
      */
@@ -63,14 +88,33 @@ public class InstanceOfPeriodicTask {
         return this.cExecutionTime == 0;
     }
     
+    /**
+     * missedDeadline is -1 if deadline isn't missed; if deadline is missed
+     * missedDeadline contains absolute deadline of the instance
+     * 
+     * @return true if deadline is missed, false otherwise
+     */
     public boolean missedDeadline(){
         return missedDeadline != -1;
     }
     
+    /**
+     * If ArrayList startOfExecutionTime is one item longer, that means that
+     * instance is currently being executed.
+     * 
+     * @return true if instance is currently being executed, false otherwise
+     */
     public boolean checkIfStillBeingExecuted(){
         return this.startOfExecutionTime.size() == this.endOfExecutionTime.size() + 1;
     }
     
+    /**
+     * Sometimes, an instance is stopped, and it immediately get started again -
+     * in these situations we get something like:
+     * startOfExecutionTime = [3, 7], endOfExecutionTime = [7, 9];
+     * removeRedundantTimesFromLists removes these duplicates so that we get:
+     * startOfExecutionTime = [3], endOfExecutionTime = [9]
+     */
     public void removeRedundantTimesFromLists() {
         if (startOfExecutionTime.size() > 1 && startOfExecutionTime.size() == endOfExecutionTime.size()) {
             //for each start time except first
@@ -88,6 +132,11 @@ public class InstanceOfPeriodicTask {
         }
     }
 
+    /**
+     * Returns final end of execution.
+     * 
+     * @return last element from endOfExecutionTime ArrayList
+     */
     private int getLastEndOfExecutionTime() {
         if (this.endOfExecutionTime.isEmpty()) {
             return 0;
@@ -124,14 +173,28 @@ public class InstanceOfPeriodicTask {
         this.cExecutionTime -= executedTimeUnits;
     }
     
-    public void setMissedDeadline(int missedDeadline) {
-        this.missedDeadline = missedDeadline;
+    /**
+     * If deadline isn't missed missedDeadline is -1; if it is missed
+     * missedDeadline becomes absolute deadline
+     */
+    public void setMissedDeadline() {
+        this.missedDeadline = this.dAbsoluteDeadline;
     }
 
+    /**
+     * Getter for id.
+     * 
+     * @return id
+     */
     public int getId() {
         return id;
     }
     
+    /**
+     * Setter for id.
+     * 
+     * @param id id to be set
+     */
     public void setId(int id) {
         this.id = id;
     }
@@ -206,6 +269,11 @@ public class InstanceOfPeriodicTask {
         this.cExecutionTime = cExecutionTime;
     }
     
+    /**
+     * Inner static class, containing various comparator, by which a collection
+     * of InstanceOfPeriodicTask objects can be sorted (e.g. readyQ in
+     * Simulation.java)
+     */
     public static class Comparators {
 
         /**

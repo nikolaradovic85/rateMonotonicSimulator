@@ -30,7 +30,7 @@ public class Main {
         args[5] = "RM";
         args[6] = "SOFT";
         
-        args[7] = "3";                  //number of repetitions
+        args[7] = "2";                  //number of repetitions
         
         int noOfSimulations = Integer.parseInt(args[0]);
         int noOfRepetitions = Integer.parseInt(args[noOfSimulations * 3 + 1]);

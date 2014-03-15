@@ -187,7 +187,7 @@ public class Simulation extends Thread {
                 if (time > highestPriorityInstance.getdAbsoluteDeadline()
                             && !highestPriorityInstance.missedDeadline()) {
                         
-                        highestPriorityInstance.setMissedDeadline(time);
+                        highestPriorityInstance.setMissedDeadline();
 
                         if (typeOfSimulation == SimulationTypes.HARD) {
                             logger.log(highestPriorityInstance);
@@ -306,7 +306,7 @@ public class Simulation extends Thread {
 
             if (temp.getdAbsoluteDeadline() <= time) {
 
-                temp.setMissedDeadline(temp.getdAbsoluteDeadline());
+                temp.setMissedDeadline();
 
                 //print that current instance is not feasible
                 if (this.typeOfSimulation == SimulationTypes.HARD) {
