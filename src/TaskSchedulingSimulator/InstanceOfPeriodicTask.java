@@ -38,12 +38,12 @@ public class InstanceOfPeriodicTask {
     /**
      * Remaining time of execution (changes over time)
      */
-    private int cExecutionTime;
+    private int remainingExeTime;
     
     /**
      * Instance execution time (doesn't change over time)
      */
-    private final int totalExecutionTime;
+    private final int cExecutionTime;
     
     /**
      * Gets set to time at which instances misses its deadline;
@@ -70,7 +70,7 @@ public class InstanceOfPeriodicTask {
     public InstanceOfPeriodicTask(PeriodicTask task, int pRActivationTime) {
         this.rActivationTime = pRActivationTime;
         this.id = task.getId();
-        this.cExecutionTime = this.totalExecutionTime = task.getcTaskExecutionTime();      
+        this.remainingExeTime = this.cExecutionTime = task.getcTaskExecutionTime();      
         this.dAbsoluteDeadline = task.getDeadline() + rActivationTime;
         this.phi = task.getPhi();
         this.taskPeriod = task.getTaskPeriod();
@@ -85,7 +85,7 @@ public class InstanceOfPeriodicTask {
      * @return true if remaining execution time is 0, false otherwise
      */
     public boolean isFinished() {
-        return this.cExecutionTime == 0;
+        return this.remainingExeTime == 0;
     }
     
     /**
@@ -169,8 +169,8 @@ public class InstanceOfPeriodicTask {
      * 
      * @param executedTimeUnits length of time to be subtracted
      */
-    public void subtractFromExecutionTime(int executedTimeUnits) {
-        this.cExecutionTime -= executedTimeUnits;
+    public void subtractFromRemainingExeTime(int executedTimeUnits) {
+        this.remainingExeTime -= executedTimeUnits;
     }
     
     /**
@@ -256,17 +256,17 @@ public class InstanceOfPeriodicTask {
     }
 
     /**
-     * @return the cExecutionTime
+     * @return the remainingExeTime
      */
-    public int getcExecutionTime() {
-        return cExecutionTime;
+    public int getRemainingExeTime() {
+        return remainingExeTime;
     }
 
     /**
-     * @param cExecutionTime the cExecutionTime to set
+     * @param remainingExeTime the remainingExeTime to set
      */
-    public void setcExecutionTime(int cExecutionTime) {
-        this.cExecutionTime = cExecutionTime;
+    public void setRemainingExeTime(int remainingExeTime) {
+        this.remainingExeTime = remainingExeTime;
     }
     
     /**
@@ -363,7 +363,7 @@ public class InstanceOfPeriodicTask {
         sbResult.append(System.lineSeparator());
         
         //fourth line is total time needed to execute instance
-        sbResult.append(this.totalExecutionTime);
+        sbResult.append(this.cExecutionTime);
         sbResult.append(System.lineSeparator());
         
         //fifth line contains all the activation times.

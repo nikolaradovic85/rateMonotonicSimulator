@@ -170,15 +170,15 @@ public class Simulation extends Thread {
                 //for this instance; if it CAN'T than calculate how much 
                 //can be executed
                 int executionLength = 
-                        time + highestPriorityInstance.getcExecutionTime() <= nextStop ?
-                        highestPriorityInstance.getcExecutionTime() :
+                        time + highestPriorityInstance.getRemainingExeTime() <= nextStop ?
+                        highestPriorityInstance.getRemainingExeTime() :
                         nextStop - time;
                 
                 //execute task, fast forward time to the end of execution
                 time += executionLength;
 
                 //subtract time executed from current instance execution time
-                highestPriorityInstance.subtractFromExecutionTime(executionLength);
+                highestPriorityInstance.subtractFromRemainingExeTime(executionLength);
 
                 //add end of execution time to current instance
                 highestPriorityInstance.addEndTimeOfExecution(time);
