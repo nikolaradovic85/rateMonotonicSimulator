@@ -114,6 +114,42 @@ public final class TraceFileParser {
         
         return result;
     }
+    
+    public double[] getAverageJitterPerTask() {
+        double[] result = new double[map.size()];
+        int counter = 0;
+        
+        for (Entry<Integer, TraceTask> e : map.entrySet()) {
+            result[counter] = e.getValue().getAverageJitter();
+            counter++;
+        }
+        
+        return result;
+    }
+    
+    public int[] getMinimumJitterPerTask() {
+        int[] result = new int[map.size()];
+        int counter = 0;
+        
+        for (Entry<Integer, TraceTask> e : map.entrySet()) {
+            result[counter] = e.getValue().getMinJitter();
+            counter++;
+        }
+        
+        return result;
+    }
+    
+    public int[] getMaximumJitterPerTask() {
+        int[] result = new int[map.size()];
+        int counter = 0;
+        
+        for (Entry<Integer, TraceTask> e : map.entrySet()) {
+            result[counter] = e.getValue().getMaxJitter();
+            counter++;
+        }
+        
+        return result;
+    }
 
     /**
      * Parses trace file. Basically, it transforms a trace file into a
@@ -153,12 +189,17 @@ public final class TraceFileParser {
                     map.put(id, new TraceTask());
                 }
 
-                //get last end of execution (actual finish time)
+                //get first activation of the instance, to calculate jitter
+                int firstExecutionStart = lineFirst.nextInt();
+                int jitter = firstExecutionStart - activationTime;
+                
+                //get last end of execution (actual finish time), to calculate
+                //response time
                 int finishTime = -1;
                 while (lineSecond.hasNextInt()) {
                     finishTime = lineSecond.nextInt();
                 }
-
+                
                 //response time is calculated
                 int responseTime = finishTime - activationTime;
 
@@ -168,6 +209,9 @@ public final class TraceFileParser {
 
                 //add response time to frequency table of response times
                 currentTask.addResponseTime(responseTime);
+                
+                //add jitter to frequency table of jitter values
+                currentTask.addJitter(jitter);
 
                 //if deadline isn't missed, increment counter for executed
                 //instances

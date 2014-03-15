@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -33,12 +34,24 @@ public class SimulationTest {
     
     @BeforeClass
     public static void setUpClass() {
+        System.out.println();
+        System.out.println("---START OF Simulation.java---");
+        System.out.println();
+        
         //delete all files from test trace directory
         File inputDir = new File(traceActualDir);
         for (File f : inputDir.listFiles()) {
             f.delete();
         }
     }
+    
+    @AfterClass
+    public static void after() {
+        System.out.println();
+        System.out.println("---END OF Simulation.java---");
+        System.out.println();
+    }
+
     
     @Before
     public void setUp() {

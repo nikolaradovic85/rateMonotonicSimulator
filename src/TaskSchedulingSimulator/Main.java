@@ -95,9 +95,12 @@ public class Main {
 
             //for each input file
             for (String input : inputFiles) {
+                //create a TraceFileParser object
                 TraceFileParser tfsa = new TraceFileParser(
                         traceDir + repetition + input + ".trc");
                 
+                //and add it to stats (in the apropriate place with regard to
+                //repetition)
                 TraceFileParser t[] = stats.get(input);
                 t[repetition - 1] = tfsa;
                 stats.put(input, t);
@@ -124,35 +127,51 @@ public class Main {
             double minimumResponseTimePerTask[]     = new double[noOfTasks];
             double maximumResponseTimePerTask[]     = new double[noOfTasks];
             double averageResponseTimePerTask[]     = new double[noOfTasks];
+            double minimumJitterPerTask[]           = new double[noOfTasks];
+            double maximumJitterPerTask[]           = new double[noOfTasks];
+            double averageJitterPerTask[]           = new double[noOfTasks];
 
             //add up all the values (per task)
             for (int iCount = 0; iCount < noOfRepetitions; iCount++) {
-                int finished[] = e.getValue()[iCount].getNoOfFinishedInstancesPerTask();
-                int missed[] = e.getValue()[iCount].getNoOfMissedDeadlinesPerTask();
-                double missProb[] = e.getValue()[iCount].getDeadlineMissProbabilityPerTask();
-                int min[] = e.getValue()[iCount].getMinimumResponseTimePerTask();
-                int max[] = e.getValue()[iCount].getMaximumResponseTimePerTask();
-                double avgResponse[] = e.getValue()[iCount].getAverageResponseTimePerTask();
+                //single trace file parser (single simulation) 
+                //from a single repetition(iCount)
+                TraceFileParser t = e.getValue()[iCount];
+                
+                int finished[]     = t.getNoOfFinishedInstancesPerTask();
+                int missed[]       = t.getNoOfMissedDeadlinesPerTask();
+                double missProb[]  = t.getDeadlineMissProbabilityPerTask();
+                int minRespTime[]  = t.getMinimumResponseTimePerTask();
+                int maxRespTime[]  = t.getMaximumResponseTimePerTask();
+                double avgResp[]   = t.getAverageResponseTimePerTask();
+                int minJitter[]    = t.getMinimumJitterPerTask();
+                int maxJitter[]    = t.getMaximumJitterPerTask();
+                double avgJitter[] = t.getAverageJitterPerTask();
 
                 for (int jCount = 0; jCount < noOfTasks; jCount++) {
-                    noOfFinishedInstancesPerTask[jCount] += finished[jCount];
-                    noOfMissedDeadlinesPerTask[jCount] += missed[jCount];
+                    noOfFinishedInstancesPerTask[jCount]   += finished[jCount];
+                    noOfMissedDeadlinesPerTask[jCount]     += missed[jCount];
                     deadlineMissProbabilityPerTask[jCount] += missProb[jCount];
-                    minimumResponseTimePerTask[jCount] += min[jCount];
-                    maximumResponseTimePerTask[jCount] += max[jCount];
-                    averageResponseTimePerTask[jCount] += avgResponse[jCount];
+                    minimumResponseTimePerTask[jCount]     += minRespTime[jCount];
+                    maximumResponseTimePerTask[jCount]     += maxRespTime[jCount];
+                    averageResponseTimePerTask[jCount]     += avgResp[jCount];
+                    minimumJitterPerTask[jCount]           += minJitter[jCount];
+                    maximumJitterPerTask[jCount]           += maxJitter[jCount];
+                    averageJitterPerTask[jCount]           += avgJitter[jCount];
                 }
             }
             
             //divide every value (per taks) by the number of repetitions
             //in order to get the average over repetitions
             for (int iCount = 0; iCount < noOfTasks; iCount++) {
-                noOfFinishedInstancesPerTask[iCount] /= noOfRepetitions;
-                noOfMissedDeadlinesPerTask[iCount] /= noOfRepetitions;
+                noOfFinishedInstancesPerTask[iCount]   /= noOfRepetitions;
+                noOfMissedDeadlinesPerTask[iCount]     /= noOfRepetitions;
                 deadlineMissProbabilityPerTask[iCount] /= noOfRepetitions;
-                minimumResponseTimePerTask[iCount] /= noOfRepetitions;
-                maximumResponseTimePerTask[iCount] /= noOfRepetitions;
-                averageResponseTimePerTask[iCount] /= noOfRepetitions;
+                minimumResponseTimePerTask[iCount]     /= noOfRepetitions;
+                maximumResponseTimePerTask[iCount]     /= noOfRepetitions;
+                averageResponseTimePerTask[iCount]     /= noOfRepetitions;
+                minimumJitterPerTask[iCount]           /= noOfRepetitions;
+                maximumJitterPerTask[iCount]           /= noOfRepetitions;
+                averageJitterPerTask[iCount]           /= noOfRepetitions;
                 
                 //print values - TODO - print to file
                 System.out.println("Task " + iCount);
@@ -180,6 +199,19 @@ public class Main {
                 System.out.print("Average response time: ");
                 System.out.print(averageResponseTimePerTask[iCount]);
                 System.out.println("");
+                
+                System.out.print("Minimum jitter: ");
+                System.out.print(minimumJitterPerTask[iCount]);
+                System.out.println("");
+                
+                System.out.print("Maximum jitter: ");
+                System.out.print(maximumJitterPerTask[iCount]);
+                System.out.println("");
+                
+                System.out.print("Average jitter: ");
+                System.out.print(averageJitterPerTask[iCount]);
+                System.out.println("");
+                
                 System.out.println("");
             }
             

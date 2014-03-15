@@ -11,13 +11,26 @@ import java.util.Map.Entry;
  */
 public class TraceTask {
     /**
-     * responseTimeFreqTable hold all response times and their number of 
-     * occurrence. Response time is key, and number of occurrences is value.
+     * Holds all response times and their number of occurrences.
+     * Response time is key, number of occurrences is value.
      */
     private final HashMap<Integer, Integer> responseTimeFreqTable;
     private int minResponseTime;
     private int maxResponseTime;
+    /**
+     * Holds all jitter values and their number of occurrences.
+     * Jitter is key, number of occurrences is value.
+     */
+    private final HashMap<Integer, Integer> jitterFreqTable;
+    private int minJitter;
+    private int maxJitter;
+    /**
+     * Number of instances which executed successfully (before their deadline).
+     */
     private int executedCounter;
+    /**
+     * Number of instances which couldn't be finished before their deadline).
+     */
     private int missedCounter;
 
     /**
@@ -25,8 +38,11 @@ public class TraceTask {
      */
     public TraceTask() {
         this.responseTimeFreqTable = new HashMap<>();
+        this.jitterFreqTable = new HashMap<>();
         this.minResponseTime = Integer.MAX_VALUE;
         this.maxResponseTime = 0;
+        this.minJitter = Integer.MAX_VALUE;
+        this.maxJitter = 0;
         this.executedCounter = 0;
         this.missedCounter = 0;
     }
@@ -77,17 +93,6 @@ public class TraceTask {
     }
     
     /**
-     * Calculates deadline miss probability for the task (all instances of the 
-     * task).
-     * 
-     * @return deadline miss probability
-     */
-    public double getDeadlineMissProbability() {
-        return  (this.missedCounter * 1.0) / 
-                ((this.executedCounter + this.missedCounter) * 1.0);
-    }
-    
-    /**
      * Calculates average response time for the task (all instances of the task).
      * 
      * @return average response time
@@ -100,28 +105,13 @@ public class TraceTask {
             sum += e.getKey() * e.getValue();
         }
         
-        if (executedCounter == 0) {
+        if (executedCounter + missedCounter == 0) {
             return 0;
         }
         
         return sum / ((executedCounter + missedCounter) * 1.0);
     }
     
-    /**
-     * Increments number of executed instances by one (the ones that finished 
-     * before their deadline).
-     */
-    public void incrementExecutedCounter() {
-        this.executedCounter += 1;
-    }
-    
-    /**
-     * Increments number of instances which missed their deadline by one.
-     */
-    public void incrementMissedCounter() {
-        this.missedCounter += 1;
-    }
-
     /**
      * Returns minimum response time for this task (all instances of the task).
      * 
@@ -138,6 +128,113 @@ public class TraceTask {
      */
     public int getMaxResponseTime() {
         return maxResponseTime;
+    }
+    
+    /**
+     * Updates minJitter if newJitter is lower than current minJitter.
+     * 
+     * @param newResponseTime possible minimum response time
+     */
+    private void addPossibleMinJitter(int newJitter) {
+        if (newJitter < this.minJitter) {
+            this.minJitter = newJitter;
+        }
+    }
+    
+    /**
+     * Updates maxJitter if newJitter is higher than current maxJitter.
+     * 
+     * @param newResponseTime
+     */
+    private void addPossibleMaxJitter(int newJitter) {
+        if (newJitter > this.maxJitter) {
+            this.maxJitter = newJitter;
+        }
+    }
+    
+    /**
+     * Adds jitter to jitterFreqTable.
+     * 
+     * @param jitter response time to be added 
+     */
+    public void addJitter(int jitter) {
+        //if this is the first occurence of this jitter value
+        if (!this.jitterFreqTable.containsKey(jitter)) {
+            //add the jitter, and set the no of occurrences to 1
+            this.jitterFreqTable.put(jitter, 1);
+            //and check if it is minimum or maximum
+            this.addPossibleMinJitter(jitter);
+            this.addPossibleMaxJitter(jitter);
+        } else {
+            //simply increment number of occurrences by 1
+            this.jitterFreqTable.put(
+                    jitter, 
+                    this.jitterFreqTable.get(jitter) + 1);
+        }
+    }
+    
+    /**
+     * Calculates average jitter for the task (all instances of the task).
+     * 
+     * @return average jitter
+     */
+    public double getAverageJitter() {
+        
+        double sum = 0;
+        
+        for (Entry<Integer, Integer> e : this.jitterFreqTable.entrySet()) {
+            sum += e.getKey() * e.getValue();
+        }
+        
+        if (executedCounter + missedCounter == 0) {
+            return 0;
+        }
+        
+        return sum / ((executedCounter + missedCounter) * 1.0);
+    }
+
+    /**
+     * Returns maximum jitter for this task (all instances of the task).
+     * 
+     * @return maximum jitter
+     */
+    public int getMinJitter() {
+        return minJitter;
+    }
+
+    /**
+     * Returns maximum jitter for this task (all instances of the task).
+     * 
+     * @return maximum jitter
+     */
+    public int getMaxJitter() {
+        return maxJitter;
+    }
+    
+    /**
+     * Calculates deadline miss probability for the task (all instances of the 
+     * task).
+     * 
+     * @return deadline miss probability
+     */
+    public double getDeadlineMissProbability() {
+        return  (this.missedCounter * 1.0) / 
+                ((this.executedCounter + this.missedCounter) * 1.0);
+    }
+    
+    /**
+     * Increments number of executed instances by one (the ones that finished 
+     * before their deadline).
+     */
+    public void incrementExecutedCounter() {
+        this.executedCounter += 1;
+    }
+    
+    /**
+     * Increments number of instances which missed their deadline by one.
+     */
+    public void incrementMissedCounter() {
+        this.missedCounter += 1;
     }
 
     /**
