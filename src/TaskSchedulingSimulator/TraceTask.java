@@ -101,7 +101,7 @@ public class TraceTask {
             return 0;
         }
         
-        return sum / (executedCounter * 1.0);
+        return sum / ((executedCounter + missedCounter) * 1.0);
     }
     
     /**
