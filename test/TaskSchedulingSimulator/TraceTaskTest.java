@@ -111,7 +111,7 @@ public class TraceTaskTest {
         instance.incrementMissedCounter();
         
         //test responseTimeFreqTable
-        assertEquals(5, instance.getAverageResponseTime(), 0.0001);
+        assertEquals(2.5, instance.getAverageResponseTime(), 0.0001);
         assertEquals(2, instance.getMinResponseTime());
         assertEquals(3, instance.getMaxResponseTime());
         assertEquals(1, instance.getMissedCounter());
@@ -124,7 +124,7 @@ public class TraceTaskTest {
         instance.incrementExecutedCounter();
 
         //test responseTimeFreqTable
-        assertEquals(9, instance.getAverageResponseTime(), 0.0001);
+        assertEquals(6, instance.getAverageResponseTime(), 0.0001);
         assertEquals(2, instance.getMinResponseTime());
         assertEquals(13, instance.getMaxResponseTime());
         assertEquals(1, instance.getMissedCounter());
@@ -151,7 +151,7 @@ public class TraceTaskTest {
         
 
         double result = t.getAverageResponseTime();
-        assertEquals(7, result, 0.0001);
+        assertEquals(5.25, result, 0.0001);
     }
 
     /**
