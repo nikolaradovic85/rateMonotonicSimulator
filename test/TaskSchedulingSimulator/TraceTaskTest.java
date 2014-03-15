@@ -19,69 +19,25 @@ public class TraceTaskTest {
     public void setUp() {
         t = new TraceTask();
         
-        t.addPossibleMinResponseTime(3);
-        t.addPossibleMaxResponseTime(3);
-        t.addResponseTimeToFreqTable(3);
+        t.addResponseTime(3);
         t.incrementExecutedCounter();
         
-        t.addPossibleMinResponseTime(2);
-        t.addPossibleMaxResponseTime(2);
-        t.addResponseTimeToFreqTable(2);
+        t.addResponseTime(2);
         t.incrementMissedCounter();
         
-        t.addPossibleMinResponseTime(13);
-        t.addPossibleMaxResponseTime(13);
-        t.addResponseTimeToFreqTable(13);
+        t.addResponseTime(13);
         t.incrementExecutedCounter();
         
-        t.addPossibleMinResponseTime(3);
-        t.addPossibleMaxResponseTime(3);
-        t.addResponseTimeToFreqTable(3);
+        t.addResponseTime(3);
         t.incrementExecutedCounter();
     }
 
     /**
-     * Test of addPossibleMinResponseTime method, of class TraceTask.
+     * Test of addResponseTime method, of class TraceTask.
      */
     @Test
-    public void testAddPossibleMinResponseTime() {
-        System.out.println("addPossibleMinResponseTime");
-        TraceTask instance = new TraceTask();
-        
-        instance.addPossibleMinResponseTime(5);
-        assertEquals(5, instance.getMinResponseTime());
-        
-        instance.addPossibleMinResponseTime(10);
-        assertEquals(5, instance.getMinResponseTime());
-        
-        instance.addPossibleMinResponseTime(-100);
-        assertEquals(-100, instance.getMinResponseTime());
-    }
-
-    /**
-     * Test of addPossibleMaxResponseTime method, of class TraceTask.
-     */
-    @Test
-    public void testAddPossibleMaxResponseTime() {
-        System.out.println("addPossibleMaxResponseTime");
-        TraceTask instance = new TraceTask();
-        
-        instance.addPossibleMaxResponseTime(5);
-        assertEquals(5, instance.getMaxResponseTime());
-        
-        instance.addPossibleMaxResponseTime(10);
-        assertEquals(10, instance.getMaxResponseTime());
-        
-        instance.addPossibleMaxResponseTime(-100);
-        assertEquals(10, instance.getMaxResponseTime());
-    }
-
-    /**
-     * Test of addResponseTimeToFreqTable method, of class TraceTask.
-     */
-    @Test
-    public void testAddResponseTimeToFreqTable() {
-        System.out.println("addResponseTimeToFreqTable");
+    public void testAddResponseTime() {
+        System.out.println("addResponseTime");
         TraceTask instance = new TraceTask();
         
         //test fresh responseTimeFreqTable
@@ -92,9 +48,7 @@ public class TraceTaskTest {
         assertEquals(0, instance.getExecutedCounter());
         
         //add something to responseTimeFreqTable
-        instance.addPossibleMinResponseTime(3);
-        instance.addPossibleMaxResponseTime(3);
-        instance.addResponseTimeToFreqTable(3);
+        instance.addResponseTime(3);
         instance.incrementExecutedCounter();
         
         //test responseTimeFreqTable
@@ -105,9 +59,7 @@ public class TraceTaskTest {
         assertEquals(1, instance.getExecutedCounter());
         
         //add something to responseTimeFreqTable
-        instance.addPossibleMinResponseTime(2);
-        instance.addPossibleMaxResponseTime(2);
-        instance.addResponseTimeToFreqTable(2);
+        instance.addResponseTime(2);
         instance.incrementMissedCounter();
         
         //test responseTimeFreqTable
@@ -118,9 +70,7 @@ public class TraceTaskTest {
         assertEquals(1, instance.getExecutedCounter());
         
         //add something to responseTimeFreqTable
-        instance.addPossibleMinResponseTime(13);
-        instance.addPossibleMaxResponseTime(13);
-        instance.addResponseTimeToFreqTable(13);
+        instance.addResponseTime(13);
         instance.incrementExecutedCounter();
 
         //test responseTimeFreqTable

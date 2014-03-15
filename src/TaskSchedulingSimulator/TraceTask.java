@@ -37,7 +37,7 @@ public class TraceTask {
      * 
      * @param newResponseTime possible minimum response time
      */
-    public void addPossibleMinResponseTime(int newResponseTime) {
+    private void addPossibleMinResponseTime(int newResponseTime) {
         if (newResponseTime < this.minResponseTime) {
             this.minResponseTime = newResponseTime;
         }
@@ -49,7 +49,7 @@ public class TraceTask {
      * 
      * @param newResponseTime
      */
-    public void addPossibleMaxResponseTime(int newResponseTime) {
+    private void addPossibleMaxResponseTime(int newResponseTime) {
         if (newResponseTime > this.maxResponseTime) {
             this.maxResponseTime = newResponseTime;
         }
@@ -60,11 +60,14 @@ public class TraceTask {
      * 
      * @param responseTime response time to be added 
      */
-    public void addResponseTimeToFreqTable(int responseTime) {
+    public void addResponseTime(int responseTime) {
         //if this is the first occurence of this response time
         if (!this.responseTimeFreqTable.containsKey(responseTime)) {
             //add the response time, and set the no of occurrences to 1
             this.responseTimeFreqTable.put(responseTime, 1);
+            //and check if it is minimum or maximum
+            this.addPossibleMinResponseTime(responseTime);
+            this.addPossibleMaxResponseTime(responseTime);
         } else {
             //simply increment number of occurrences by 1
             this.responseTimeFreqTable.put(

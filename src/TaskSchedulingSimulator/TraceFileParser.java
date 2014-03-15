@@ -167,10 +167,7 @@ public final class TraceFileParser {
                 TraceTask currentTask = map.get(id);
 
                 //add response time to frequency table of response times
-                //and check if it's min or max
-                currentTask.addPossibleMinResponseTime(responseTime);
-                currentTask.addPossibleMaxResponseTime(responseTime);
-                currentTask.addResponseTimeToFreqTable(responseTime);
+                currentTask.addResponseTime(responseTime);
 
                 //if deadline isn't missed, increment counter for executed
                 //instances
