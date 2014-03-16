@@ -36,10 +36,10 @@ public class FrequencyTableTest {
     public void setUp() {
         ft = new FrequencyTable();
         
-        ft.addTime(3);
-        ft.addTime(2);
-        ft.addTime(13);
-        ft.addTime(3);
+        ft.addTime(3, true);
+        ft.addTime(2, false);
+        ft.addTime(13, true);
+        ft.addTime(3, true);
     }
     
     @After
@@ -61,7 +61,7 @@ public class FrequencyTableTest {
 
         
         //add something to FrequencyTable
-        instance.addTime(3);
+        instance.addTime(3, true);
         
         //test FrequencyTable
         assertEquals(3, instance.getAverageTime(), 0.0001);
@@ -70,7 +70,7 @@ public class FrequencyTableTest {
         
         
         //add something to FrequencyTable
-        instance.addTime(2);
+        instance.addTime(2, false);
         
         //test FrequencyTable
         assertEquals(2.5, instance.getAverageTime(), 0.0001);
@@ -79,7 +79,7 @@ public class FrequencyTableTest {
         
         
         //add something to FrequencyTable
-        instance.addTime(13);
+        instance.addTime(13, true);
 
         //test FrequencyTable
         assertEquals(6, instance.getAverageTime(), 0.0001);
@@ -96,7 +96,6 @@ public class FrequencyTableTest {
     public void testGetAverageTime() {
         System.out.print("getAverageTime: ");
         
-
         double result = ft.getAverageTime();
         assertEquals(5.25, result, 0.0001);
         
@@ -119,10 +118,29 @@ public class FrequencyTableTest {
      */
     @Test
     public void testGetMaximum() {
-        System.out.print("getMaximum: ");       
+        System.out.print("getMaximum: ");
         assertEquals(13, ft.getMaximum());
         
         System.out.println("OK");
     }
     
+    /**
+     * Test deadline misses using toString.
+     */
+    @Test
+    public void testDeadlineMisses() {
+        System.out.print("Deadline misses per time in frequency table: ");
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append("2 1 0");
+        sb.append(System.lineSeparator());
+        sb.append("3 2 2");
+        sb.append(System.lineSeparator());
+        sb.append("13 1 1");
+        sb.append(System.lineSeparator());
+        String expected = sb.toString();
+        String actual = ft.toString();
+        assertEquals(expected, actual);
+        System.out.println("OK");
+    }
 }

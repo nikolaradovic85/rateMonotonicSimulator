@@ -22,20 +22,20 @@ public class TraceTaskTest {
     public void setUp() {
         t = new TraceTask();
         
-        t.responseTimeFT.addTime(3);
-        t.jitterFT.addTime(3);
+        t.responseTimeFT.addTime(3, true);
+        t.jitterFT.addTime(3, true);
         t.incrementExecutedCounter();
         
-        t.responseTimeFT.addTime(2);
-        t.jitterFT.addTime(2);
+        t.responseTimeFT.addTime(2, false);
+        t.jitterFT.addTime(2, false);
         t.incrementMissedCounter();
         
-        t.responseTimeFT.addTime(13);
-        t.jitterFT.addTime(13);
+        t.responseTimeFT.addTime(13, true);
+        t.jitterFT.addTime(13, true);
         t.incrementExecutedCounter();
         
-        t.responseTimeFT.addTime(3);
-        t.jitterFT.addTime(3);
+        t.responseTimeFT.addTime(3, true);
+        t.jitterFT.addTime(3, true);
         t.incrementExecutedCounter();
     }
     

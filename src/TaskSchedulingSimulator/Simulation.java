@@ -281,7 +281,6 @@ public class Simulation extends Thread {
                         break;
                 }
 
-                //PeriodicTask temp = new PeriodicTask(id, taskPeriod, phi, cTaskExecutionTime);
                 input.add(temp);
             }
 

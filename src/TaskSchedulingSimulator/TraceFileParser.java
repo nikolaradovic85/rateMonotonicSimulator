@@ -181,7 +181,8 @@ public final class TraceFileParser {
                 Scanner lineSecond = new Scanner(endTimes);
 
                 //scan the row which contains -1 if deadline isn't missed
-                int missedDeadline = scan.nextInt();
+                int lineMissedDeadline = scan.nextInt();
+                boolean missedDeadline = lineMissedDeadline != -1;
 
                 //if this is first occurance of any instance with this id
                 //add a new task to the map
@@ -207,15 +208,17 @@ public final class TraceFileParser {
                 //the trace file
                 TraceTask currentTask = map.get(id);
 
-                //add response time to frequency table of response times
-                currentTask.responseTimeFT.addTime(responseTime);
+                //add response time to frequency table of response times and
+                //whether deadline was missed
+                currentTask.responseTimeFT.addTime(responseTime, missedDeadline);
                 
-                //add jitter to frequency table of jitter values
-                currentTask.jitterFT.addTime(jitter);
+                //add jitter to frequency table of jitter values and
+                //whether deadline was missed
+                currentTask.jitterFT.addTime(jitter, missedDeadline);
 
                 //if deadline isn't missed, increment counter for executed
                 //instances
-                if (missedDeadline == -1) {
+                if (!missedDeadline) {
                     currentTask.incrementExecutedCounter();
                 } 
                 //if deadline IS missed, increment counter for instances
