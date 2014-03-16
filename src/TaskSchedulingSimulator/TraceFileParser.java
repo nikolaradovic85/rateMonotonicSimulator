@@ -84,7 +84,7 @@ public final class TraceFileParser {
         int counter = 0;
         
         for (Entry<Integer, TraceTask> e : map.entrySet()) {
-            result[counter] = e.getValue().getAverageResponseTime();
+            result[counter] = e.getValue().responseTimeFT.getAverageTime();
             counter++;
         }
         
@@ -96,7 +96,7 @@ public final class TraceFileParser {
         int counter = 0;
         
         for (Entry<Integer, TraceTask> e : map.entrySet()) {
-            result[counter] = e.getValue().getMinResponseTime();
+            result[counter] = e.getValue().responseTimeFT.getMinimum();
             counter++;
         }
         
@@ -108,7 +108,7 @@ public final class TraceFileParser {
         int counter = 0;
         
         for (Entry<Integer, TraceTask> e : map.entrySet()) {
-            result[counter] = e.getValue().getMaxResponseTime();
+            result[counter] = e.getValue().responseTimeFT.getMaximum();
             counter++;
         }
         
@@ -120,7 +120,7 @@ public final class TraceFileParser {
         int counter = 0;
         
         for (Entry<Integer, TraceTask> e : map.entrySet()) {
-            result[counter] = e.getValue().getAverageJitter();
+            result[counter] = e.getValue().jitterFT.getAverageTime();
             counter++;
         }
         
@@ -132,7 +132,7 @@ public final class TraceFileParser {
         int counter = 0;
         
         for (Entry<Integer, TraceTask> e : map.entrySet()) {
-            result[counter] = e.getValue().getMinJitter();
+            result[counter] = e.getValue().jitterFT.getMinimum();
             counter++;
         }
         
@@ -144,7 +144,7 @@ public final class TraceFileParser {
         int counter = 0;
         
         for (Entry<Integer, TraceTask> e : map.entrySet()) {
-            result[counter] = e.getValue().getMaxJitter();
+            result[counter] = e.getValue().jitterFT.getMaximum();
             counter++;
         }
         
@@ -208,10 +208,10 @@ public final class TraceFileParser {
                 TraceTask currentTask = map.get(id);
 
                 //add response time to frequency table of response times
-                currentTask.addResponseTime(responseTime);
+                currentTask.responseTimeFT.addTime(responseTime);
                 
                 //add jitter to frequency table of jitter values
-                currentTask.addJitter(jitter);
+                currentTask.jitterFT.addTime(jitter);
 
                 //if deadline isn't missed, increment counter for executed
                 //instances
