@@ -136,27 +136,17 @@ public class Main {
                 //single trace file parser (single simulation) 
                 //from a single repetition(iCount)
                 TraceFileParser t = e.getValue()[iCount];
-                
-                int finished[]     = t.getNoOfFinishedInstancesPerTask();
-                int missed[]       = t.getNoOfMissedDeadlinesPerTask();
-                double missProb[]  = t.getDeadlineMissProbabilityPerTask();
-                int minRespTime[]  = t.getMinimumResponseTimePerTask();
-                int maxRespTime[]  = t.getMaximumResponseTimePerTask();
-                double avgResp[]   = t.getAverageResponseTimePerTask();
-                int minJitter[]    = t.getMinimumJitterPerTask();
-                int maxJitter[]    = t.getMaximumJitterPerTask();
-                double avgJitter[] = t.getAverageJitterPerTask();
 
                 for (int jCount = 0; jCount < noOfTasks; jCount++) {
-                    noOfFinishedInstancesPerTask[jCount]   += finished[jCount];
-                    noOfMissedDeadlinesPerTask[jCount]     += missed[jCount];
-                    deadlineMissProbabilityPerTask[jCount] += missProb[jCount];
-                    minimumResponseTimePerTask[jCount]     += minRespTime[jCount];
-                    maximumResponseTimePerTask[jCount]     += maxRespTime[jCount];
-                    averageResponseTimePerTask[jCount]     += avgResp[jCount];
-                    minimumJitterPerTask[jCount]           += minJitter[jCount];
-                    maximumJitterPerTask[jCount]           += maxJitter[jCount];
-                    averageJitterPerTask[jCount]           += avgJitter[jCount];
+                    noOfFinishedInstancesPerTask[jCount]   += t.getNoOfFinishedInstancesPerTask()[jCount];
+                    noOfMissedDeadlinesPerTask[jCount]     += t.getNoOfMissedDeadlinesPerTask()[jCount];
+                    deadlineMissProbabilityPerTask[jCount] += t.getDeadlineMissProbabilityPerTask()[jCount];
+                    minimumResponseTimePerTask[jCount]     += t.getMinimumResponseTimePerTask()[jCount];
+                    maximumResponseTimePerTask[jCount]     += t.getMaximumResponseTimePerTask()[jCount];
+                    averageResponseTimePerTask[jCount]     += t.getAverageResponseTimePerTask()[jCount];
+                    minimumJitterPerTask[jCount]           += t.getMinimumJitterPerTask()[jCount];
+                    maximumJitterPerTask[jCount]           += t.getMaximumJitterPerTask()[jCount];
+                    averageJitterPerTask[jCount]           += t.getAverageJitterPerTask()[jCount];
                 }
             }
             
