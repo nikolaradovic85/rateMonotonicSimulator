@@ -11,7 +11,7 @@ public class PeriodicTaskFrequencyTable extends PeriodicTask {
     Map<Integer, Integer> table;
     
     public PeriodicTaskFrequencyTable(
-            int pId, 
+            String pId, 
             int taskPeriod, 
             int deadline,
             int phi, 

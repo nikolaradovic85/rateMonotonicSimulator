@@ -7,40 +7,33 @@ package TaskSchedulingSimulator;
  */
 
 public abstract class PeriodicTask implements Comparable <PeriodicTask>{
-    private int id;
-    private int taskPeriod;         // period
-    private int phi;                // phase
-    private int deadline;
-    //private int cTaskExecutionTime; // execution time
+    private final String id;
+    private final int taskPeriod;
+    private final int phi;
+    private final int deadline;
 
     /**
      * Constructor.
      * 
-     * @param pId
-     * @param taskPeriod
-     * @param phi
-     * @param cTaskExecutionTime
+     * @param pId task id
+     * @param taskPeriod task period
+     * @param deadline task deadline
+     * @param phi task phase
      */
-    public PeriodicTask(int pId, int taskPeriod, int deadline, int phi){
+    public PeriodicTask(String pId, int taskPeriod, int deadline, int phi){
         this.id = pId;
-        //this.cTaskExecutionTime = cTaskExecutionTime;
         this.phi = phi;
         this.taskPeriod = taskPeriod;
         this.deadline = deadline;
     }
 
     /**
-     * @return the id
+     * Getter for id.
+     * 
+     * @return the id of the task
      */
-    public int getId() {
-        return id;
-    }
-
-    /**
-     * @param id the id to be set
-     */
-    public void setId(int id) {
-        this.id = id;
+    public String getId() {
+        return this.id;
     }
 
     /**
@@ -51,26 +44,12 @@ public abstract class PeriodicTask implements Comparable <PeriodicTask>{
     }
 
     /**
-     * @param taskPeriod the taskPeriod to set
-     */
-    public void setTaskPeriod(int taskPeriod) {
-        this.taskPeriod = taskPeriod;
-    }
-
-    /**
      * @return the phi
      */
     public int getPhi() {
         return phi;
     }
 
-    /**
-     * @param phi the phi to set
-     */
-    public void setPhi(int phi) {
-        this.phi = phi;
-    }
-    
     public int getDeadline(){
         return this.deadline;
     }

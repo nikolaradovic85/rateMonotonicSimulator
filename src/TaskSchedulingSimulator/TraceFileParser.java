@@ -22,7 +22,7 @@ public final class TraceFileParser {
      * TraceTask object (every other piece of information about every instance
      * of the task).
      */
-    private final HashMap<Integer, TraceTask> map;
+    private final HashMap<String, TraceTask> map;
 
     /**
      * Constructor. Parses trace file, so the class can be immutable.
@@ -49,11 +49,11 @@ public final class TraceFileParser {
     METHOD HERE, IN ORDER TO USE IT IN Main.java
     */
     // <editor-fold defaultstate="collapsed" desc="Property getters per task">
-    public int[] getTaskIDsPerTask() {
-        int[] result = new int[map.size()];
+    public String[] getTaskIDsPerTask() {
+        String[] result = new String[map.size()];
         int counter = 0;
         
-        for (Entry<Integer, TraceTask> e : map.entrySet()) {
+        for (Entry<String, TraceTask> e : map.entrySet()) {
             result[counter] = e.getKey();
             counter++;
         }
@@ -65,7 +65,7 @@ public final class TraceFileParser {
         int[] result = new int[map.size()];
         int counter = 0;
         
-        for (Entry<Integer, TraceTask> e : map.entrySet()) {
+        for (Entry<String, TraceTask> e : map.entrySet()) {
             result[counter] = e.getValue().getExecutedCounter();
             counter++;
         }
@@ -77,7 +77,7 @@ public final class TraceFileParser {
         int[] result = new int[map.size()];
         int counter = 0;
         
-        for (Entry<Integer, TraceTask> e : map.entrySet()) {
+        for (Entry<String, TraceTask> e : map.entrySet()) {
             result[counter] = e.getValue().getMissedCounter();
             counter++;
         }
@@ -89,7 +89,7 @@ public final class TraceFileParser {
         double[] result = new double[map.size()];
         int counter = 0;
         
-        for (Entry<Integer, TraceTask> e : map.entrySet()) {
+        for (Entry<String, TraceTask> e : map.entrySet()) {
             result[counter] = e.getValue().getDeadlineMissProbability();
             counter++;
         }
@@ -101,7 +101,7 @@ public final class TraceFileParser {
         double[] result = new double[map.size()];
         int counter = 0;
         
-        for (Entry<Integer, TraceTask> e : map.entrySet()) {
+        for (Entry<String, TraceTask> e : map.entrySet()) {
             result[counter] = e.getValue().responseTimeFT.getAverageTime();
             counter++;
         }
@@ -113,7 +113,7 @@ public final class TraceFileParser {
         int[] result = new int[map.size()];
         int counter = 0;
         
-        for (Entry<Integer, TraceTask> e : map.entrySet()) {
+        for (Entry<String, TraceTask> e : map.entrySet()) {
             result[counter] = e.getValue().responseTimeFT.getMinimum();
             counter++;
         }
@@ -125,7 +125,7 @@ public final class TraceFileParser {
         int[] result = new int[map.size()];
         int counter = 0;
         
-        for (Entry<Integer, TraceTask> e : map.entrySet()) {
+        for (Entry<String, TraceTask> e : map.entrySet()) {
             result[counter] = e.getValue().responseTimeFT.getMaximum();
             counter++;
         }
@@ -137,7 +137,7 @@ public final class TraceFileParser {
         double[] result = new double[map.size()];
         int counter = 0;
         
-        for (Entry<Integer, TraceTask> e : map.entrySet()) {
+        for (Entry<String, TraceTask> e : map.entrySet()) {
             result[counter] = e.getValue().jitterFT.getAverageTime();
             counter++;
         }
@@ -149,7 +149,7 @@ public final class TraceFileParser {
         int[] result = new int[map.size()];
         int counter = 0;
         
-        for (Entry<Integer, TraceTask> e : map.entrySet()) {
+        for (Entry<String, TraceTask> e : map.entrySet()) {
             result[counter] = e.getValue().jitterFT.getMinimum();
             counter++;
         }
@@ -161,7 +161,7 @@ public final class TraceFileParser {
         int[] result = new int[map.size()];
         int counter = 0;
         
-        for (Entry<Integer, TraceTask> e : map.entrySet()) {
+        for (Entry<String, TraceTask> e : map.entrySet()) {
             result[counter] = e.getValue().jitterFT.getMaximum();
             counter++;
         }
@@ -171,7 +171,7 @@ public final class TraceFileParser {
 
     /**
      * Parses trace file. Basically, it transforms a trace file into a
-     * HashMap<Integer, TraceTask>.
+     * HashMap<String, TraceTask>.
      *
      * @param traceFile path to trace file
      */
@@ -182,7 +182,7 @@ public final class TraceFileParser {
             // while not end of file
             while (scan.hasNextLine()) {
                 //first int in trace is periodic task id
-                int id = scan.nextInt();
+                String id = scan.next();
 
                 //scanning next three integers from trace file
                 int activationTime = scan.nextInt();

@@ -114,6 +114,7 @@ public class Main {
 
             //get the number of tasks and print simulation input file name
             int noOfTasks = e.getValue()[0].getNumberOfTasks();
+            String taskIDs[] = e.getValue()[0].getTaskIDsPerTask();
             
             System.out.println(e.getKey());
             System.out.println("");
@@ -137,16 +138,16 @@ public class Main {
                 //from a single repetition(iCount)
                 TraceFileParser t = e.getValue()[iCount];
 
-                for (int jCount = 0; jCount < noOfTasks; jCount++) {
-                    noOfFinishedInstancesPerTask[jCount]   += t.getNoOfFinishedInstancesPerTask()[jCount];
-                    noOfMissedDeadlinesPerTask[jCount]     += t.getNoOfMissedDeadlinesPerTask()[jCount];
-                    deadlineMissProbabilityPerTask[jCount] += t.getDeadlineMissProbabilityPerTask()[jCount];
-                    minimumResponseTimePerTask[jCount]     += t.getMinimumResponseTimePerTask()[jCount];
-                    maximumResponseTimePerTask[jCount]     += t.getMaximumResponseTimePerTask()[jCount];
-                    averageResponseTimePerTask[jCount]     += t.getAverageResponseTimePerTask()[jCount];
-                    minimumJitterPerTask[jCount]           += t.getMinimumJitterPerTask()[jCount];
-                    maximumJitterPerTask[jCount]           += t.getMaximumJitterPerTask()[jCount];
-                    averageJitterPerTask[jCount]           += t.getAverageJitterPerTask()[jCount];
+                for (int taskCounter = 0; taskCounter < noOfTasks; taskCounter++) {
+                    noOfFinishedInstancesPerTask[taskCounter]   += t.getNoOfFinishedInstancesPerTask()[taskCounter];
+                    noOfMissedDeadlinesPerTask[taskCounter]     += t.getNoOfMissedDeadlinesPerTask()[taskCounter];
+                    deadlineMissProbabilityPerTask[taskCounter] += t.getDeadlineMissProbabilityPerTask()[taskCounter];
+                    minimumResponseTimePerTask[taskCounter]     += t.getMinimumResponseTimePerTask()[taskCounter];
+                    maximumResponseTimePerTask[taskCounter]     += t.getMaximumResponseTimePerTask()[taskCounter];
+                    averageResponseTimePerTask[taskCounter]     += t.getAverageResponseTimePerTask()[taskCounter];
+                    minimumJitterPerTask[taskCounter]           += t.getMinimumJitterPerTask()[taskCounter];
+                    maximumJitterPerTask[taskCounter]           += t.getMaximumJitterPerTask()[taskCounter];
+                    averageJitterPerTask[taskCounter]           += t.getAverageJitterPerTask()[taskCounter];
                 }
             }
             
@@ -164,7 +165,7 @@ public class Main {
                 averageJitterPerTask[iCount]           /= noOfRepetitions;
                 
                 //print values - TODO - print to file
-                System.out.println("Task " + iCount);
+                System.out.println("Task: " + taskIDs[iCount]);
                 
                 System.out.print("Finished instances: ");
                 System.out.print(noOfFinishedInstancesPerTask[iCount]);

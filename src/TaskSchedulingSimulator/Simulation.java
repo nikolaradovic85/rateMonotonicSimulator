@@ -243,7 +243,7 @@ public class Simulation extends Thread {
             int numberOfPeriodicTasks = scan.nextInt();
 
             for (int i = 0; i < numberOfPeriodicTasks; i++) {
-                int id = scan.nextInt();
+                String id = scan.next();
                 int phi = scan.nextInt();
                 int taskPeriod = scan.nextInt();
                 int deadline = scan.nextInt();

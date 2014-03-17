@@ -8,7 +8,7 @@ public class PeriodicTaskFixed extends PeriodicTask {
     int cFixedExecutionTime;
 
     public PeriodicTaskFixed(
-            int pId, 
+            String pId, 
             int taskPeriod, 
             int deadline,
             int phi, 

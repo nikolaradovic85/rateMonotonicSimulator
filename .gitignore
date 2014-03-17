@@ -2,3 +2,9 @@
 /dist/
 /io/trace
 /io/statistic
+/test/TaskSchedulingSimulator/files/io/traceActual/tc1EDF_SOFT.trc
+/test/TaskSchedulingSimulator/files/io/traceActual/tc2EDF_SOFT.trc
+/test/TaskSchedulingSimulator/files/io/traceActual/tc3EDF_SOFT.trc
+/test/TaskSchedulingSimulator/files/io/traceActual/tc1RM_SOFT.trc
+/test/TaskSchedulingSimulator/files/io/traceActual/tc2RM_SOFT.trc
+/test/TaskSchedulingSimulator/files/io/traceActual/tc3RM_SOFT.trc

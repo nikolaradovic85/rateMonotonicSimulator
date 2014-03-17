@@ -6,12 +6,12 @@ package TaskSchedulingSimulator;
  */
 public class PeriodicTaskMinMaxUniform extends PeriodicTask {
 
-    private int cMin;
-    private int cMax;
-    private int randomDistribution; // not used
+    private final int cMin;
+    private final int cMax;
+    private final int randomDistribution; // not used
     
     public PeriodicTaskMinMaxUniform(
-            int pId, 
+            String pId, 
             int taskPeriod, 
             int deadline,
             int phi, 

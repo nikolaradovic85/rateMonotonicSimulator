@@ -12,38 +12,38 @@ public class InstanceOfPeriodicTask {
     /**
      * Id of the task.
      */
-    private int id;
+    private final String id;
     
     /**
      * Period of periodic task.
      */
-    private int taskPeriod;
+    private final int taskPeriod;
     
     /**
      * Phase of the task.
      */
-    private int phi;
+    private final int phi;
     
     /**
      * Time at which instance is created (and added to readyQ in Simulation.java)
      */
-    private int rActivationTime;
+    private final int rActivationTime;
     
     /**
      * Absolute deadline of the instance (time of activation + relative deadline
      * from input task set)
      */
-    private int dAbsoluteDeadline;
-    
-    /**
-     * Remaining time of execution (changes over time)
-     */
-    private int remainingExeTime;
+    private final int dAbsoluteDeadline;
     
     /**
      * Instance execution time (doesn't change over time)
      */
     private final int cExecutionTime;
+    
+    /**
+     * Remaining time of execution (changes over time)
+     */
+    private int remainingExeTime;
     
     /**
      * Gets set to time at which instances misses its deadline;
@@ -186,20 +186,13 @@ public class InstanceOfPeriodicTask {
      * 
      * @return id
      */
-    public int getId() {
+    public String getId() {
         return id;
     }
     
     /**
-     * Setter for id.
+     * Getter for taskPeriod.
      * 
-     * @param id id to be set
-     */
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    /**
      * @return the taskPeriod
      */
     public int getTaskPeriod() {
@@ -207,70 +200,43 @@ public class InstanceOfPeriodicTask {
     }
 
     /**
-     * @param taskPeriod the taskPeriod to set
-     */
-    public void setTaskPeriod(int taskPeriod) {
-        this.taskPeriod = taskPeriod;
-    }
-
-    /**
-     * @return the phi
+     * Getter for phi
+     * 
+     * @return the phase
      */
     public int getPhi() {
         return phi;
     }
 
     /**
-     * @param phi the phi to set
-     */
-    public void setPhi(int phi) {
-        this.phi = phi;
-    }
-
-    /**
-     * @return the rActivationTime
+     * Getter for rActivationTime
+     * 
+     * @return the absolute time of activation of the instance
      */
     public int getrActivationTime() {
         return rActivationTime;
     }
 
     /**
-     * @param rActivationTime the rActivationTime to set
-     */
-    public void setrActivationTime(int rActivationTime) {
-        this.rActivationTime = rActivationTime;
-    }
-
-    /**
-     * @return the dAbsoluteDeadline
+     * Getter for dAbsoluteDeadline
+     * 
+     * @return the instance absolute deadline
      */
     public int getdAbsoluteDeadline() {
         return dAbsoluteDeadline;
     }
 
     /**
-     * @param dAbsoluteDeadline the dAbsoluteDeadline to set
-     */
-    public void setdAbsoluteDeadline(int dAbsoluteDeadline) {
-        this.dAbsoluteDeadline = dAbsoluteDeadline;
-    }
-
-    /**
-     * @return the remainingExeTime
+     * Getter for remainingExeTime
+     * 
+     * @return remaining time of execution
      */
     public int getRemainingExeTime() {
         return remainingExeTime;
     }
 
     /**
-     * @param remainingExeTime the remainingExeTime to set
-     */
-    public void setRemainingExeTime(int remainingExeTime) {
-        this.remainingExeTime = remainingExeTime;
-    }
-    
-    /**
-     * Inner static class, containing various comparator, by which a collection
+     * Inner static class, containing various comparators, by which a collection
      * of InstanceOfPeriodicTask objects can be sorted (e.g. readyQ in
      * Simulation.java)
      */
