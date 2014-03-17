@@ -12,15 +12,18 @@ public class TraceTask {
      * Response time is key, number of occurrences is value.
      */
     public final FrequencyTable responseTimeFT;
+    
     /**
      * Holds all jitter values and their number of occurrences.
      * Jitter is key, number of occurrences is value.
      */
     public final FrequencyTable jitterFT;
+    
     /**
      * Number of instances which executed successfully (before their deadline).
      */
     private int executedCounter;
+    
     /**
      * Number of instances which couldn't be finished before their deadline).
      */

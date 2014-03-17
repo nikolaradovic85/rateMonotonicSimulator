@@ -14,13 +14,24 @@ import java.util.TreeMap;
  */
 public class FrequencyTable {
     /**
-     * Holds time values and their number of occurrences.
+     * Contains time values and their number of occurrences.
      * Time is key, number of occurrences is value.
      */
     private final TreeMap<Integer, Pair> FreqencyTableMap;
+    
+    /**
+     * Contains maximum time.
+     */
     private int minimum;
+    
+    /**
+     * Contains minimum time.
+     */
     private int maximum;
 
+    /**
+     * Constructor.
+     */
     public FrequencyTable() {
         this.FreqencyTableMap = new TreeMap<>();
         this.minimum = Integer.MAX_VALUE;

@@ -11,26 +11,44 @@ import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 
 /**
- *
+ * Used to parse a trace file and store and retrieve all the data it contains.
+ * 
  * @author nikola
  */
 public final class TraceFileParser {
 
+    /**
+     * Gets populated with data from trace file. Key is task id, value is
+     * TraceTask object (every other piece of information about every instance
+     * of the task).
+     */
     private final HashMap<Integer, TraceTask> map;
 
+    /**
+     * Constructor. Parses trace file, so the class can be immutable.
+     * 
+     * @param traceFile Path to trace file to be parsed
+     */
     public TraceFileParser(String traceFile) {
         this.map = new HashMap<>();
         parseTraceFile(traceFile);
     }
-
-    public double getDeadlineMissProbability(int id) {
-        return map.get(id).getDeadlineMissProbability();
-    }
     
+    /**
+     * Returns the number of different tasks in the trace file
+     * 
+     * @return number of tasks
+     */
     public int getNumberOfTasks() {
         return map.size();
     }
     
+    /* 
+    GETTERS FOR EACH OF THE PROPERTIES OF TraceTask.java PER TASK;
+    IF YOU ADD A NEW PROPERTY FOR TraceTask.java YOU ALSO NEED TO ADD ANOTHER
+    METHOD HERE, IN ORDER TO USE IT IN Main.java
+    */
+    // <editor-fold defaultstate="collapsed" desc="Property getters per task">
     public int[] getTaskIDsPerTask() {
         int[] result = new int[map.size()];
         int counter = 0;
@@ -149,7 +167,7 @@ public final class TraceFileParser {
         }
         
         return result;
-    }
+    } // </editor-fold> 
 
     /**
      * Parses trace file. Basically, it transforms a trace file into a
