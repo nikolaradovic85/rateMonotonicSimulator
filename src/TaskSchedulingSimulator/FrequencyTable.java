@@ -39,6 +39,59 @@ public class FrequencyTable {
     }
     
     /**
+     * Calculates average time in FreqencyTableMap
+     * 
+     * @return average time
+     */
+    public double getAverageTime() {
+        
+        double sum = 0;
+        int noOfInstances = 0;
+        
+        for (Map.Entry<Integer, Pair> e : this.FreqencyTableMap.entrySet()) {
+            sum += e.getKey() * e.getValue().noOfOccurences;
+            noOfInstances += e.getValue().noOfOccurences;
+        }
+        
+        //if table is empty
+        if (noOfInstances == 0) { return 0; }
+        
+        //return average
+        return sum / ((noOfInstances) * 1.0);
+    }
+    
+    /**
+     * Calculates standard deviation from frequency table.
+     * 
+     * @return standard deviation
+     */
+    public double getStandardDeviation() {
+        
+        double result = 0.0;
+        double mean = this.getAverageTime();
+        int noOfInstances = 0;
+        
+        for (Map.Entry<Integer, Pair> e : FreqencyTableMap.entrySet()) {
+            result += Math.pow((e.getKey() - mean), 2) * e.getValue().noOfOccurences;
+            noOfInstances += e.getValue().noOfOccurences;
+        }
+        
+        //if table is empty
+        if (noOfInstances == 0) { return 0; }
+        
+        return Math.sqrt((result / noOfInstances));
+    }
+    
+    /**
+     * Calculates variance from frequency table.
+     * 
+     * @return variance
+     */
+    public double getVariance() {
+        return Math.pow(this.getStandardDeviation(), 2);
+    }
+    
+    /**
      * Adds time to FreqencyTableMap.
      * 
      * @param time time to be added 
@@ -64,28 +117,6 @@ public class FrequencyTable {
             //put updated pair back into frequency table
             this.FreqencyTableMap.put(time, updatedPair);
         }
-    }
-    
-    /**
-     * Calculates average time in FreqencyTableMap
-     * 
-     * @return average time
-     */
-    public double getAverageTime() {
-        
-        double sum = 0;
-        int noOfInstances = 0;
-        
-        for (Map.Entry<Integer, Pair> e : this.FreqencyTableMap.entrySet()) {
-            sum += e.getKey() * e.getValue().noOfOccurences;
-            noOfInstances += e.getValue().noOfOccurences;
-        }
-        
-        //if table is empty
-        if (noOfInstances == 0) { return 0; }
-        
-        //return average
-        return sum / ((noOfInstances) * 1.0);
     }
     
     /**

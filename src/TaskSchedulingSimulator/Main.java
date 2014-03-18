@@ -125,12 +125,18 @@ public class Main {
             double noOfFinishedInstancesPerTask[]   = new double[noOfTasks];
             double noOfMissedDeadlinesPerTask[]     = new double[noOfTasks];
             double deadlineMissProbabilityPerTask[] = new double[noOfTasks];
+            
             double minimumResponseTimePerTask[]     = new double[noOfTasks];
             double maximumResponseTimePerTask[]     = new double[noOfTasks];
             double averageResponseTimePerTask[]     = new double[noOfTasks];
+            double responseTimeStanDevPerTask[]     = new double[noOfTasks];
+            double responseTimeVariancePerTask[]    = new double[noOfTasks];
+            
             double minimumJitterPerTask[]           = new double[noOfTasks];
             double maximumJitterPerTask[]           = new double[noOfTasks];
             double averageJitterPerTask[]           = new double[noOfTasks];
+            double jitterStanDevPerTask[]           = new double[noOfTasks];
+            double jitterVariancePerTask[]          = new double[noOfTasks];
 
             //add up all the values (per task)
             for (int iCount = 0; iCount < noOfRepetitions; iCount++) {
@@ -142,12 +148,18 @@ public class Main {
                     noOfFinishedInstancesPerTask[taskCounter]   += t.getNoOfFinishedInstancesPerTask()[taskCounter];
                     noOfMissedDeadlinesPerTask[taskCounter]     += t.getNoOfMissedDeadlinesPerTask()[taskCounter];
                     deadlineMissProbabilityPerTask[taskCounter] += t.getDeadlineMissProbabilityPerTask()[taskCounter];
+                    
                     minimumResponseTimePerTask[taskCounter]     += t.getMinimumResponseTimePerTask()[taskCounter];
                     maximumResponseTimePerTask[taskCounter]     += t.getMaximumResponseTimePerTask()[taskCounter];
                     averageResponseTimePerTask[taskCounter]     += t.getAverageResponseTimePerTask()[taskCounter];
+                    responseTimeVariancePerTask[taskCounter]    += t.getResponseTimeVariancePerTask()[taskCounter];
+                    responseTimeStanDevPerTask[taskCounter]     += t.getResponseTimeStandardDevPerTask()[taskCounter];
+                    
                     minimumJitterPerTask[taskCounter]           += t.getMinimumJitterPerTask()[taskCounter];
                     maximumJitterPerTask[taskCounter]           += t.getMaximumJitterPerTask()[taskCounter];
                     averageJitterPerTask[taskCounter]           += t.getAverageJitterPerTask()[taskCounter];
+                    jitterVariancePerTask[taskCounter]          += t.getJitterVariancePerTask()[taskCounter];
+                    jitterStanDevPerTask[taskCounter]           += t.getJitterStandardDevPerTask()[taskCounter];
                 }
             }
             
@@ -157,12 +169,18 @@ public class Main {
                 noOfFinishedInstancesPerTask[iCount]   /= noOfRepetitions;
                 noOfMissedDeadlinesPerTask[iCount]     /= noOfRepetitions;
                 deadlineMissProbabilityPerTask[iCount] /= noOfRepetitions;
+                
                 minimumResponseTimePerTask[iCount]     /= noOfRepetitions;
                 maximumResponseTimePerTask[iCount]     /= noOfRepetitions;
                 averageResponseTimePerTask[iCount]     /= noOfRepetitions;
+                responseTimeStanDevPerTask[iCount]     /= noOfRepetitions;
+                responseTimeVariancePerTask[iCount]    /= noOfRepetitions;
+                
                 minimumJitterPerTask[iCount]           /= noOfRepetitions;
                 maximumJitterPerTask[iCount]           /= noOfRepetitions;
                 averageJitterPerTask[iCount]           /= noOfRepetitions;
+                jitterStanDevPerTask[iCount]           /= noOfRepetitions;
+                jitterVariancePerTask[iCount]          /= noOfRepetitions;
                 
                 //print values - TODO - print to file
                 System.out.println("Task: " + taskIDs[iCount]);
@@ -191,6 +209,11 @@ public class Main {
                 System.out.print(averageResponseTimePerTask[iCount]);
                 System.out.println("");
                 
+                System.out.print("Response time standard deviation / variance: ");
+                System.out.print(responseTimeStanDevPerTask[iCount] + 
+                        " / " + responseTimeVariancePerTask[iCount]);
+                System.out.println("");
+                
                 System.out.print("Minimum jitter: ");
                 System.out.print(minimumJitterPerTask[iCount]);
                 System.out.println("");
@@ -201,6 +224,11 @@ public class Main {
                 
                 System.out.print("Average jitter: ");
                 System.out.print(averageJitterPerTask[iCount]);
+                System.out.println("");
+                
+                System.out.print("Jitter standard deviation / variance: ");
+                System.out.print(jitterStanDevPerTask[iCount] + 
+                        " / " + jitterVariancePerTask[iCount]);
                 System.out.println("");
                 
                 System.out.println("");

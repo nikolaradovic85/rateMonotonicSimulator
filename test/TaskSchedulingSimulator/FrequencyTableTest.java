@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
  */
 public class FrequencyTableTest {
     
-    FrequencyTable ft;
+    FrequencyTable ft, ftEmpty;
     
     public FrequencyTableTest() {
     }
@@ -35,6 +35,7 @@ public class FrequencyTableTest {
     @Before
     public void setUp() {
         ft = new FrequencyTable();
+        ftEmpty = new FrequencyTable();
         
         ft.addTime(3, true);
         ft.addTime(2, false);
@@ -99,6 +100,9 @@ public class FrequencyTableTest {
         double result = ft.getAverageTime();
         assertEquals(5.25, result, 0.0001);
         
+        double resultEmpty = ftEmpty.getAverageTime();
+        assertEquals(0, resultEmpty, 0.0001);
+        
         System.out.println("OK");
     }
 
@@ -120,6 +124,30 @@ public class FrequencyTableTest {
     public void testGetMaximum() {
         System.out.print("getMaximum: ");
         assertEquals(13, ft.getMaximum());
+        
+        System.out.println("OK");
+    }
+    
+    /**
+     * Test of getStandardDeviation method, of class FrequencyTable.
+     */
+    @Test
+    public void testGetStandardDeviation() {
+        System.out.print("getStandardDeviation: ");
+        assertEquals(4.49305, ft.getStandardDeviation(), 0.0001);
+        assertEquals(0, ftEmpty.getStandardDeviation(), 0.0001);
+        
+        System.out.println("OK");
+    }
+    
+    /**
+     * Test of getVariance method, of class FrequencyTable.
+     */
+    @Test
+    public void testGetVariance() {
+        System.out.print("getVariance: ");
+        assertEquals(20.1875, ft.getVariance(), 0.0001);
+        assertEquals(0, ftEmpty.getVariance(), 0.0001);
         
         System.out.println("OK");
     }

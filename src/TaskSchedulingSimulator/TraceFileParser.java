@@ -48,7 +48,7 @@ public final class TraceFileParser {
     IF YOU ADD A NEW PROPERTY FOR TraceTask.java YOU ALSO NEED TO ADD ANOTHER
     METHOD HERE, IN ORDER TO USE IT IN Main.java
     */
-    // <editor-fold defaultstate="collapsed" desc="Property getters per task">
+    // <editor-fold defaultstate="collapsed" desc="Property getters per task - boilerplate code">
     public String[] getTaskIDsPerTask() {
         String[] result = new String[map.size()];
         int counter = 0;
@@ -109,6 +109,30 @@ public final class TraceFileParser {
         return result;
     }
     
+    public double[] getResponseTimeStandardDevPerTask() {
+        double[] result = new double[map.size()];
+        int counter = 0;
+        
+        for (Entry<String, TraceTask> e : map.entrySet()) {
+            result[counter] = e.getValue().responseTimeFT.getStandardDeviation();
+            counter++;
+        }
+        
+        return result;
+    }
+    
+    public double[] getResponseTimeVariancePerTask() {
+        double[] result = new double[map.size()];
+        int counter = 0;
+        
+        for (Entry<String, TraceTask> e : map.entrySet()) {
+            result[counter] = e.getValue().responseTimeFT.getVariance();
+            counter++;
+        }
+        
+        return result;
+    }
+    
     public int[] getMinimumResponseTimePerTask() {
         int[] result = new int[map.size()];
         int counter = 0;
@@ -139,6 +163,30 @@ public final class TraceFileParser {
         
         for (Entry<String, TraceTask> e : map.entrySet()) {
             result[counter] = e.getValue().jitterFT.getAverageTime();
+            counter++;
+        }
+        
+        return result;
+    }
+    
+    public double[] getJitterStandardDevPerTask() {
+        double[] result = new double[map.size()];
+        int counter = 0;
+        
+        for (Entry<String, TraceTask> e : map.entrySet()) {
+            result[counter] = e.getValue().jitterFT.getStandardDeviation();
+            counter++;
+        }
+        
+        return result;
+    }
+    
+    public double[] getJitterVariancePerTask() {
+        double[] result = new double[map.size()];
+        int counter = 0;
+        
+        for (Entry<String, TraceTask> e : map.entrySet()) {
+            result[counter] = e.getValue().jitterFT.getVariance();
             counter++;
         }
         
