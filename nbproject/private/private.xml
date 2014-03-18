@@ -5,9 +5,12 @@
         <group>
             <file>file:/home/ljubo/NetBeansProjects/rateMonotonicSimulator/src/TaskSchedulingSimulator/FrequencyTable.java</file>
             <file>file:/home/ljubo/NetBeansProjects/rateMonotonicSimulator/src/TaskSchedulingSimulator/Simulation.java</file>
-            <file>file:/home/ljubo/NetBeansProjects/rateMonotonicSimulator/src/TaskSchedulingSimulator/InstanceOfPeriodicTask.java</file>
+            <file>file:/home/ljubo/NetBeansProjects/rateMonotonicSimulator/test/TaskSchedulingSimulator/TraceTaskTest.java</file>
+            <file>file:/home/ljubo/NetBeansProjects/rateMonotonicSimulator/src/TaskSchedulingSimulator/TraceTask.java</file>
+            <file>file:/home/ljubo/NetBeansProjects/rateMonotonicSimulator/src/TaskSchedulingSimulator/PeriodicTaskFixed.java</file>
             <file>file:/home/ljubo/NetBeansProjects/rateMonotonicSimulator/src/TaskSchedulingSimulator/PeriodicTask.java</file>
             <file>file:/home/ljubo/NetBeansProjects/rateMonotonicSimulator/src/TaskSchedulingSimulator/PeriodicTaskFrequencyTable.java</file>
+            <file>file:/home/ljubo/NetBeansProjects/rateMonotonicSimulator/test/TaskSchedulingSimulator/FrequencyTableTest.java</file>
             <file>file:/home/ljubo/NetBeansProjects/rateMonotonicSimulator/src/TaskSchedulingSimulator/TraceFileParser.java</file>
             <file>file:/home/ljubo/NetBeansProjects/rateMonotonicSimulator/src/TaskSchedulingSimulator/Main.java</file>
         </group>

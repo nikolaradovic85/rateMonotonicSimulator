@@ -1,8 +1,8 @@
 package TaskSchedulingSimulator;
 
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,6 +15,10 @@ public class Main {
     private static final String inputDir = "io/input/";
     private static final String traceDir = "io/trace/";
     private static final String statsDir = "io/statistic/";
+    private static final String inputFormatMessage = 
+            "Format of input arguments: " + System.lineSeparator()
+            + "noOfSims(N) inFile1 algorithm1 simType 1 ... inFileN algorithmN "
+            + "simTypeN NUMBER_OF_REPETITIONS";
     
     public static void main(String[] args) {
         
@@ -28,45 +32,81 @@ public class Main {
         
         args[4] = "specialinput.txt";   //...
         args[5] = "RM";
-        args[6] = "SOFT";
+        args[6] = "ads";
         
         args[7] = "2";                  //number of repetitions
         
+        
+        
         int noOfSimulations = Integer.parseInt(args[0]);
         int noOfRepetitions = Integer.parseInt(args[noOfSimulations * 3 + 1]);
-        HashMap<String, TraceFileParser[]> stats = new HashMap<>();
-        
-        
-        String inputFiles[] = new String[noOfSimulations];
-        Simulation simulationArray[] = new Simulation[noOfSimulations];
-        Simulation.SimulationTypes simulationType = null;
-        Comparator<InstanceOfPeriodicTask> comparator = null;
+        TreeMap<String, TraceFileParser[]> stats = new TreeMap<>();
 
         //repeat given number of times
         for (int repetition = 1; repetition <= noOfRepetitions; repetition++) {
         
+            String inputFiles[] = new String[noOfSimulations];
+            Simulation simulationArray[] = new Simulation[noOfSimulations];
+            Simulation.SimulationTypes simulationType;
+            Comparator<InstanceOfPeriodicTask> comparator;
+            
             for (int iCount = 0; iCount < noOfSimulations; iCount++) {
-                String inputFile    = args[iCount * 3 + 1];
-                String simAlghoritm = args[iCount * 3 + 2];
-                String simType      = args[iCount * 3 + 3];
+                int inputFileLine    = iCount * 3 + 1;
+                int simAlgorithmLine = iCount * 3 + 2;
+                int simTypeLine      = iCount * 3 + 3;
+                
+                String inputFile    = args[inputFileLine];
+                String simAlgorithm = args[simAlgorithmLine];
+                String simType      = args[simTypeLine];
+                
+                /* 
+                Check if all given input files are different.
+                If current input file is already in inputFiles array, that means
+                it's a duplicate and program should terminate.
+                */
+                for (int jCount = 0; jCount < iCount; jCount++) {
+                    if (inputFiles[jCount].equals(inputFile)) {
+                        System.out.println(
+                                "Duplicate input file " 
+                                + inputFile
+                                + ". Terminating.");
+                        return;
+                    }
+                }
+                
+                inputFiles[iCount] = inputFile;
                 
                 if (!stats.containsKey(inputFile)) {
                     stats.put(inputFile, new TraceFileParser[noOfRepetitions]);
                 }
 
-                switch (simAlghoritm) {
+                switch (simAlgorithm) {
                     case "RM" : comparator = InstanceOfPeriodicTask.Comparators.TASK_PERIOD; break;
                     case "EDF": comparator = InstanceOfPeriodicTask.Comparators.ABSOLUTE_DEADLINE; break;
                     case "DM" : comparator = InstanceOfPeriodicTask.Comparators.RELATIVE_DEADLINE; break;
+                    default: System.out.println(
+                            "Wrong simulation algorithm in input arguments,"
+                            + " argument " + (simAlgorithmLine + 1) + ": "
+                            + simAlgorithm + "." + System.lineSeparator()
+                            + "Only RM, EDF and DM are allowed. "
+                            + System.lineSeparator() + inputFormatMessage
+                            + System.lineSeparator() + "Terminating."); 
+                            return;
                 }
 
                 switch (simType) {
                     case "SOFT"  : simulationType = Simulation.SimulationTypes.SOFT; break;
                     case "HARD"  : simulationType = Simulation.SimulationTypes.SOFT; break;
                     case "HYBRID": simulationType = Simulation.SimulationTypes.HYBRID; break;
+                    default: System.out.println(
+                            "Wrong simulation type in input arguments,"
+                            + " argument " + (simTypeLine + 1) + ": "
+                            + simType + "." + System.lineSeparator()
+                            + "Only SOFT, HARD and HYBRID are allowed. "
+                            + System.lineSeparator() + inputFormatMessage
+                            + System.lineSeparator() + "Terminating."); 
+                            return;
                 }
-
-                inputFiles[iCount] = inputFile;
 
                 simulationArray[iCount] = new Simulation(
                         Integer.toString(iCount), 
