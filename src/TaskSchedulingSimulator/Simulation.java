@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.Iterator;
 import java.util.Map;
@@ -26,7 +27,6 @@ import java.util.logging.Logger;
 public class Simulation extends Thread {
 
     public enum SimulationTypes {
-
         SOFT,
         HARD,
         HYBRID
@@ -39,6 +39,7 @@ public class Simulation extends Thread {
     private final SimulationTypes typeOfSimulation;
     private final ArrayList<InstanceOfPeriodicTask> readyQ;
     private int time;
+    private Map<String,Integer> activationTimes;
 
     /**
      * Constructor for Simulation.
@@ -48,6 +49,14 @@ public class Simulation extends Thread {
      * @param inputFileName Path to input file
      * @param outputFileName Path to output file
      * @param pComparator
+     * input (array of periodic tasks) and activationTimes are populated in readInputFromFile()
+     * activationTimes in beginning consists phase of each periodic task.
+     * time is set on minimum value from activationTimes, so it's set on minimum phase of all periodic tasks,
+     * which is first activation of any periodic task. During simulation activation times
+     * updates whenever we create new instance of periodic task. We set activation time of that periodic task 
+     * that "produces" this new instance on finish time of instance. This is reason why activationTimes is implemented
+     * trough HashMap(String, Integer) where key string stores periodic task id, and integer value stores end of last added
+     * instance time period.
      */
     public Simulation(
             String threadName,
@@ -63,59 +72,70 @@ public class Simulation extends Thread {
         this.logger = new SimulatorLogger(outputFileName);
         this.comparator = pComparator;
         this.input = new ArrayList<>();
+        this.activationTimes = new HashMap<>();
         readInputFromFile(new File(inputFileName));
-        time = getMinPhiFromInput();
+        time = getNextActivationTime();
     }
 
     /**
      * Search for next activation time of ANY task (both higher and lower
-     * priority)
+     * priority). Scans whole activationTime map and returns minimum value, which is 
+     * next activation time.
      *
      * @return next time of activation of any instance from input after time
      * @param input set of periodic tasks
      * @param time
      */
     private int getNextActivationTime() {
-        int nextActivationTime = time + 1;
-        boolean found = false;
-        while (!found) {
-            for (PeriodicTask temp : input) {
-                if ((nextActivationTime - temp.getPhi()) % temp.getTaskPeriod() == 0) {
-                    found = true;
-                }
-            }
-            if (!found) {
-                nextActivationTime++;
+        int nextActivation = Integer.MAX_VALUE;
+        for(Map.Entry<String,Integer> entry : activationTimes.entrySet()){
+            if(entry.getValue().compareTo(nextActivation) < 0 ){
+                nextActivation = entry.getValue();
             }
         }
-        return nextActivationTime;
+        return nextActivation;
     }
 
     /**
      * adds instances of periodic task that activate at time = time to readyQ,
-     * and sorts instances in readyQ by priority
+     * and sorts instances in readyQ by priority. Scans activationTime map and 
+     * creates instances of periodic tasks if activation time of that periodic task
+     * is equal time. Also, after instance insertion , changes activation time
+     * of periodic task to the end of time period of inserted instance.
      *
      * @param time
      * @param readyQ
      * @param input
      */
-    private void updateReadyQ() {
-
-        //for each task from input set of periodic tasks
-        for (PeriodicTask temp : input) {
-
-            //check if instance should be activated
-            if (time - temp.getPhi() >= 0
-                    && (time - temp.getPhi()) % temp.getTaskPeriod() == 0) {
-
-                //add instance to readyQ 
-                readyQ.add(new InstanceOfPeriodicTask(temp, time));
+    private void updateReadyQandActivationTimes() {
+        //for every periodic task
+        for(Map.Entry<String,Integer> entry : activationTimes.entrySet()){
+            //check if should be activated in this moment
+            if(entry.getValue().equals(time) ){
+                //create instance from periodic task
+                InstanceOfPeriodicTask temp = new InstanceOfPeriodicTask(getPeriodicTaskByID(entry.getKey()),time);
+                //add instance to readyQ
+                readyQ.add(temp);
+                //set activation time for periodic task to the end of instance time period 
+                entry.setValue(temp.getrActivationTime()+temp.getTaskPeriod());
             }
         }
         //sort readyQ with appropriate comparator for the chosen algorithm
         Collections.sort(readyQ, comparator);
     }
 
+    /**
+     * 
+     * @param id - id of periodic task
+     * @return periodic task with that id
+     */
+    private PeriodicTask getPeriodicTaskByID(String id){
+        for(PeriodicTask temp : this.input){
+            if(temp.getId().equals(id))
+                return temp;
+        }
+        return null;
+    }
     private void printNotFeasible(InstanceOfPeriodicTask instance) {
         System.out.println(
                 this.getName()
@@ -126,15 +146,6 @@ public class Simulation extends Thread {
                 + ".");
     }
 
-    private int getMinPhiFromInput() {
-        int minPhi = input.get(0).getPhi();
-        for (PeriodicTask temp : input) {
-            if (temp.getPhi() < minPhi) {
-                minPhi = temp.getPhi();
-            }
-        }
-        return minPhi;
-    }
 
     /**
      * Simulates periodic task scheduling.
@@ -146,7 +157,7 @@ public class Simulation extends Thread {
         while (time < endOfTimePeriod) {
 
             //activate all tasks that need to be activated at current time
-            updateReadyQ();
+            updateReadyQandActivationTimes();
 
             //if there are no active instances in readyQ at this time, 
             //fast forward to the next activation time
@@ -202,12 +213,12 @@ public class Simulation extends Thread {
                     logger.log(highestPriorityInstance);
 
                     //and remove it from readyQ
-                    readyQ.remove(0);
+                    readyQ.remove(0);                    
                 }
             }
 
             //check if some instance with lower priority missed deadline
-            if (checkForMissedHardDeadline() == true) {
+            if (checkForMissedDeadlineInReadyQ() == true) {
                 //unsuccessfully end simulate and save log to file
                 logger.saveLogToFile();
                 return; //return false;
@@ -231,8 +242,7 @@ public class Simulation extends Thread {
     }
 
     /**
-     * Reads a file and populates input, execution time calculated from uniform
-     * distribution
+     * Reads a file and populates input and activationTime
      *
      * @param f file which is parsed
      */
@@ -245,27 +255,27 @@ public class Simulation extends Thread {
             for (int i = 0; i < numberOfPeriodicTasks; i++) {
                 String id = scan.next();
                 int phi = scan.nextInt();
-                int taskPeriod = scan.nextInt();
-                int deadline = scan.nextInt();
-                int cTaskExecutionTime = 0;
-                String executionTimeType = scan.next();
-                PeriodicTask temp = null;
-
-                switch (executionTimeType) {
+                //set phi as first activation time of periodic task
+                activationTimes.put(id,phi);
+                String taskPeriodType = scan.next();
+                Map<Integer, Integer> periodMap = new TreeMap<>();
+                
+                switch (taskPeriodType) {
                     case "FIXED":
-                        cTaskExecutionTime = scan.nextInt();
-                        temp = new PeriodicTaskFixed(id, taskPeriod, deadline, phi, cTaskExecutionTime);
+                        int cTaskExecutionTime = scan.nextInt();
+                        periodMap.put(1, cTaskExecutionTime);
                         break;
                     case "MIN_MAX_UNIFORM":
                         int cMin = scan.nextInt();
                         int cMax = scan.nextInt();
                         int randomDistribution = scan.nextInt(); // not used
-                        temp = new PeriodicTaskMinMaxUniform(id, taskPeriod, deadline, phi, cMin, cMax, randomDistribution);
+                        periodMap.put(1,cMin);
+                        periodMap.put(2,cMax);
+                        periodMap.put(3,randomDistribution);
                         break;
                     case "FREQUENCY_TABLE":
                         int noOfEntries = scan.nextInt();
                         int cumulativeProbability = 0;
-                        Map<Integer, Integer> freqTable = new TreeMap<>();
 
                         /* populate hashmap with the frequency table 
                          with cumulative probabilies, e.g., probabilities 
@@ -274,13 +284,45 @@ public class Simulation extends Thread {
                         for (int iCount = 0; iCount < noOfEntries; iCount++) {
                             int execTime = scan.nextInt();
                             cumulativeProbability += scan.nextInt();
-                            freqTable.put(execTime, cumulativeProbability);
+                            periodMap.put(execTime, cumulativeProbability);
                         }
-
-                        temp = new PeriodicTaskFrequencyTable(id, taskPeriod, deadline, phi, freqTable);
                         break;
                 }
+                
+                int deadline = scan.nextInt();
+                int cTaskExecutionTime = 0;
+                String executionTimeType = scan.next();
+                Map<Integer, Integer> executionMap = new TreeMap<>();
+                switch (executionTimeType) {
+                    case "FIXED":
+                        cTaskExecutionTime = scan.nextInt();
+                        executionMap.put(1,cTaskExecutionTime);
+                        break;
+                    case "MIN_MAX_UNIFORM":
+                        int cMin = scan.nextInt();
+                        int cMax = scan.nextInt();
+                        int randomDistribution = scan.nextInt(); // not used
+                        executionMap.put(1,cMin);
+                        executionMap.put(2,cMax);
+                        executionMap.put(3,randomDistribution);
+                        break;
+                    case "FREQUENCY_TABLE":
+                        int noOfEntries = scan.nextInt();
+                        int cumulativeProbability = 0;
+                        /* populate hashmap with the frequency table 
+                         with cumulative probabilies, e.g., probabilities 
+                         for a group of three tasks are 10%, 50%, 40%, but the 
+                         hashmap contains 10,60,100 */
+                        for (int iCount = 0; iCount < noOfEntries; iCount++) {
+                            int execTime = scan.nextInt();
+                            cumulativeProbability += scan.nextInt();
+                            executionMap.put(execTime, cumulativeProbability);
+                        }
 
+                        break;
+                }
+                PeriodicTask temp = new PeriodicTask(id, phi, taskPeriodType,
+                        periodMap, deadline, executionTimeType,executionMap );
                 input.add(temp);
             }
 
@@ -293,7 +335,7 @@ public class Simulation extends Thread {
             System.out.println("Input mismatch!");}
     }
 
-    private boolean checkForMissedHardDeadline() {
+    private boolean checkForMissedDeadlineInReadyQ() {
         boolean anyMissedHard = false;
         Iterator<InstanceOfPeriodicTask> it = readyQ.iterator();
 

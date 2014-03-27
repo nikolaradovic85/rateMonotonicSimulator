@@ -1,35 +1,46 @@
 package TaskSchedulingSimulator;
 
+import java.util.Map;
+
 /**
  * PeriodicTask class is used to make a "task set" (called input in Simulation).
- * 
+ *
  * @author nikola
  */
+public class PeriodicTask {
 
-public abstract class PeriodicTask implements Comparable <PeriodicTask>{
     private final String id;
-    private final int taskPeriod;
     private final int phi;
     private final int deadline;
+    private final Type periodType;
+    Map<Integer, Integer> periodMap;
+    private final Type executionType;
+    Map<Integer, Integer> executionMap;
 
     /**
      * Constructor.
-     * 
-     * @param pId task id
-     * @param taskPeriod task period
-     * @param deadline task deadline
-     * @param phi task phase
+     * @param id
+     * @param phi
+     * @param taskPeriodType
+     * @param periodMap
+     * @param deadline
+     * @param executionTimeType
+     * @param executionMap 
      */
-    public PeriodicTask(String pId, int taskPeriod, int deadline, int phi){
-        this.id = pId;
+    PeriodicTask(String id, int phi, String taskPeriodType, Map<Integer, Integer> periodMap,
+            int deadline, String executionTimeType, Map<Integer, Integer> executionMap) {
+        this.id = id;
         this.phi = phi;
-        this.taskPeriod = taskPeriod;
         this.deadline = deadline;
+        this.periodType = getParameterType(taskPeriodType);
+        this.periodMap = periodMap;
+        this.executionType = getParameterType(executionTimeType);
+        this.executionMap = executionMap;
     }
 
     /**
      * Getter for id.
-     * 
+     *
      * @return the id of the task
      */
     public String getId() {
@@ -37,10 +48,10 @@ public abstract class PeriodicTask implements Comparable <PeriodicTask>{
     }
 
     /**
-     * @return the taskPeriod
+     * @return the taskPeriod, calculated in method getValueForType.
      */
     public int getTaskPeriod() {
-        return taskPeriod;
+        return getValueForType(periodType, periodMap);
     }
 
     /**
@@ -50,21 +61,70 @@ public abstract class PeriodicTask implements Comparable <PeriodicTask>{
         return phi;
     }
 
-    public int getDeadline(){
+    public int getDeadline() {
         return this.deadline;
     }
 
     /**
-     * Each implementation of PeriodicTask should have its own implementation
-     * of this method (e.g. PeriodicTaskMinMaxUniform needs to calculate a 
-     * random value between min and max and return this as the execution time.
-     * 
-     * @return the cTaskExecutionTime
+     * @return the cTaskExecutionTime, calculated in method getValueForType. 
      */
-    public abstract int getcTaskExecutionTime();
+    public int getcTaskExecutionTime() {
+        return getValueForType(executionType, executionMap);
+    }
 
-    @Override
-    public int compareTo(PeriodicTask other){
-        return this.taskPeriod - other.getTaskPeriod();
+    /**
+     * Converts string from input file in appropriate enum type
+     *
+     * @param stringType
+     * @return Type
+     */
+    public Type getParameterType(String stringType) {
+        switch (stringType) {
+            case "FIXED":
+                return Type.FIXED;
+            case "MIN_MAX_UNIFORM":
+                return Type.MIN_MAX_UNIFORM;
+            case "FREQUENCY_TABLE":
+                return Type.FREQUENCY_TABLE;
+            default:
+                return Type.FIXED;
+        }
+    }
+
+    /**
+     * 
+     * @param type - type of "operation"
+     * @param map - contains all values needed to produce output 
+     * (if type Fixed map contains only one value; if min max uniform map contains three values,
+     * min, max, random distribution; if frequency table type map contains whole frequency table)
+     * @return appropriate value for actual type: if type fixed returns always same FIXED Value,
+     * if MIN_MAX_UNIFORM returns integer value in range [min,max], if FREQUENCY_TABLE returns 
+     * value that is in accordance with frequency table stored in map.
+     * This method is used for calculating time period and execution time
+     */
+    public int getValueForType(Type type, Map<Integer, Integer> map) {
+        switch (type) {
+            case FIXED:
+                return (int) map.get(1);
+            case MIN_MAX_UNIFORM:
+                int cMin = (int) map.get(1);
+                int cMax = (int) map.get(2);
+                int randomDistribution = (int) map.get(3);
+                return cMin + (int) (Math.random() * (cMax - cMin + 1));
+            case FREQUENCY_TABLE:
+                int cTaskExecutionTime = 0;
+
+                // find a random number [1,100] (uniform distribution)
+                int random100 = (int) Math.ceil(Math.random() * 100);
+
+                // find its match in the hashmap
+                for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+                    if (random100 <= entry.getValue()) {
+                        cTaskExecutionTime = entry.getKey();
+                        return cTaskExecutionTime;
+                    }
+                }
+        }
+        return -1;
     }
 }
