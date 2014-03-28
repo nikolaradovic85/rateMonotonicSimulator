@@ -3,12 +3,7 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/nikola/simulator/rateMonotonicSimulator/test/TaskSchedulingSimulator/FrequencyTableTest.java</file>
-            <file>file:/home/nikola/simulator/rateMonotonicSimulator/src/TaskSchedulingSimulator/Simulation.java</file>
-            <file>file:/home/nikola/simulator/rateMonotonicSimulator/src/TaskSchedulingSimulator/PeriodicTask.java</file>
-            <file>file:/home/nikola/simulator/rateMonotonicSimulator/src/TaskSchedulingSimulator/InstanceOfPeriodicTask.java</file>
-            <file>file:/home/nikola/simulator/rateMonotonicSimulator/src/TaskSchedulingSimulator/Type.java</file>
-            <file>file:/home/nikola/simulator/rateMonotonicSimulator/src/TaskSchedulingSimulator/FrequencyTable.java</file>
+            <file>file:/home/nikola/simulator/rateMonotonicSimulator/src/TaskSchedulingSimulator/Main.java</file>
         </group>
     </open-files>
 </project-private>

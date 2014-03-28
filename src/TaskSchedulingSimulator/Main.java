@@ -24,13 +24,17 @@ public class Main {
         
         //Manualy editing args will be removed when ready for distribution.
         args = new String[10];
-        args[0] = "1";                  //number of simulations (inputs)
+        args[0] = "2";                  //number of simulations (inputs)
         
         args[1] = "input2.txt";         //path to input file
         args[2] = "RM";                 //algorithm
         args[3] = "SOFT";               //type of simulation
+    
+        args[4] = "input3.txt";         //path to input file
+        args[5] = "RM";                 //algorithm
+        args[6] = "SOFT";               //type of simulation
         
-        args[4] = "1";                  //number of repetitions
+        args[7] = "100";                  //number of repetitions
         
         
         
