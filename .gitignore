@@ -10,3 +10,5 @@
 /test/TaskSchedulingSimulator/files/io/traceActual/tc1RM_SOFT.trc
 /test/TaskSchedulingSimulator/files/io/traceActual/tc2RM_SOFT.trc
 /test/TaskSchedulingSimulator/files/io/traceActual/tc3RM_SOFT.trc
+test/TaskSchedulingSimulator/files/io/traceActual
+

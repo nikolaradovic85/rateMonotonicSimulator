@@ -112,14 +112,21 @@ public class PeriodicTask {
                 int randomDistribution = (int) map.get(3);
                 return cMin + (int) (Math.random() * (cMax - cMin + 1));
             case FREQUENCY_TABLE:
+                //sum of all probabilities in the map
+                int sum = 0;
+                for (Map.Entry<Integer, Integer> entry: map.entrySet()) {
+                    sum += entry.getValue();
+                }
+                
                 int cTaskExecutionTime = 0;
 
-                // find a random number [1,100] (uniform distribution)
-                int random100 = (int) Math.ceil(Math.random() * 100);
+                //find a random number [1,sum of all probabilities in the map],
+                //uniform distribution
+                int randomInt = (int) Math.ceil(Math.random() * sum);
 
                 // find its match in the hashmap
                 for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
-                    if (random100 <= entry.getValue()) {
+                    if (randomInt <= entry.getValue()) {
                         cTaskExecutionTime = entry.getKey();
                         return cTaskExecutionTime;
                     }
